@@ -57,7 +57,7 @@ options:
 
 EXAMPLES = r"""
 - name: Evaluate Security group rules from EC2 instance to RDS Instance
-  validate_security_group_rules:
+  cloud.aws_troubleshooting.validate_security_group_rules:
     dest_subnet_cidrs:
         - 10.1.0.0/24
         - 10.1.2.0/24
