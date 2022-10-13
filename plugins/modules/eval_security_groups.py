@@ -58,7 +58,7 @@ options:
 
 EXAMPLES = r"""
 - name: Evaluate ingress and egress security group rules
-  eval_security_groups:
+  cloud.aws_troubleshooting.eval_security_groups:
     src_ip: 172.32.1.31
     src_security_groups:
         - sg-0258afe8541042bac

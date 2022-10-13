@@ -35,7 +35,7 @@ options:
 
 EXAMPLES = r"""
 - name: Get connection next hop type
-  get_connection_next_hop:
+  cloud.aws_troubleshooting.get_connection_next_hop:
     dst_ip: 172.32.2.13
     routes:
       - destination_cidr_block: "172.32.0.0/16"

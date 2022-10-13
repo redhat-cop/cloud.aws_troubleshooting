@@ -51,7 +51,7 @@ options:
 
 EXAMPLES = r"""
 - name: Evaluate VPC peering
-  eval_vpc_peering:
+  cloud.aws_troubleshooting.eval_vpc_peering:
     src_ip: "172.25.0.9"
     dst_vpc: "vpc-09620d5e5c8622e06"
     peering_id: "pcx-054dfaa54c74adba4"

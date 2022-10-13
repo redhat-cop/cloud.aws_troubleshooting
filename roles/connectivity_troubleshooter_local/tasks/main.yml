@@ -52,7 +52,7 @@
       - "{{ __dst_security_groups_info.results }}"
 
   - name: Evaluate ingress and egress security group rules
-    eval_security_groups:
+    cloud.aws_troubleshooting.eval_security_groups:
       src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
       src_security_groups: "{{ src_security_groups }}"
       dst_ip: "{{ connectivity_troubleshooter_local_destination_ip }}"
@@ -90,7 +90,7 @@
       _vals: "{{ ['egress', 'ingress']|map('extract', item) }}"
 
   - name: Evaluate ingress and egress netwok ACLs
-    eval_network_acls:
+    cloud.aws_troubleshooting.eval_network_acls:
       src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
       src_subnet_id: "{{ src_subnet_id }}"
       src_port_range: "{{ connectivity_troubleshooter_local_source_port_range }}"

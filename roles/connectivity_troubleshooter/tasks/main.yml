@@ -2,7 +2,7 @@
 # tasks file for roles/connectivity_troubleshooter
 - block:
   - include_role:
-      name: connectivity_troubleshooter_validate
+      name: cloud.aws_troubleshooting.connectivity_troubleshooter_validate
     vars:
       connectivity_troubleshooter_validate_destination_ip: "{{ connectivity_troubleshooter_destination_ip }}"
       connectivity_troubleshooter_validate_destination_port: "{{ connectivity_troubleshooter_destination_port }}"
@@ -14,7 +14,7 @@
     when: "next_hop != 'local' and not next_hop.startswith('nat-') and not next_hop.startswith('igw-') and not next_hop.startswith('pcx-')"
 
   - include_role:
-      name: cloud.aws_roles.connectivity_troubleshooter_local
+      name: cloud.aws_troubleshooting.connectivity_troubleshooter_local
     vars:
       connectivity_troubleshooter_local_destination_ip: "{{ connectivity_troubleshooter_destination_ip }}"
       connectivity_troubleshooter_local_destination_port: "{{ connectivity_troubleshooter_destination_port }}"
@@ -24,7 +24,7 @@
     when: "'local' == next_hop"
 
   - include_role:
-      name: cloud.aws_roles.connectivity_troubleshooter_igw
+      name: cloud.aws_troubleshooting.connectivity_troubleshooter_igw
     vars:
       connectivity_troubleshooter_igw_destination_ip: "{{ connectivity_troubleshooter_destination_ip }}"
       connectivity_troubleshooter_igw_destination_port: "{{ connectivity_troubleshooter_destination_port }}"
@@ -35,7 +35,7 @@
     when: "'igw-' in next_hop"
 
   - include_role:
-      name: cloud.aws_roles.connectivity_troubleshooter_nat
+      name: cloud.aws_troubleshooting.connectivity_troubleshooter_nat
     vars:
       connectivity_troubleshooter_nat_destination_ip: "{{ connectivity_troubleshooter_destination_ip }}"
       connectivity_troubleshooter_nat_destination_port: "{{ connectivity_troubleshooter_destination_port }}"
@@ -44,7 +44,7 @@
     when: "'nat-' in next_hop"
 
   - include_role:
-      name: cloud.aws_roles.connectivity_troubleshooter_peering
+      name: cloud.aws_troubleshooting.connectivity_troubleshooter_peering
     vars:
       connectivity_troubleshooter_peering_destination_ip: "{{ connectivity_troubleshooter_destination_ip }}"
       connectivity_troubleshooter_peering_destination_port: "{{ connectivity_troubleshooter_destination_port }}"

@@ -29,12 +29,12 @@ Example Playbook
     - hosts: localhost
 
       roles:
-        - role: connectivity_troubleshooter_validate
+        - role: cloud.aws_troubleshooting.connectivity_troubleshooter_validate
           connectivity_troubleshooter_validate_destination_ip: 172.31.2.8
           connectivity_troubleshooter_validate_destination_port: 443
           connectivity_troubleshooter_validate_source_ip: 172.31.2.7
 
-        - role: cloud.aws_roles.connectivity_troubleshooter_local:
+        - role: cloud.aws_troubleshooting.connectivity_troubleshooter_local:
           connectivity_troubleshooter_local_destination_ip: 172.31.2.8
           connectivity_troubleshooter_local_destination_port: 443
           connectivity_troubleshooter_local_source_ip: 172.31.2.7
@@ -44,7 +44,7 @@ License
 
 GNU General Public License v3.0 or later
 
-See [LICENCE](https://github.com/ansible-collections/cloud.aws_roles/blob/main/LICENSE) to see the full text.
+See [LICENCE](https://github.com/ansible-collections/cloud.aws_troubleshooting/blob/main/LICENSE) to see the full text.
 
 Author Information
 ------------------

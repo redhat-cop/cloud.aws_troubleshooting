@@ -67,7 +67,7 @@ options:
 
 EXAMPLES = r"""
 - name: Evaluate ingress and egress network ACLs
-  eval_src_igw_route:
+  cloud.aws_troubleshooting.eval_src_igw_route:
     src_ip: "192.168.0.112
     src_subnet_id: "subnet-03181dc286eca1244"
     dst_ip: "8.8.8.8"

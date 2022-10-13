@@ -7,14 +7,14 @@
     when: "'pcx-' not in next_hop"
 
   - name: Gather information about peering connection
-    ec2_vpc_peering_info:
+    community.aws.ec2_vpc_peering_info:
       filters:
         vpc-peering-connection-id:
           - "{{ next_hop }}"
     register: vpc_peering_connection_info
 
   - name: Gather information about Network Interface of the Destination peer
-    ec2_eni_info:
+    amazon.aws.ec2_eni_info:
       filters:
         addresses.private-ip-address: "{{ connectivity_troubleshooter_peering_destination_ip }}"
     register: __dst_peer_eni
@@ -55,7 +55,7 @@
     when: __dst_peer_route_table.route_tables | length == 0
 
   - name: Evaluate VPC peering connection
-    eval_vpc_peering:
+    cloud.aws_troubleshooting.eval_vpc_peering:
       src_ip: "{{ connectivity_troubleshooter_peering_source_ip  }}"
       peering_id: "{{ next_hop }}"
       dst_vpc: "{{ connectivity_troubleshooter_peering_destination_vpc }}"

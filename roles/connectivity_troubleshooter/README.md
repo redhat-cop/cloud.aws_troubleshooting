@@ -13,11 +13,11 @@ Requirements
 Authentication against AWS is managed by the `aws_setup_credentials` role.
 
 It also requires the folllowing roles:
-- connectivity_troubleshooter_validate
-- connectivity_troubleshooter_igw
-- connectivity_troubleshooter_local 
-- connectivity_troubleshooter_nat
-- connectivity_troubleshooter_peering
+- cloud.aws_troubleshooting.connectivity_troubleshooter_validate
+- cloud.aws_troubleshooting.connectivity_troubleshooter_igw
+- cloud.aws_troubleshooting.connectivity_troubleshooter_local 
+- cloud.aws_troubleshooting.connectivity_troubleshooter_nat
+- cloud.aws_troubleshooting.connectivity_troubleshooter_peering
 
 Role Variables
 --------------
@@ -40,7 +40,7 @@ Example Playbook
     - hosts: localhost
 
       roles:
-        - role: cloud.aws_roles.connectivity_troubleshooter:
+        - role: cloud.aws_troubleshooting.connectivity_troubleshooter:
           connectivity_troubleshooter_destination_ip: 172.31.2.8
           connectivity_troubleshooter_destination_port: 443
           connectivity_troubleshooter_source_ip: 172.31.2.7
@@ -50,7 +50,7 @@ License
 
 GNU General Public License v3.0 or later
 
-See [LICENCE](https://github.com/ansible-collections/cloud.azure_roles/blob/main/LICENSE) to see the full text.
+See [LICENCE](https://github.com/ansible-collections/cloud.aws_troubleshooting/blob/main/LICENSE) to see the full text.
 
 Author Information
 ------------------

@@ -66,7 +66,7 @@ options:
 
 EXAMPLES = r"""
 - name: Evaluate ingress and egress NAT network ACLs
-  eval_nat_network_acls:
+  cloud.aws_troubleshooting.eval_nat_network_acls:
     dst_ip: "8.8.8.8"
     dst_port: 80
     nat_network_acls:

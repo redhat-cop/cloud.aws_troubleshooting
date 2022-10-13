@@ -70,7 +70,7 @@
     when: __src_route_table.route_tables | length == 0
 
   - name: Get connection next hop
-    get_connection_next_hop:
+    cloud.aws_troubleshooting.get_connection_next_hop:
       dst_ip: "{{ connectivity_troubleshooter_validate_destination_ip }}"
       routes: "{{ routes }}"
     register: __result_next_hop
