@@ -1,0 +1,23 @@
+---
+namespace: cloud
+name: aws_troubleshooting
+version: 0.1.0
+readme: README.md
+authors:
+  - Ansible (https://github.com/ansible)
+description: Amazon AWS roles and playbooks for Ansible.
+license_file: COPYING
+tags:
+  - amazon
+  - aws
+  - cloud
+  - infrastructure
+  - cluster
+repository: https://github.com/ansible-collections/cloud.aws_troubleshooting
+documentation: null
+homepage: https://github.com/ansible-collections/cloud.aws_troubleshooting
+issues: https://github.com/ansible-collections/cloud.aws_troubleshooting/issues
+build_ignore:
+  - '*cloud-config-aws.ini'
+  - '*cloud-config-aws.yml'
+  - 'changelogs/.plugin-cache.yaml'
