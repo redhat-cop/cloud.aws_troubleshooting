@@ -57,11 +57,11 @@
     route_table_id: "{{ __route_table_info.route_tables[0].id }}"
     tags:
       Name: "{{ vpc_name }}-1"
-    subnets:  
-      - "{{ __create_vpc_subnet_1.subnet.id }}" 
+    subnets:
+    - "{{ __create_vpc_subnet_1.subnet.id }}"
     routes:
-      - dest: "{{ vpc_2_subnet_cidr }}"
-        vpc_peering_connection_id: "{{ __create_vpc_peering.peering_id }}"
+    - dest: "{{ vpc_2_subnet_cidr }}"
+      vpc_peering_connection_id: "{{ __create_vpc_peering.peering_id }}"
   register: __route_table_out
 
 - name: Set Route in
@@ -70,12 +70,12 @@
     tags:
       Name: "{{ vpc_name }}-2"
     subnets:
-      - "{{ __create_vpc_subnet_2.subnet.id }}"
+    - "{{ __create_vpc_subnet_2.subnet.id }}"
     routes:
-      - dest: "{{ vpc_1_subnet_cidr_1 }}"
-        vpc_peering_connection_id: "{{ __create_vpc_peering.peering_id }}"
-      - dest: 0.0.0.0/0
-        gateway_id: "{{ __create_igw.gateway_id }}"
+    - dest: "{{ vpc_1_subnet_cidr_1 }}"
+      vpc_peering_connection_id: "{{ __create_vpc_peering.peering_id }}"
+    - dest: 0.0.0.0/0
+      gateway_id: "{{ __create_igw.gateway_id }}"
   register: __route_table_in
 
 - name: In Security Group
@@ -85,18 +85,18 @@
     purge_rules: true
     description: Ansible-Generated internal rule
     rules:
-      - proto: udp
-        from_port: 12345
-        to_port: 12345
-        cidr_ip: 0.0.0.0/0
-      - proto: tcp
-        from_port: 22
-        to_port: 22
-        cidr_ip: 0.0.0.0/0
-      - proto: tcp
-        from_port: 443
-        to_port: 443
-        cidr_ip: 0.0.0.0/0
+    - proto: udp
+      from_port: 12345
+      to_port: 12345
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 443
+      to_port: 443
+      cidr_ip: 0.0.0.0/0
   register: __security_group_in
 
 - name: Out Security Group
@@ -106,22 +106,22 @@
     purge_rules: true
     description: Ansible-Generated internal rule
     rules:
-      - proto: udp
-        from_port: 12345
-        to_port: 12345
-        cidr_ip: 0.0.0.0/0
-      - proto: tcp
-        from_port: 22
-        to_port: 22
-        cidr_ip: 0.0.0.0/0
-      - proto: tcp
-        from_port: 443
-        to_port: 443
-        cidr_ip: 0.0.0.0/0
-      - proto: tcp
-        from_port: 3128
-        to_port: 3128
-        cidr_ip: "{{ vpc_1_subnet_cidr_1 }}"
+    - proto: udp
+      from_port: 12345
+      to_port: 12345
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 443
+      to_port: 443
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 3128
+      to_port: 3128
+      cidr_ip: "{{ vpc_1_subnet_cidr_1 }}"
   register: __security_group_out
 
 - name: Deploy EC2 instance 1
@@ -152,4 +152,4 @@
 
 - set_fact:
     ip_instance_1: "{{ __create_ec2_instance_1.instances.0.private_ip_address }}"
-    ip_instance_2:  "{{ __create_ec2_instance_2.instances.0.private_ip_address }}"
+    ip_instance_2: "{{ __create_ec2_instance_2.instances.0.private_ip_address }}"

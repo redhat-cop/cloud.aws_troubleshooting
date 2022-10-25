@@ -10,7 +10,7 @@
     community.aws.ec2_vpc_peering_info:
       filters:
         vpc-peering-connection-id:
-          - "{{ next_hop }}"
+        - "{{ next_hop }}"
     register: vpc_peering_connection_info
 
   - name: Gather information about Network Interface of the Destination peer
@@ -29,7 +29,7 @@
     amazon.aws.ec2_vpc_route_table_info:
       filters:
         association.subnet-id:
-          - "{{ dst_peer_subnet_id }}"
+        - "{{ dst_peer_subnet_id }}"
     register: __dst_peer_route_table
 
   - set_fact:
@@ -38,19 +38,19 @@
 
   # if RouteTable is not returned, this indicates association of subnet with main route table
   - block:
-      - name: Gather information about Destination peer subnet
-        amazon.aws.ec2_vpc_route_table_info:
-          filters:
-            association.main: "true"
-            vpc-id: "{{ dst_peer_vpc_id }}"
-        register: __dst_peer_route_table_retry
+    - name: Gather information about Destination peer subnet
+      amazon.aws.ec2_vpc_route_table_info:
+        filters:
+          association.main: "true"
+          vpc-id: "{{ dst_peer_vpc_id }}"
+      register: __dst_peer_route_table_retry
 
-      - fail:
-          msg: "Could not find route table for Destination peer"
-        when: __dst_peer_route_table_retry.route_tables | length == 0
+    - fail:
+        msg: "Could not find route table for Destination peer"
+      when: __dst_peer_route_table_retry.route_tables | length == 0
 
-      - set_fact:
-          routes: "{{ __dst_peer_route_table_retry.route_tables.0.routes }}"
+    - set_fact:
+        routes: "{{ __dst_peer_route_table_retry.route_tables.0.routes }}"
 
     when: __dst_peer_route_table.route_tables | length == 0
 

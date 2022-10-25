@@ -16,7 +16,7 @@
     community.aws.ec2_vpc_nacl_info:
       filters:
         association.subnet-id:
-          - "{{ src_subnet_id }}"
+        - "{{ src_subnet_id }}"
     register: __src_subnet_nacls
 
   - set_fact:

@@ -35,7 +35,7 @@
     amazon.aws.ec2_vpc_route_table_info:
       filters:
         association.subnet-id:
-          - "{{ nat_subnet_id }}"
+        - "{{ nat_subnet_id }}"
     register: __nat_route_table
 
   - set_fact:
@@ -44,19 +44,19 @@
 
   # if RouteTable is not returned, this indicates association of subnet with main route table
   - block:
-      - name: Gather information about VPC route table
-        amazon.aws.ec2_vpc_route_table_info:
-          filters:
-            association.main: "true"
-            vpc-id: "{{ nat_vpc_id }}"
-        register: __nat_route_table_retry
+    - name: Gather information about VPC route table
+      amazon.aws.ec2_vpc_route_table_info:
+        filters:
+          association.main: "true"
+          vpc-id: "{{ nat_vpc_id }}"
+      register: __nat_route_table_retry
 
-      - fail:
-          msg: "Could not find route table for NAT Gateway"
-        when: __nat_route_table_retry.route_tables | length == 0
+    - fail:
+        msg: "Could not find route table for NAT Gateway"
+      when: __nat_route_table_retry.route_tables | length == 0
 
-      - set_fact:
-          nat_routes: "{{ __nat_route_table_retry.route_tables.0.routes }}"
+    - set_fact:
+        nat_routes: "{{ __nat_route_table_retry.route_tables.0.routes }}"
 
     when: __nat_route_table.route_tables | length == 0
 

@@ -48,8 +48,8 @@
   - set_fact:
       security_groups_info: "{{ security_groups_info | default([]) + item.security_groups }}"
     with_items:
-      - "{{ __src_security_groups_info.results }}"
-      - "{{ __dst_security_groups_info.results }}"
+    - "{{ __src_security_groups_info.results }}"
+    - "{{ __dst_security_groups_info.results }}"
 
   - name: Evaluate ingress and egress security group rules
     cloud.aws_troubleshooting.eval_security_groups:
@@ -65,7 +65,7 @@
     community.aws.ec2_vpc_nacl_info:
       filters:
         association.subnet-id:
-          - "{{ src_subnet_id }}"
+        - "{{ src_subnet_id }}"
     register: __network_acls_info
 
   - set_fact:
@@ -79,7 +79,7 @@
     community.aws.ec2_vpc_nacl_info:
       filters:
         association.subnet-id:
-          - "{{ dst_subnet_id }}"
+        - "{{ dst_subnet_id }}"
     register: __network_acls_info
 
   - set_fact:

@@ -14,11 +14,11 @@
 
     - set_fact:
         image_id: '{{ fedora_images.images.0.image_id }}'
-    
+
     - block:
       - include_tasks: setup_classic.yml
 
-      # local 
+      # local
       - include_role:
           name: cloud.aws_roles.connectivity_troubleshooter
         vars:
@@ -30,7 +30,7 @@
       - include_role:
           name: cloud.aws_roles.connectivity_troubleshooter
         vars:
-          connectivity_troubleshooter_destination_ip: 8.8.8.8 
+          connectivity_troubleshooter_destination_ip: 8.8.8.8
           connectivity_troubleshooter_destination_port: 80
           connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
@@ -38,23 +38,23 @@
       - include_role:
           name: cloud.aws_roles.connectivity_troubleshooter
         vars:
-          connectivity_troubleshooter_destination_ip: 8.8.8.8 
+          connectivity_troubleshooter_destination_ip: 8.8.8.8
           connectivity_troubleshooter_destination_port: 80
           connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
     always:
-      - include_tasks: cleanup_classic.yml
-      
-  - block:
-      - include_tasks: setup_destination_peering.yml
+    - include_tasks: cleanup_classic.yml
 
-      # Peering
-      - include_role:
-          name: cloud.aws_roles.connectivity_troubleshooter
-        vars:
-          connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
-          connectivity_troubleshooter_destination_port: 12345
-          connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
+  - block:
+    - include_tasks: setup_destination_peering.yml
+
+    # Peering
+    - include_role:
+        name: cloud.aws_roles.connectivity_troubleshooter
+      vars:
+        connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
+        connectivity_troubleshooter_destination_port: 12345
+        connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
     always:
-      - include_tasks: cleanup_destination_peering.yml
+    - include_tasks: cleanup_destination_peering.yml
