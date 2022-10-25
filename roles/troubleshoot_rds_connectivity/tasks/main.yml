@@ -1,20 +1,23 @@
 ---
 - name: Fail when 'troubleshoot_rds_connectivity_db_instance_id' is not defined
   ansible.builtin.fail:
-    msg: "The DB instance identifier must be defined as troubleshoot_rds_connectivity_db_instance_id"
+    msg: The DB instance identifier must be defined as troubleshoot_rds_connectivity_db_instance_id
   when: troubleshoot_rds_connectivity_db_instance_id is not defined
 
 - name: Fail when 'troubleshoot_rds_connectivity_ec2_instance_id' is not defined
   ansible.builtin.fail:
-    msg: "The EC2 instance identifier must be defined as troubleshoot_rds_connectivity_ec2_instance_id"
+    msg: The EC2 instance identifier must be defined as troubleshoot_rds_connectivity_ec2_instance_id
   when: troubleshoot_rds_connectivity_ec2_instance_id is not defined
 
 - name: Fail when invalid value specified for EC2 instance identifer
   ansible.builtin.fail:
-    msg: "Invalid value specified for EC2 instance identifer, allowed pattern '^i-[a-z0-9]{8,17}$'"
+    msg: Invalid value specified for EC2 instance identifer, allowed pattern '^i-[a-z0-9]{8,17}$'
   when: troubleshoot_rds_connectivity_ec2_instance_id | regex_search('^i-[a-z0-9]{8,17}$') is none
 
 - name: Run 'troubleshoot_rds_connectivity' roles
+  module_defaults:
+    group/aws: "{{ aws_role_credentials }}"
+
   block:
     - name: Include 'get_rds_instance_info.yml'
       ansible.builtin.include_tasks: get_rds_instance_info.yml
@@ -51,7 +54,3 @@
         src_private_ip: "{{ ec2_private_ip_addrs }}"
         src_route_tables: "{{ ec2_subnet_route_table.route_tables }}"
         src_vpc_route_tables: "{{ ec2_vpc_route_table.route_tables }}"
-
-  module_defaults:
-    group/aws:
-      "{{ aws_role_credentials }}"

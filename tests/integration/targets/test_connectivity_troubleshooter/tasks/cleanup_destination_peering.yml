@@ -21,11 +21,11 @@
 - name: Find all VPC Peering connections
   community.aws.ec2_vpc_peering_info:
     filters:
-      accepter-vpc-info.vpc-id: '{{ item }}'
+      accepter-vpc-info.vpc-id: "{{ item }}"
   register: __vpc_peering_info
   loop:
-  - '{{ vpc_id_1 }}'
-  - '{{ vpc_id_2 }}'
+    - "{{ vpc_id_1 }}"
+    - "{{ vpc_id_2 }}"
   ignore_errors: true
 
 - name: Set 'vpc_peering_connection_ids' variable
@@ -39,7 +39,7 @@
     peering_id: "{{ item }}"
     state: absent
   ignore_errors: true
-  loop: '{{ vpc_peering_connection_ids }}'
+  loop: "{{ vpc_peering_connection_ids }}"
 
 - name: Gather information about EC2 instances
   amazon.aws.ec2_instance_info:
@@ -51,7 +51,7 @@
 - name: Delete EC2 instances
   amazon.aws.ec2_instance:
     instance_ids:
-    - "{{ __ec2_instances_info.instances.0.instance_id }}"
+      - "{{ __ec2_instances_info.instances.0.instance_id }}"
     wait: true
     state: terminated
   ignore_errors: true
@@ -59,18 +59,18 @@
 - name: Retrieve Security Groups based VPC 1
   amazon.aws.ec2_security_group_info:
     filters:
-      vpc-id: '{{ vpc_id_1 }}'
+      vpc-id: "{{ vpc_id_1 }}"
   register: __security_groups
   ignore_errors: true
 
 - name: Delete Security Groups
   amazon.aws.ec2_security_group:
-    name: '{{ item.group_name }}'
-    group_id: '{{ item.group_id }}'
-    description: '{{ item.description }}'
+    name: "{{ item.group_name }}"
+    group_id: "{{ item.group_id }}"
+    description: "{{ item.description }}"
     rules: []
     rules_egress: []
-  loop: '{{ __security_groups.security_groups }}'
+  loop: "{{ __security_groups.security_groups }}"
   ignore_errors: true
 
 - name: Delete subnet
@@ -99,8 +99,8 @@
 
 - name: Delete VPC 1
   amazon.aws.ec2_vpc_net:
-    name: '{{ vpc_name }}-1'
-    cidr_block: '{{ vpc_1_cidr }}'
+    name: "{{ vpc_name }}-1"
+    cidr_block: "{{ vpc_1_cidr }}"
     state: absent
   ignore_errors: true
 
@@ -125,7 +125,7 @@
 - name: Delete EC2 instances
   amazon.aws.ec2_instance:
     instance_ids:
-    - "{{ __ec2_instances_info.instances.0.instance_id }}"
+      - "{{ __ec2_instances_info.instances.0.instance_id }}"
     wait: true
     state: terminated
   ignore_errors: true
@@ -133,19 +133,19 @@
 - name: Retrieve Security Groups based VPC 2
   amazon.aws.ec2_security_group_info:
     filters:
-      vpc-id: '{{ vpc_id_2 }}'
+      vpc-id: "{{ vpc_id_2 }}"
   register: __security_groups
   ignore_errors: true
 
 - name: Delete Security Groups
   amazon.aws.ec2_security_group:
-    name: '{{ item.group_name }}'
-    group_id: '{{ item.group_id }}'
-    description: '{{ item.description }}'
+    name: "{{ item.group_name }}"
+    group_id: "{{ item.group_id }}"
+    description: "{{ item.description }}"
     rules: []
     rules_egress: []
     state: absent
-  loop: '{{ __security_groups.security_groups }}'
+  loop: "{{ __security_groups.security_groups }}"
   ignore_errors: true
 
 - name: Delete subnet
@@ -174,13 +174,13 @@
 
 - name: Delete Internet Gateway
   amazon.aws.ec2_vpc_igw:
-    vpc_id: '{{ vpc_id_2 }}'
+    vpc_id: "{{ vpc_id_2 }}"
     state: absent
   ignore_errors: true
 
 - name: Delete VPC 2
   amazon.aws.ec2_vpc_net:
-    name: '{{ vpc_name }}-2'
-    cidr_block: '{{ vpc_2_cidr }}'
+    name: "{{ vpc_name }}-2"
+    cidr_block: "{{ vpc_2_cidr }}"
     state: absent
   ignore_errors: true

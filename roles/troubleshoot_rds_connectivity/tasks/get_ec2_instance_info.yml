@@ -15,7 +15,8 @@
     ec2_security_group_ids: "{{ ec2_instance_info.security_groups | map(attribute='group_id') | list }}"
     ec2_subnet_id: "{{ ec2_instance_info.subnet_id }}"
     ec2_vpc_id: "{{ ec2_instance_info.vpc_id }}"
-    ec2_private_ip_addrs: "{{ ec2_instance_info.network_interfaces | map(attribute='private_ip_addresses') | flatten | map(attribute='private_ip_address') | list }}"
+    ec2_private_ip_addrs: "{{ ec2_instance_info.network_interfaces | map(attribute='private_ip_addresses') | flatten | map(attribute='private_ip_address') | list\
+      \ }}"
   vars:
     ec2_instance_info: "{{ result.instances.0 }}"
 

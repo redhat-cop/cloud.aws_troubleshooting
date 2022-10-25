@@ -25,31 +25,31 @@
     wait: true
     state: terminated
   ignore_errors: true
-  loop: '{{ __ec2_instances_info.instances }}'
+  loop: "{{ __ec2_instances_info.instances }}"
 
 - name: Retrieve Security Groups based VPC 1
   amazon.aws.ec2_security_group_info:
     filters:
-      vpc-id: '{{ vpc_id_1 }}'
+      vpc-id: "{{ vpc_id_1 }}"
   register: __security_groups
   ignore_errors: true
 
 - name: Delete Security Groups
   amazon.aws.ec2_security_group:
-    name: '{{ item.group_name }}'
-    group_id: '{{ item.group_id }}'
-    description: '{{ item.description }}'
+    name: "{{ item.group_name }}"
+    group_id: "{{ item.group_id }}"
+    description: "{{ item.description }}"
     rules: []
     rules_egress: []
     state: absent
-  loop: '{{ __security_groups.security_groups }}'
+  loop: "{{ __security_groups.security_groups }}"
   ignore_errors: true
 
 - name: Gather information about NAT gateway
   amazon.aws.ec2_vpc_nat_gateway_info:
     filters:
       subnet-id: "{{ __subnet_private_public.results[0].subnet.id }}"
-      state: ['available']
+      state: [available]
   register: __nat_gateway
   ignore_errors: true
 
@@ -57,16 +57,16 @@
   amazon.aws.ec2_vpc_nat_gateway:
     nat_gateway_id: "{{ __nat_gateway.result.0.nat_gateway_id }}"
     state: absent
-    release_eip: yes
+    release_eip: true
     wait: true
   ignore_errors: true
 
 - name: Ensure EIP is actually released
   amazon.aws.ec2_eip:
     state: absent
-    device_id: '{{ item.nat_gateway_addresses[0].network_interface_id }}'
+    device_id: "{{ item.nat_gateway_addresses[0].network_interface_id }}"
     in_vpc: true
-  with_items: '{{ __nat_gateway.result }}'
+  with_items: "{{ __nat_gateway.result }}"
   ignore_errors: true
 
 - name: Delete subnets
@@ -109,7 +109,7 @@
 
 - name: Delete VPC 1
   amazon.aws.ec2_vpc_net:
-    name: '{{ vpc_name }}'
-    cidr_block: '{{ vpc_1_cidr }}'
+    name: "{{ vpc_name }}"
+    cidr_block: "{{ vpc_1_cidr }}"
     state: absent
   ignore_errors: true

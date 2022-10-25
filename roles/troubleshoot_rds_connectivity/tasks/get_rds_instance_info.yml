@@ -6,12 +6,12 @@
 
 - name: Assert that DB instance exists
   ansible.builtin.fail:
-    msg: "No DB instance found with identifier '{{ troubleshoot_rds_connectivity_db_instance_id }}'"
+    msg: No DB instance found with identifier '{{ troubleshoot_rds_connectivity_db_instance_id }}'
   when: rds_info.instances | length == 0
 
 - name: Assert that DB Instance status is 'available'
   ansible.builtin.fail:
-    msg: "Bad DB instance status, expecting 'available', found '{{ rds_info.instances.0.db_instance_status }}'"
+    msg: Bad DB instance status, expecting 'available', found '{{ rds_info.instances.0.db_instance_status }}'
   when: rds_info.instances.0.db_instance_status != "available"
 
 - name: Set 'rds_instance_endpoint_addr', 'rds_instance_endpoint_port', 'rds_instance_subnets', 'rds_instance_vpc_id' and rds_instance_vpc_security_groups' variables

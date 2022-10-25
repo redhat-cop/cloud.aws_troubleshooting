@@ -10,11 +10,11 @@
   when: option_value | length > 0
 
 - name: Read value from Environment
+  when: option_value | length == 0
   block:
     - name: Set 'env_values' variable
       ansible.builtin.set_fact:
         env_values: []
-
     - name: Set 'env_values' from Environment
       ansible.builtin.set_fact:
         env_values: "{{ env_values + [current_value] }}"
@@ -29,5 +29,3 @@
       ansible.builtin.set_fact:
         aws_role_credentials: "{{ aws_role_credentials | combine({option_key: env_values[0]}) }}"
       when: env_values | length > 0
-
-  when: option_value | length == 0
