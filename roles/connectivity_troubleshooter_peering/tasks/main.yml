@@ -1,8 +1,10 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_peering_destination
 
-- block:
-  - fail:
+- name: Run 'connectivity_troubleshooter_peering' role
+  block:
+  - name: Fail when next hop type is not supported by this role
+    ansible.builtin.fail:
       msg: "Next hop type '{{ next_hop }}' is not supported by this role"
     when: "'pcx-' not in next_hop"
 
@@ -19,7 +21,8 @@
         addresses.private-ip-address: "{{ connectivity_troubleshooter_peering_destination_ip }}"
     register: __dst_peer_eni
 
-  - set_fact:
+  - name: Set 'dst_peer_vpc_id' and 'dst_peer_subnet_id' variables
+    ansible.builtin.set_fact:
       dst_peer_vpc_id: "{{ __dst_peer_eni_info.vpc_id }}"
       dst_peer_subnet_id: "{{ __dst_peer_eni_info.subnet_id }}"
     vars:
@@ -32,12 +35,15 @@
         - "{{ dst_peer_subnet_id }}"
     register: __dst_peer_route_table
 
-  - set_fact:
+  - name: Set 'routes' variable
+    ansible.builtin.set_fact:
       routes: "{{ __dst_peer_route_table.route_tables.0.routes  }}"
     when: __dst_peer_route_table.route_tables | length > 0
 
   # if RouteTable is not returned, this indicates association of subnet with main route table
-  - block:
+  - name: Gather information about VPC route table using association.main=true
+    when: __dst_peer_route_table.route_tables | length == 0
+    block:
     - name: Gather information about Destination peer subnet
       amazon.aws.ec2_vpc_route_table_info:
         filters:
@@ -45,18 +51,18 @@
           vpc-id: "{{ dst_peer_vpc_id }}"
       register: __dst_peer_route_table_retry
 
-    - fail:
+    - name: Fail when no route table for Destination peer is found
+      ansible.builtin.fail:
         msg: "Could not find route table for Destination peer"
       when: __dst_peer_route_table_retry.route_tables | length == 0
 
-    - set_fact:
+    - name: Set 'routes' variable
+      ansible.builtin.set_fact:
         routes: "{{ __dst_peer_route_table_retry.route_tables.0.routes }}"
-
-    when: __dst_peer_route_table.route_tables | length == 0
 
   - name: Evaluate VPC peering connection
     cloud.aws_troubleshooting.eval_vpc_peering:
-      src_ip: "{{ connectivity_troubleshooter_peering_source_ip  }}"
+      src_ip: "{{ connectivity_troubleshooter_peering_source_ip }}"
       peering_id: "{{ next_hop }}"
       dst_vpc: "{{ connectivity_troubleshooter_peering_destination_vpc }}"
       routes: "{{ routes }}"

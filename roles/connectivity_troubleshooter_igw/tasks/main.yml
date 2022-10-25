@@ -1,7 +1,9 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_igw
-- block:
-  - fail:
+- name: Run 'connectivity_troubleshooter_igw' role
+  block:
+  - name: Fail when next hop type is not supported by this role
+    ansible.legacy.fail:
       msg: "Next hop type '{{ next_hop }}' is not supported by this role"
     when: "'igw-' not in next_hop"
 
@@ -19,18 +21,20 @@
         - "{{ src_subnet_id }}"
     register: __src_subnet_nacls
 
-  - set_fact:
-      src_subnet_nacls: "{{ src_subnet_nacls|d([]) + [dict(_keys|zip(_vals))] }}"
+  - name: Set 'src_subnet_nacls' variable
+    ansible.legacy.set_fact:
+      src_subnet_nacls: "{{ src_subnet_nacls | d([]) + [dict(_keys | zip(_vals))] }}"
     loop: "{{ __src_subnet_nacls.nacls }}"
     vars:
       _keys: "{{ ['egress', 'ingress'] }}"
-      _vals: "{{ ['egress', 'ingress']|map('extract', item) }}"
+      _vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
 
-  - set_fact:
+  - name: Set 'src_security_groups_info' variable
+    ansible.legacy.set_fact:
       src_security_groups_info: "{{ __src_security_groups.results | sum(attribute='security_groups', start=[]) }}"
 
   - name: Evaluate ingress and egress netwok ACLs
-    eval_src_igw_route:
+    cloud.aws_troubleshooting.eval_src_igw_route:
       src_ip: "{{ connectivity_troubleshooter_igw_source_ip }}"
       src_port_range: "{{ connectivity_troubleshooter_igw_source_port_range }}"
       src_subnet_id: "{{ src_subnet_id }}"

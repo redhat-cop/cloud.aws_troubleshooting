@@ -1,25 +1,25 @@
 ---
 - name: Create VPC 1
-  ec2_vpc_net:
+  amazon.aws.ec2_vpc_net:
     name: "{{ vpc_name }}-1"
     cidr_block: "{{ vpc_1_cidr }}"
   register: __create_vpc_1
 
 - name: Create Subnet 1
-  ec2_vpc_subnet:
+  amazon.aws.ec2_vpc_subnet:
     cidr: "{{ vpc_1_subnet_cidr_1 }}"
     vpc_id: "{{ __create_vpc_1.vpc.id }}"
     state: present
   register: __create_vpc_subnet_1
 
 - name: Create VPC 2
-  ec2_vpc_net:
+  amazon.aws.ec2_vpc_net:
     name: "{{ vpc_name }}-2"
     cidr_block: "{{ vpc_2_cidr }}"
   register: __create_vpc_2
 
 - name: Create Subnet 2
-  ec2_vpc_subnet:
+  amazon.aws.ec2_vpc_subnet:
     cidr: "{{ vpc_2_subnet_cidr }}"
     vpc_id: "{{ __create_vpc_2.vpc.id }}"
     state: present
@@ -27,32 +27,32 @@
   register: __create_vpc_subnet_2
 
 - name: Create VPC Peering
-  ec2_vpc_peer:
+  community.aws.ec2_vpc_peer:
     vpc_id: "{{ __create_vpc_1.vpc.id }}"
     peer_vpc_id: "{{ __create_vpc_2.vpc.id }}"
     state: present
   register: __create_vpc_peering
 
 - name: Accept VPC Peering
-  ec2_vpc_peer:
+  community.aws.ec2_vpc_peer:
     peering_id: "{{ __create_vpc_peering.peering_id }}"
     state: accept
   register: __accept_vpc_peering
 
 - name: Create Internet Gateway
-  ec2_vpc_igw:
+  amazon.aws.ec2_vpc_igw:
     vpc_id: "{{ __create_vpc_2.vpc.id }}"
     state: present
   register: __create_igw
 
 - name: Gather Route Tables
-  ec2_vpc_route_table_info:
+  amazon.aws.ec2_vpc_route_table_info:
     filters:
       vpc-id: "{{ __create_vpc_1.vpc.id }}"
   register: __route_table_info
 
 - name: Set Route out
-  ec2_vpc_route_table:
+  amazon.aws.ec2_vpc_route_table:
     vpc_id: "{{ __create_vpc_1.vpc.id }}"
     route_table_id: "{{ __route_table_info.route_tables[0].id }}"
     tags:
@@ -65,7 +65,7 @@
   register: __route_table_out
 
 - name: Set Route in
-  ec2_vpc_route_table:
+  amazon.aws.ec2_vpc_route_table:
     vpc_id: "{{ __create_vpc_2.vpc.id }}"
     tags:
       Name: "{{ vpc_name }}-2"
@@ -79,7 +79,7 @@
   register: __route_table_in
 
 - name: In Security Group
-  ec2_group:
+  amazon.aws.ec2_security_group:
     name: "{{ vpc_name }}-1-secgroup"
     vpc_id: "{{ __create_vpc_1.vpc.id }}"
     purge_rules: true
@@ -100,7 +100,7 @@
   register: __security_group_in
 
 - name: Out Security Group
-  ec2_group:
+  amazon.aws.ec2_security_group:
     name: "{{ vpc_name }}-2-secgroup"
     vpc_id: "{{ __create_vpc_2.vpc.id }}"
     purge_rules: true
@@ -125,7 +125,7 @@
   register: __security_group_out
 
 - name: Deploy EC2 instance 1
-  ec2_instance:
+  amazon.aws.ec2_instance:
     instance_type: t2.micro
     image_id: "{{ image_id }}"
     wait: yes
@@ -138,7 +138,7 @@
   register: __create_ec2_instance_1
 
 - name: Deploy EC2 instance 2
-  ec2_instance:
+  amazon.aws.ec2_instance:
     instance_type: t2.micro
     image_id: "{{ image_id }}"
     wait: yes
@@ -150,6 +150,7 @@
       Name: "{{ instance_name }}-2"
   register: __create_ec2_instance_2
 
-- set_fact:
+- name: Set 'ip_instance_1' and 'ip_instance_2' variables
+  ansible.builtin.set_fact:
     ip_instance_1: "{{ __create_ec2_instance_1.instances.0.private_ip_address }}"
     ip_instance_2: "{{ __create_ec2_instance_2.instances.0.private_ip_address }}"
