@@ -25,7 +25,7 @@
             # local
             - name: Include 'connectivity_troubleshooter' role
               ansible.builtin.include_role:
-                name: cloud.aws_roles.connectivity_troubleshooter
+                name: cloud.aws_troubleshooting.connectivity_troubleshooter
               vars:
                 connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
                 connectivity_troubleshooter_destination_port: 80
@@ -34,7 +34,7 @@
             # NAT
             - name: Include 'connectivity_troubleshooter' role
               ansible.builtin.include_role:
-                name: cloud.aws_roles.connectivity_troubleshooter
+                name: cloud.aws_troubleshooting.connectivity_troubleshooter
               vars:
                 connectivity_troubleshooter_destination_ip: 8.8.8.8
                 connectivity_troubleshooter_destination_port: 80
@@ -43,7 +43,7 @@
             # IGW
             - name: Include 'connectivity_troubleshooter' role
               ansible.builtin.include_role:
-                name: cloud.aws_roles.connectivity_troubleshooter
+                name: cloud.aws_troubleshooting.connectivity_troubleshooter
               vars:
                 connectivity_troubleshooter_destination_ip: 8.8.8.8
                 connectivity_troubleshooter_destination_port: 80
@@ -61,7 +61,7 @@
         # Peering
         - name: Include 'connectivity_troubleshooter' role
           ansible.builtin.include_role:
-            name: cloud.aws_roles.connectivity_troubleshooter
+            name: cloud.aws_troubleshooting.connectivity_troubleshooter
           vars:
             connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
             connectivity_troubleshooter_destination_port: 12345
