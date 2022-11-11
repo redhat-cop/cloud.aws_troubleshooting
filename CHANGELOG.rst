@@ -1,5 +1,22 @@
-Will be updated by antsibull-changelog. Do not edit this manually!
+====================================================
+CHANGE THIS IN changelogs/config.yaml! Release Notes
+====================================================
 
-See https://github.com/ansible-community/antsibull-changelog/blob/main/docs/changelogs.rst for information on how to use antsibull-changelog.
+.. contents:: Topics
 
-Check out ``changelogs/config.yaml`` for its configuration. You need to change at least the ``title`` field in there.
+
+v1.0.1
+======
+
+Release Summary
+---------------
+
+Re-release 1.0.0 with updated README and generated CHNAGELOG, initial release of the collection
+
+Minor Changes
+-------------
+
+- various playbooks - minor linting fixes (https://github.com/ansible-collections/cloud.aws_troubleshooting/pull/6).
+- various plugins - formating using black (https://github.com/ansible-collections/cloud.aws_troubleshooting/pull/6).
+- various roles - minor linting fixes (https://github.com/ansible-collections/cloud.aws_troubleshooting/pull/6).
+- various tests - minor linting fixes (https://github.com/ansible-collections/cloud.aws_troubleshooting/pull/6).
