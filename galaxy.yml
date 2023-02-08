@@ -13,10 +13,10 @@ tags:
   - cloud
   - infrastructure
   - cluster
-repository: https://github.com/ansible-collections/cloud.aws_troubleshooting
+repository: https://github.com/redhat-cop/cloud.aws_troubleshooting
 documentation: null
-homepage: https://github.com/ansible-collections/cloud.aws_troubleshooting
-issues: https://github.com/ansible-collections/cloud.aws_troubleshooting/issues
+homepage: https://github.com/redhat-cop/cloud.aws_troubleshooting
+issues: https://github.com/redhat-cop/cloud.aws_troubleshooting/issues
 build_ignore:
   - '*cloud-config-aws.ini'
   - '*cloud-config-aws.yml'

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Fix collection FQCN name issue for role troubleshooting_rds_connectivity (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/xx).
