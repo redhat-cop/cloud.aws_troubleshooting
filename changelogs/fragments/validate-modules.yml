@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Code refactoring for validate_* modules (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/14).

@@ -51,6 +51,7 @@ options:
     description:
     - Source Private IP.
     type: str
+    elements: str
     required: true
 
 """
@@ -118,10 +119,15 @@ result:
   sample: 'Security Group validation successful'
 """
 
-from ipaddress import ip_network, ip_address
-import copy
-
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.exception import (
+    TroubleShootingError,
+)
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.securitygroup_rules import (
+    evaluate_security_groups,
+)
+from ansible.module_utils._text import to_text
 
 
 class ValidateSecurityGroupRules(AnsibleModule):
@@ -132,7 +138,7 @@ class ValidateSecurityGroupRules(AnsibleModule):
             dest_security_groups=dict(type="list", elements="dict", required=True),
             dest_port=dict(type="list", elements="int", required=True),
             src_security_groups=dict(type="list", elements="dict", required=True),
-            src_private_ip=dict(type="str", required=True),
+            src_private_ip=dict(type="list", elements="str", required=True),
             protocol=dict(type="str", default="tcp"),
         )
 
@@ -140,112 +146,34 @@ class ValidateSecurityGroupRules(AnsibleModule):
 
         self.execute_module()
 
-    def evaluate_security_group_rules_basedon_cidr(
-        self, security_group, security_group_ids
-    ):
-        remote_cidrs = self.params.get("dest_subnet_cidrs")
-        required_cidrs = copy.deepcopy(remote_cidrs)
-        dest_port = self.params.get("dest_port")
-        protocol = self.params.get("protocol")
-        for rule in security_group.get("ip_permissions_egress", []):
-            if (
-                rule["ip_protocol"] == protocol
-                and dest_port in range(rule["from_port"], rule["to_port"] + 1)
-            ) or (rule["ip_protocol"] == "-1"):
-                for group in rule["user_id_group_pairs"]:
-                    if group["group_id"] in security_group_ids:
-                        return
-                for remote_cidr in remote_cidrs:
-                    for cidrs in rule["ip_ranges"]:
-                        if ip_network(cidrs["cidr_ip"], strict=False).overlaps(
-                            ip_network(remote_cidr, strict=False)
-                        ):
-                            required_cidrs.remove(remote_cidr)
-                            break
-
-        if len(required_cidrs) > 0:
-            return "Security group {id} is not allowing {protocol} traffic to/from IP ranges {ip_addr} for port(s) {port}.".format(
-                id=security_group.get("group_id"),
-                ip_addr=required_cidrs,
-                port=dest_port,
-                protocol=protocol,
-            )
-
-    def evaluate_security_group_rules_basedon_ip(
-        self, security_group, security_group_ids
-    ):
-        for rule in security_group.get("ip_permissions", []):
-            if (
-                rule["ip_protocol"] == self.params.get("protocol")
-                and self.params.get("dest_port")
-                in range(rule["from_port"], rule["to_port"] + 1)
-            ) or (rule["ip_protocol"] == "-1"):
-                for group in rule["user_id_group_pairs"]:
-                    if group["group_id"] in security_group_ids:
-                        return
-                for cidrs in rule["ip_ranges"]:
-                    if ip_address(self.params.get("src_private_ip")) in ip_network(
-                        cidrs["cidr_ip"], strict=False
-                    ):
-                        return
-
-        return "Security group {id} is not allowing {protocol} traffic to/from IP {ip_addr} for port(s) {port}.".format(
-            id=security_group.get("group_id"),
-            protocol=self.params.get("protocol"),
-            ip_addr=self.params.get("src_private_ip"),
-            port=self.params.get("dest_port"),
-        )
-
     def execute_module(self):
 
+        events = {}
+        events["RDSSecurityGroupIds"] = [
+            grp["group_id"] for grp in self.params.get("dest_security_groups")
+        ]
+        events["RDSSecurityGroups"] = [
+            snake_dict_to_camel_dict(grp, capitalize_first=True)
+            for grp in self.params.get("dest_security_groups")
+        ]
+        events["RDSSubnetCidrs"] = self.params.get("dest_subnet_cidrs")
+        events["RDSEndpointPort"] = self.params.get("dest_port")[0]
+        events["EC2SecurityGroupIds"] = [
+            grp["group_id"] for grp in self.params.get("src_security_groups")
+        ]
+        events["EC2SecurityGroups"] = [
+            snake_dict_to_camel_dict(grp, capitalize_first=True)
+            for grp in self.params.get("src_security_groups")
+        ]
+        events["EC2InstanceIPs"] = self.params.get("src_private_ip")
+
         try:
-            dest_secgroup_ids = [
-                x["group_id"] for x in self.params.get("dest_security_groups")
-            ]
-            src_secgroup_ids = [
-                x["group_id"] for x in self.params.get("src_security_groups")
-            ]
+            result = evaluate_security_groups(events)
+            self.exit_json(msg=result)
 
-            # Verify Egress traffic from Source Instance to Destination subnets
-            result = None
-            for sec_group in self.params.get("src_security_groups"):
-                result = self.evaluate_security_group_rules_basedon_cidr(
-                    sec_group, dest_secgroup_ids
-                )
-                if result is None:
-                    break
-
-            if result:
-                self.fail_json(
-                    msg="{msg}. Please review security group(s) {ids} for rules allowing egress TCP traffic to port {port}".format(
-                        msg=result,
-                        ids=src_secgroup_ids,
-                        port=self.params.get("dest_port"),
-                    )
-                )
-
-            # Verify Ingress traffic to Destination from Source Instance IP
-            for sec_group in self.params.get("dest_security_groups"):
-                result = self.evaluate_security_group_rules_basedon_ip(
-                    sec_group, src_secgroup_ids
-                )
-                if result is None:
-                    break
-
-            if result:
-                self.fail_json(
-                    msg="{msg}.Please review security group(s) {ids} for rules allowing ingress TCP traffic from port {port}".format(
-                        msg=result,
-                        ids=dest_secgroup_ids,
-                        port=self.params.get("dest_port"),
-                    )
-                )
-
-            self.exit_json(result="Security Group validation successful")
-
-        except Exception as e:
+        except TroubleShootingError as err:
             self.fail_json(
-                msg="Security Group validation failed: {}".format(e), exception=e
+                msg="Security Group validation failed: {0}".format(to_text(err))
             )
 
 
