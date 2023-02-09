@@ -50,7 +50,7 @@ options:
   src_private_ip:
     description:
     - Source Private IP.
-    type: str
+    type: list
     elements: str
     required: true
 
@@ -107,7 +107,7 @@ EXAMPLES = r"""
               user_id_group_pairs: []
           owner_id: "0000000000000"
           vpc_id: "vpc-0bee28efef41e1de4"
-    src_private_ip: "172.10.3.10"
+    src_private_ip: [ "172.10.3.10" ]
 
 """
 
