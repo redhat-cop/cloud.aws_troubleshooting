@@ -38,7 +38,7 @@ Clone the collection repository.
 ```shell
   mkdir -p ~/.ansible/collections/ansible_collections/cloud/aws_troubleshooting
   cd ~/.ansible/collections/ansible_collections/cloud/aws_troubleshooting
-  git clone https://github.com/redhat-cop/cloud.aws_troubleshooting
+  git clone https://github.com/redhat-cop/cloud.aws_troubleshooting .
 ```
 
 ### Using this collection
