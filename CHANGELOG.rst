@@ -5,6 +5,14 @@ CHANGE THIS IN changelogs/config.yaml! Release Notes
 .. contents:: Topics
 
 
+v1.0.3
+======
+
+Bugfixes
+--------
+
+- Fix collection FQCN name issue for role troubleshooting_rds_connectivity (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/13).
+
 v1.0.2
 ======
 
