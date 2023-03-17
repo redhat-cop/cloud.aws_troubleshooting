@@ -23,3 +23,10 @@ releases:
     fragments:
     - linting.yml
     release_date: '2022-11-16'
+  1.0.3:
+    changes:
+      bugfixes:
+      - Fix collection FQCN name issue for role troubleshooting_rds_connectivity (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/13).
+    fragments:
+    - multiple-renaming.yml
+    release_date: '2023-03-17'
