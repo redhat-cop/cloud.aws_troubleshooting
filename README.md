@@ -27,18 +27,70 @@ Name | Description
 
 ## Installation and Usage
 
-### Installing the Collection from Ansible Galaxy
-Before using the amazon_roles collection, you need to install it with the Ansible Galaxy CLI:
+### Requirements
 
-    ansible-galaxy collection install cloud.aws_troubleshooting
+The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [community.aws](https://github.com/ansible-collections/amazon.aws) collections MUST be installed in order for this collection to work.
 
-You can also include it in a `requirements.yml` file and install it via `ansible-galaxy collection install -r requirements.yml`, using the format:
+
+### Installation
+Clone the collection repository.
+
+```shell
+  mkdir -p ~/.ansible/collections/ansible_collections/cloud/aws_troubleshooting
+  cd ~/.ansible/collections/ansible_collections/cloud/aws_troubleshooting
+  git clone https://github.com/redhat-cop/cloud.aws_troubleshooting .
+```
+
+### Using this collection
+
+Once installed, you can reference the cloud.aws_troubleshooting collection content by its fully qualified collection name (FQCN), for example:
 
 ```yaml
-    ---
-    collections:
-    - name: cloud.aws_troubleshooting
-        version: 1.0.0
+  - hosts: all
+    tasks:
+       - name: Include 'cloud.aws_troubleshooting.connectivity_troubleshooter' role
+        ansible.builtin.include_role:
+          name: cloud.aws_troubleshooting.connectivity_troubleshooter
+        vars:
+          connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
+          connectivity_troubleshooter_destination_port: 80
+          connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
+```
+
+### See Also
+
+* [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
+
+
+## Contributing to this collection
+
+We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against this collection repository.
+
+### Testing and Development
+
+The project uses `ansible-lint` and `black`.
+Assuming this repository is checked out in the proper structure,
+e.g. `collections_root/ansible_collections/cloud/aws_troubleshooting/`, run:
+
+```shell
+  tox -e linters
+```
+
+Sanity and unit tests are run as normal:
+
+```shell
+  ansible-test sanity
+```
+
+If you want to run cloud integration tests, ensure you log in to the cloud:
+
+```shell
+# using the "default" profile on AWS
+  aws configure set aws_access_key_id     my-access-key
+  aws configure set aws_secret_access_key my-secret-key
+  aws configure set region                eu-north-1
+
+  ansible-test integration [target]
 ```
 
 ## License
