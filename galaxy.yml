@@ -14,7 +14,7 @@ tags:
   - infrastructure
   - cluster
 repository: https://github.com/redhat-cop/cloud.aws_troubleshooting
-documentation: null
+documentation: ''
 homepage: https://github.com/redhat-cop/cloud.aws_troubleshooting
 issues: https://github.com/redhat-cop/cloud.aws_troubleshooting/issues
 build_ignore:
