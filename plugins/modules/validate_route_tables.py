@@ -261,10 +261,15 @@ result:
   sample: 'Route table validation successful'
 """
 
-from ipaddress import ip_network
-import copy
-
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.exception import (
+    TroubleShootingError,
+)
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.route_table_entries import (
+    evaluate_route_tables,
+)
+from ansible.module_utils._text import to_text
 
 
 class ValidateRouteTables(AnsibleModule):
@@ -284,214 +289,41 @@ class ValidateRouteTables(AnsibleModule):
 
         self.execute_module()
 
-    def validate_vpc(self, src_vpc_id, src_private_ips, dest_vpc_id, dest_subnet_cidrs):
-        # Check whether resources are in the same VPC. If not, Cidr cannot overlap
-        if not (dest_vpc_id[0] == src_vpc_id[0]):
-            for dest_cidr in dest_subnet_cidrs:
-                for ip_addr in src_private_ips:
-                    if ip_network(dest_cidr, strict=False).overlaps(
-                        ip_network(ip_addr, strict=False)
-                    ):
-                        self.fail_json(
-                            msg="Resources are located in different VPCs, however, Cidrs are overlapping."
-                        )
-        else:
-            self.exit_json(result="Resources located in the same VPC.")
-
-    def validate_route_tables(
-        self,
-        src_route_tables,
-        b_check_vpc_rtb_ec2,
-        dest_route_tables,
-        b_check_vpc_rtb_rds,
-    ):
-        # Check whether resources are using the same route table
-        for rtb in dest_route_tables:
-            self.rds_rtb_list.append(rtb["route_table_id"])
-
-        for rtb in src_route_tables:
-            self.ec2_rtb_list.append(rtb["route_table_id"])
-
-        if (
-            (dest_route_tables == src_route_tables)
-            and not b_check_vpc_rtb_ec2
-            and not b_check_vpc_rtb_rds
-        ):
-            self.exit_json(
-                result="Source and destination resources are using the same route table(s): {}".format(
-                    self.ec2_rtb_list
-                )
-            )
-
-    def validate_route_connection(
-        self,
-        src_private_ips,
-        dest_vpc_route_tables,
-        dest_route_tables,
-        b_check_vpc_rtb_rds,
-    ):
-
-        # Third verification: Check wheter route is through a peering connection
-        # Verify whether Destination RTBs contains route to Source network
-        for rtb in dest_route_tables:
-            required_ips = copy.deepcopy(src_private_ips)
-            for route in rtb["routes"]:
-                if "vpc_peering_connection_id" not in route.keys():
-                    continue
-                if len(required_ips) == 0:
-                    break
-                for remote_ip in src_private_ips:
-                    if ip_network(
-                        route["destination_cidr_block"], strict=False
-                    ).overlaps(ip_network(remote_ip, strict=False)):
-                        required_ips.remove(remote_ip)
-            if len(required_ips) == 0:
-                self.rds_rtb_list.remove(rtb["route_table_id"])
-
-        if b_check_vpc_rtb_rds:
-            for rtb in dest_vpc_route_tables:
-                required_ips = copy.deepcopy(src_private_ips)
-                for route in rtb["routes"]:
-                    if "vpc_peering_connection_id" not in route.keys():
-                        continue
-                    if len(required_ips) == 0:
-                        break
-                    for remote_ip in src_private_ips:
-                        if ip_network(
-                            route["destination_cidr_block"], strict=False
-                        ).overlaps(ip_network(remote_ip, strict=False)):
-                            if remote_ip in required_ips:
-                                required_ips.remove(remote_ip)
-                if len(required_ips) == 0:
-                    self.rds_rtb_list.remove(rtb["route_table_id"])
-
-    def validate_route_to_dest_on_source(
-        self,
-        src_route_tables,
-        src_vpc_route_tables,
-        dest_subnet_cidrs,
-        b_check_vpc_rtb_ec2,
-    ):
-
-        # Verify whether Source RTB contains route to Destination network
-        for rtb in src_route_tables:
-            required_cidrs = copy.deepcopy(dest_subnet_cidrs)
-            for route in rtb["routes"]:
-                if "vpc_peering_connection_id" not in route.keys():
-                    continue
-                if len(required_cidrs) == 0:
-                    break
-                for remote_cidr in dest_subnet_cidrs:
-                    if ip_network(
-                        route["destination_cidr_block"], strict=False
-                    ).overlaps(ip_network(remote_cidr, strict=False)):
-                        if remote_cidr in required_cidrs:
-                            required_cidrs.remove(remote_cidr)
-            if len(required_cidrs) == 0:
-                self.ec2_rtb_list.remove(rtb["route_table_id"])
-
-        if b_check_vpc_rtb_ec2:
-            for rtb in src_vpc_route_tables:
-                required_ips = copy.deepcopy(dest_subnet_cidrs)
-                for route in rtb["routes"]:
-                    if "vpc_peering_connection_id" not in route.keys():
-                        continue
-                    if len(required_cidrs) == 0:
-                        break
-                    for remote_cidr in dest_subnet_cidrs:
-                        if ip_network(
-                            route["destination_cidr_block"], strict=False
-                        ).overlaps(ip_network(remote_cidr, strict=False)):
-                            required_cidrs.remove(remote_cidr)
-                if len(required_ips) == 0:
-                    self.ec2_rtb_list.remove(rtb["route_table_id"])
-
     def execute_module(self):
+
+        events = {}
+        events["EC2InstanceIPs"] = self.params.get("src_private_ip")
+        events["EC2SubnetId"] = self.params.get("src_subnets")[0].get("id")
+        events["EC2RouteTables"] = [
+            snake_dict_to_camel_dict(r, capitalize_first=True)
+            for r in self.params.get("src_route_tables")
+        ]
+        events["EC2VpcRouteTables"] = [
+            snake_dict_to_camel_dict(r, capitalize_first=True)
+            for r in self.params.get("src_vpc_route_tables")
+        ]
+        events["EC2VpcId"] = self.params.get("src_subnets")[0].get("vpc_id")
+        events["RDSSubnetCidrs"] = [
+            s.get("cidr_block") for s in self.params.get("dest_subnets")
+        ]
+        events["RDSSubnetIds"] = [s.get("id") for s in self.params.get("dest_subnets")]
+        events["RDSRouteTables"] = [
+            snake_dict_to_camel_dict(r, capitalize_first=True)
+            for r in self.params.get("dest_route_tables")
+        ]
+        events["RDSVpcId"] = self.params.get("dest_subnets")[0].get("vpc_id")
+        events["RDSVpcRouteTables"] = [
+            snake_dict_to_camel_dict(r, capitalize_first=True)
+            for r in self.params.get("dest_vpc_route_tables")
+        ]
+
         try:
-            # RDS Info
-            dest_subnet_ids = [x.get("id") for x in self.params.get("dest_subnets")]
-            dest_subnet_cidrs = [
-                x.get("cidr_block") for x in self.params.get("dest_subnets")
-            ]
-            dest_route_tables = self.params.get("dest_route_tables")
-            dest_vpc_route_tables = self.params.get("dest_vpc_route_tables")
-            dest_vpc_id = list(
-                set(x.get("vpc_id") for x in self.params.get("dest_subnets"))
-            )
+            result = evaluate_route_tables(events)
+            self.exit_json(msg=result)
 
-            # EC2 Instance Info
-            src_subnet_ids = [x.get("id") for x in self.params.get("src_subnets")]
-            src_private_ips = self.params.get("src_private_ip")
-            src_route_tables = self.params.get("src_route_tables")
-            src_vpc_route_tables = self.params.get("src_vpc_route_tables")
-            src_vpc_id = list(
-                set(x.get("vpc_id") for x in self.params.get("src_subnets"))
-            )
-
-            self.rds_rtb_list = []
-            self.ec2_rtb_list = []
-            b_check_vpc_rtb_rds = False
-            b_check_vpc_rtb_ec2 = False
-
-            rds_rtb_subnet_list = []  # All subnets that contain a valid rtb
-            ec2_rtb_subnet_list = []
-
-            # Initializing RouteTables
-            for rtb in dest_route_tables:
-                for assoc in rtb["associations"]:
-                    if assoc["subnet_id"] in dest_subnet_ids:
-                        rds_rtb_subnet_list.append(assoc["subnet_id"])
-            if len(rds_rtb_subnet_list) < len(dest_subnet_ids):
-                b_check_vpc_rtb_rds = True
-
-            for rtb in src_route_tables:
-                for assoc in rtb["associations"]:
-                    if assoc["subnet_id"] in src_subnet_ids:
-                        ec2_rtb_subnet_list.append(assoc["subnet_id"])
-            if len(ec2_rtb_subnet_list) < len(src_subnet_ids):
-                b_check_vpc_rtb_ec2 = True
-
-            self.validate_vpc(
-                src_vpc_id, src_private_ips, dest_vpc_id, dest_subnet_cidrs
-            )
-            self.validate_route_tables(
-                src_route_tables,
-                b_check_vpc_rtb_ec2,
-                dest_route_tables,
-                b_check_vpc_rtb_rds,
-            )
-            self.validate_route_connection(
-                src_private_ips,
-                dest_vpc_route_tables,
-                dest_route_tables,
-                b_check_vpc_rtb_rds,
-            )
-            self.validate_route_to_dest_on_source(
-                src_route_tables,
-                src_vpc_route_tables,
-                dest_subnet_cidrs,
-                b_check_vpc_rtb_ec2,
-            )
-
-            if len(self.rds_rtb_list) > 0:
-                self.fail_json(
-                    msg="Please review route table(s) {} for entries matching {} Cidr".format(
-                        self.rds_rtb_list, src_private_ips
-                    )
-                )
-
-            if len(self.ec2_rtb_list) > 0:
-                self.fail_json(
-                    msg="Please review route table(s) {} for entries matching {} Cidr".format(
-                        self.ec2_rtb_list, dest_subnet_cidrs
-                    )
-                )
-
-            self.exit_json(result="Route table validation successful")
-
-        except Exception as e:
+        except TroubleShootingError as err:
             self.fail_json(
-                msg="Route table validation failed: {}".format(e), exception=e
+                msg="Route table validation failed: {0}".format(to_text(err))
             )
 
 

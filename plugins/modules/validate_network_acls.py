@@ -97,10 +97,16 @@ result:
   sample: 'Network ACL validation successful'
 """
 
-from ipaddress import ip_network, ip_address
 from collections import namedtuple
 from ansible.module_utils.basic import AnsibleModule
-
+from ansible.module_utils.common.dict_transformations import snake_dict_to_camel_dict
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.exception import (
+    TroubleShootingError,
+)
+from ansible_collections.cloud.aws_troubleshooting.plugins.module_utils.network_acl_rules import (
+    evaluate_network_acls,
+)
+from ansible.module_utils._text import to_text
 
 # NACL Entry format
 # [
@@ -128,10 +134,35 @@ NACLEntry = namedtuple(
 )
 
 
-def is_port_in_range(port, from_port, to_port):
-    if from_port is not None and to_port is not None:
-        return port in range(from_port, to_port + 1)
-    return True
+def ansible_to_amazon_acl(acl):
+    result = snake_dict_to_camel_dict(acl, capitalize_first=True)
+    result["Associations"] = result["Subnets"]
+    result["NetworkAclId"] = result["NaclId"]
+    result["Entries"] = [
+        {
+            "CidrBlock": entry[3],
+            "Egress": True,
+            "Protocol": entry[1],
+            "RuleAction": entry[2],
+            "RuleNumber": entry[0],
+            "PortRange": {"From": entry[6], "To": entry[6]},
+        }
+        for entry in result["Egress"]
+    ]
+
+    result["Entries"] += [
+        {
+            "CidrBlock": entry[3],
+            "Egress": False,
+            "Protocol": entry[1],
+            "RuleAction": entry[2],
+            "RuleNumber": entry[0],
+            "PortRange": {"From": entry[6], "To": entry[6]},
+        }
+        for entry in result["Ingress"]
+    ]
+
+    return result
 
 
 class ValidateNetworkACL(AnsibleModule):
@@ -152,72 +183,29 @@ class ValidateNetworkACL(AnsibleModule):
 
         self.execute_module()
 
-    def evaluate_network_traffic(self, acl, egress=True):
-        allowed_ports = []
-        denied_ports = []
-
-        for port in self.dest_port:
-            if port in allowed_ports or port in denied_ports:
-                continue
-            acl_entries = acl.get("egress", []) if egress else acl.get("ingress", [])
-            for entry in acl_entries:
-                nacl_entry = NACLEntry(*entry)
-
-                if egress:
-                    # Evaluate traffic based on CIDR when egress is set to True
-                    eval_traffic = (
-                        ip_network(nacl_entry.cidr_block, strict=False).overlaps(
-                            ip_network(cidr, strict=False)
-                        )
-                        for cidr in self.dest_subnet_cidrs
-                    )
-                else:
-                    # Evaluate traffic based on IP when egress is set to False
-                    eval_traffic = (
-                        ip_address(ip)
-                        in ip_network(nacl_entry.cidr_block, strict=False)
-                        for ip in self.src_private_ip
-                    )
-
-                if (
-                    nacl_entry.protocol in ("all", "tcp")
-                    and is_port_in_range(
-                        port, nacl_entry.port_range_from, nacl_entry.port_range_to
-                    )
-                    and any(eval_traffic)
-                ):
-                    if nacl_entry.rule_action == "allow":
-                        allowed_ports.append(port)
-                    else:
-                        denied_ports.append(port)
-
-        if len(denied_ports) > 0:
-            acl_type = "egress" if egress else "ingress"
-            self.fail_json(
-                msg="Network acl {id} is not allowing traffic for port(s) {ports}."
-                "Please review network acl for {acl_type} rules allowing port(s) {ports}".format(
-                    id=acl.get("nacl_id"),
-                    ports=denied_ports,
-                    acl_type=acl_type,
-                )
-            )
-
     def execute_module(self):
+
         try:
-            # Verify Egress traffic from Source to Destination subnets
-            for acl in self.src_network_acl_rules:
-                self.evaluate_network_traffic(acl, egress=True)
+            events = self.build_events()
+            result = evaluate_network_acls(events)
+            self.exit_json(msg=result)
 
-            # Verify Ingress traffic to Destination from Source Instance IP
-            for acl in self.dest_network_acl_rules:
-                self.evaluate_network_traffic(acl, egress=False)
+        except TroubleShootingError as err:
+            self.fail_json(msg="Network validation failed: {0}".format(to_text(err)))
 
-            self.exit_json(result="Network ACL validation successful")
+    def build_events(self):
 
-        except Exception as e:
-            self.fail_json(
-                msg="Network ACL validation failed: {}".format(e), exception=e
-            )
+        events = {}
+        events["EC2InstanceIPs"] = self.src_private_ip
+        events["EC2NetworkAclRules"] = [
+            ansible_to_amazon_acl(acl) for acl in self.src_network_acl_rules
+        ]
+        events["RDSEndpointPort"] = self.dest_port[0]
+        events["RDSSubnetCidrs"] = self.dest_subnet_cidrs
+        events["RDSNetworkAclRules"] = [
+            ansible_to_amazon_acl(acl) for acl in self.dest_network_acl_rules
+        ]
+        return events
 
 
 def main():
