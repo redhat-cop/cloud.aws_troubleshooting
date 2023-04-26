@@ -33,7 +33,7 @@ options:
     description:
     - The port range used by the AWS resource in your Amazon VPC you want to test connectivity from.
     type: str
-    required: false
+    required: true
   dst_ip:
     description:
     - The IPv4 address of the resource you want to connect to.
@@ -191,7 +191,10 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 break
                             else:
                                 self.fail_json(
-                                    msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+                                    msg=f"NatGateway Subnet {self.src_subnet_id}\
+                                       Network Acl Egress Rules do not allow\
+                                       outbound traffic to destination: \
+                                       {self.dst_ip} : {str(dst_port)}"
                                 )
             else:
                 self.fail_json(
@@ -221,11 +224,15 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 break
                             else:
                                 self.fail_json(
-                                    msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+                                    msg=f"NatGateway Subnet {self.src_subnet_id} \
+                                        Network Acl Ingress Rules do not allow \
+                                        inbound traffic from destination: {self.dst_ip}"
                                 )
             else:
                 self.fail_json(
-                    msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+                    msg=f"NatGateway Subnet {self.src_subnet_id} \
+                          Network Acl Ingress Rules do not allow \
+                          inbound traffic from destination: {self.dst_ip}"
                 )
 
         def check_ingress_from_src(acls, src_ip, dst_port):
@@ -248,11 +255,14 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 break
                             else:
                                 self.fail_json(
-                                    msg=f"NatGateway Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
+                                    msg=f"NatGateway Subnet Network Acl \
+                                          Ingress Rules do not allow inbound \
+                                          traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
                                 )
             else:
                 self.fail_json(
-                    msg=f"NatGateway Subnet Network Acl Ingress Rules do not allow inbound traffic from source {self.src_ip} towards destination port {str(dst_port)}"
+                    msg=f"NatGateway Subnet Network Acl Ingress Rules do not allow \
+                          inbound traffic from source {self.src_ip} towards destination port {str(dst_port)}"
                 )
 
         def check_egress_towards_src(acls, dst_ip):
