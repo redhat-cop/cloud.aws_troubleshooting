@@ -7,6 +7,9 @@ authors:
   - Ansible (https://github.com/ansible)
 description: Amazon AWS roles and playbooks for Ansible.
 license_file: COPYING
+dependencies:
+  amazon.aws: '>=5.4.0'
+  community.aws: '>=5.4.0'
 tags:
   - amazon
   - aws
