@@ -33,7 +33,6 @@ options:
     description:
     - The port range used by the AWS resource in your Amazon VPC you want to test connectivity from.
     type: str
-    required: true
   dst_ip:
     description:
     - The IPv4 address of the resource you want to connect to.
@@ -127,7 +126,7 @@ class EvalNatNetworkAcls(AnsibleModule):
 
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
-            src_port_range=dict(type="str", required=False),
+            src_port_range=dict(type="str"),
             src_subnet_id=dict(type="str", required=True),
             dst_ip=dict(type="str", required=True),
             dst_port=dict(type="str", required=True),
@@ -198,7 +197,8 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 )
             else:
                 self.fail_json(
-                    msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+                    msg=f"NatGateway Subnet {self.src_subnet_id} \
+                          Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
                 )
 
         def check_ingress_from_dst(acls, src_ip):
