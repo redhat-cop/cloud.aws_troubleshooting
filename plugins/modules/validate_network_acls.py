@@ -3,6 +3,7 @@
 
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -47,7 +48,7 @@ options:
     description:
     - Source Private IP.
     type: list
-    elememts: str
+    elements: str
     required: true
 
 """
@@ -56,8 +57,8 @@ EXAMPLES = r"""
 - name: Evaluate network ACLS from EC2 instance to RDS Instance
   cloud.aws_troubleshooting.validate_network_acls:
     dest_subnet_cidrs:
-        - 10.1.0.0/24
-        - 10.1.2.0/24
+        - "10.1.0.0/24"
+        - "10.1.2.0/24"
     dest_network_acl_rules:
         - egress:
             - [100, "all", "allow", "0.0.0.0/0", null, null, 0, 65535]
@@ -68,8 +69,8 @@ EXAMPLES = r"""
           owner_id: "000000000000"
           subnets:
             - "subnet-0af56e0d353f88cb8"
-            - "subnet-032f1a2598b6318ed"]
-          vpc_id: "vpc-0274c44deffd7368a
+            - "subnet-032f1a2598b6318ed"
+          vpc_id: "vpc-0274c44deffd7368a"
     dest_port:
         - 5432
     src_network_acl_rules:
@@ -81,11 +82,11 @@ EXAMPLES = r"""
           nacl_id: "acl-01124846ef9f50ff2"
           owner_id: "000000000000"
           subnets:
-            - subnet-0af56e0d353f88cb8
-            - subnet-032f1a2598b6318ed
+            - "subnet-0af56e0d353f88cb8"
+            - "subnet-032f1a2598b6318ed"
           vpc_id: "vpc-0274c44deffd7368a"
     src_private_ip:
-        - 172.10.3.10
+        - "172.10.3.10"
 
 """
 
@@ -215,9 +216,7 @@ class ValidateNetworkACL(AnsibleModule):
             self.exit_json(result="Network ACL validation successful")
 
         except Exception as e:
-            self.fail_json(
-                msg="Network ACL validation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Network ACL validation failed: {e}")
 
 
 def main():

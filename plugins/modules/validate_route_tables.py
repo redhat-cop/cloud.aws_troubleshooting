@@ -3,6 +3,7 @@
 
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -68,7 +69,7 @@ EXAMPLES = r"""
 - name: Evaluate routes from EC2 instance to RDS Instance
   cloud.aws_troubleshooting.validate_route_tables:
     dest_subnets:
-        - assign_ipv6_address_on_creation": false
+        - assign_ipv6_address_on_creation: false
           availability_zone: "eu-west-2b"
           availability_zone_id: "euw2-az3"
           available_ip_address_count: 250
@@ -77,10 +78,10 @@ EXAMPLES = r"""
           enable_dns64: false
           id: "subnet-032f1a2598b6318ed"
           ipv6_cidr_block_association_set: []
-          ipv6_native": false
+          ipv6_native: false
           map_customer_owned_ip_on_launch: false
           map_public_ip_on_launch: false
-          owner_id": "00000000000"
+          owner_id: "00000000000"
           private_dns_name_options_on_launch:
             enable_resource_name_dns_a_record: false
             enable_resource_name_dns_aaaa_record": false
@@ -89,7 +90,7 @@ EXAMPLES = r"""
           subnet_arn: "arn:aws:ec2:eu-west-2:721066863947:subnet/subnet-032f1a2598b6318ed"
           subnet_id: "subnet-032f1a2598b6318ed"
           vpc_id: "vpc-0274c44deffd7368a"
-        - assign_ipv6_address_on_creation": false
+        - assign_ipv6_address_on_creation: false
           availability_zone: "eu-west-2a"
           availability_zone_id: "euw2-az2"
           available_ip_address_count: 250
@@ -98,14 +99,14 @@ EXAMPLES = r"""
           enable_dns64: false
           id: "subnet-0af56e0d353f88cb8"
           ipv6_cidr_block_association_set: []
-          ipv6_native": false
+          ipv6_native: false
           map_customer_owned_ip_on_launch: false
           map_public_ip_on_launch: false
-          owner_id": "00000000000"
+          owner_id: "00000000000"
           private_dns_name_options_on_launch:
             enable_resource_name_dns_a_record: false
-            enable_resource_name_dns_aaaa_record": false
-            hostname_type": "ip-name"
+            enable_resource_name_dns_aaaa_record: false
+            hostname_type: "ip-name"
           state: "available"
           subnet_arn: "arn:aws:ec2:eu-west-2:721066863947:subnet/subnet-0af56e0d353f88cb8"
           subnet_id: "subnet-0af56e0d353f88cb8"
@@ -137,8 +138,8 @@ EXAMPLES = r"""
               interface_id: null
               network_interface_id: null
               origin: "CreateRoute"
-              state": "active"
-          vpc_id": "vpc-0bee28efef41e1de4"
+              state: "active"
+          vpc_id: "vpc-0bee28efef41e1de4"
     dest_vpc_route_tables:
         - associations:
             - association_state:
@@ -169,7 +170,7 @@ EXAMPLES = r"""
               state": "active"
           vpc_id": "vpc-0bee28efef41e1de4"
     src_subnets:
-        - assign_ipv6_address_on_creation": false
+        - assign_ipv6_address_on_creation: false
           availability_zone: "eu-west-2a"
           availability_zone_id: "euw2-az2"
           available_ip_address_count: 250
@@ -178,20 +179,20 @@ EXAMPLES = r"""
           enable_dns64: false
           id: "subnet-0af56e0d353f88cb8"
           ipv6_cidr_block_association_set: []
-          ipv6_native": false
+          ipv6_native: false
           map_customer_owned_ip_on_launch: false
           map_public_ip_on_launch: false
-          owner_id": "00000000000"
+          owner_id: "00000000000"
           private_dns_name_options_on_launch:
             enable_resource_name_dns_a_record: false
             enable_resource_name_dns_aaaa_record": false
-            hostname_type": "ip-name"
+            hostname_type: "ip-name"
           state: "available"
           subnet_arn: "arn:aws:ec2:eu-west-2:721066863947:subnet/subnet-0af56e0d353f88cb8"
           subnet_id: "subnet-0af56e0d353f88cb8"
           vpc_id: "vpc-0274c44deffd7368a"
     src_private_ip:
-        - 172.0.1.4
+        - "172.0.1.4"
     src_route_tables:
         - associations:
             - association_state:
@@ -219,9 +220,9 @@ EXAMPLES = r"""
               interface_id: null
               network_interface_id: null
               origin: "CreateRoute"
-              state": "active"
-          vpc_id": "vpc-0bee28efef41e1de4"
-    src_vpc_route_tables
+              state: "active"
+          vpc_id: "vpc-0bee28efef41e1de4"
+    src_vpc_route_tables:
         - associations:
             - association_state:
                 state: "associated"
@@ -248,8 +249,8 @@ EXAMPLES = r"""
               interface_id: null
               network_interface_id: null
               origin: "CreateRoute"
-              state": "active"
-          vpc_id": "vpc-0bee28efef41e1de4"
+              state: "active"
+          vpc_id: "vpc-0bee28efef41e1de4"
 
 """
 
@@ -318,9 +319,7 @@ class ValidateRouteTables(AnsibleModule):
             and not b_check_vpc_rtb_rds
         ):
             self.exit_json(
-                result="Source and destination resources are using the same route table(s): {}".format(
-                    self.ec2_rtb_list
-                )
+                result=f"Source and destination resources are using the same route table(s): {self.ec2_rtb_list}"
             )
 
     def validate_route_connection(
@@ -475,24 +474,18 @@ class ValidateRouteTables(AnsibleModule):
 
             if len(self.rds_rtb_list) > 0:
                 self.fail_json(
-                    msg="Please review route table(s) {} for entries matching {} Cidr".format(
-                        self.rds_rtb_list, src_private_ips
-                    )
+                    msg=f"Please review route table(s) {self.rds_rtb_list} for entries matching {src_private_ips} Cidr"
                 )
 
             if len(self.ec2_rtb_list) > 0:
                 self.fail_json(
-                    msg="Please review route table(s) {} for entries matching {} Cidr".format(
-                        self.ec2_rtb_list, dest_subnet_cidrs
-                    )
+                    msg=f"Please review route table(s) {self.ec2_rtb_list} for entries matching {dest_subnet_cidrs} Cidr"
                 )
 
             self.exit_json(result="Route table validation successful")
 
         except Exception as e:
-            self.fail_json(
-                msg="Route table validation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Route table validation failed: {e}")
 
 
 def main():

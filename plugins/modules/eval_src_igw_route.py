@@ -3,6 +3,7 @@
 
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -68,7 +69,7 @@ options:
 EXAMPLES = r"""
 - name: Evaluate ingress and egress network ACLs
   cloud.aws_troubleshooting.eval_src_igw_route:
-    src_ip: "192.168.0.112
+    src_ip: "192.168.0.112"
     src_subnet_id: "subnet-03181dc286eca1244"
     dst_ip: "8.8.8.8"
     dst_port: 80
@@ -112,8 +113,8 @@ EXAMPLES = r"""
         groups:
             - group_id: "sg-030921b67798a88fd"
               group_name: "sg_ansibleVPC_publicsubnet_jumphost"
-        id: "eni-046bc4b5d5249b832
-        interface_type: "interface
+        id: "eni-046bc4b5d5249b832"
+        interface_type: "interface"
         ipv6_addresses: []
         mac_address: "0e:32:64:a5:39:f7"
         network_interface_id: "eni-046bc4b5d5249b832"
@@ -164,7 +165,7 @@ EXAMPLES = r"""
             - ip_protocol: "-1"
               ip_ranges":
                 - cidr_ip: "0.0.0.0/0"
-              ipv6_ranges: [],
+              ipv6_ranges: []
               prefix_list_ids: []
               user_id_group_pairs: []
           owner_id: "721066863947"
@@ -263,10 +264,9 @@ class EvalSrcIgwRoute(AnsibleModule):
                                 self.fail_json(
                                     msg=f"Source Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(self.dst_port)}"
                                 )
-            else:
-                self.fail_json(
-                    msg=f"Source Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(self.dst_port)}"
-                )
+            self.fail_json(
+                msg=f"Source Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(self.dst_port)}"
+            )
 
         def check_ingress_acls(acls, src_ip):
 
@@ -294,10 +294,9 @@ class EvalSrcIgwRoute(AnsibleModule):
                                 self.fail_json(
                                     msg=f"Source Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
                                 )
-            else:
-                self.fail_json(
-                    msg=f"Source Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
-                )
+            self.fail_json(
+                msg=f"Source Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+            )
 
         dst_ip = ip_address(self.dst_ip)
         dst_port = int(self.dst_port)
@@ -340,7 +339,7 @@ class EvalSrcIgwRoute(AnsibleModule):
             self.eval_src_nacls()
             self.exit_json(result="Source evaluation successful")
         except Exception as e:
-            self.fail_json(msg="Source evaluation failed: {}".format(e), exception=e)
+            self.fail_json(msg=f"Source evaluation failed: {e}")
 
 
 def main():

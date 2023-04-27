@@ -127,7 +127,7 @@ class EvalNatNetworkAcls(AnsibleModule):
 
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
-            src_port_range=dict(type="str", required=True),
+            src_port_range=dict(type="str", required=False),
             src_subnet_id=dict(type="str", required=True),
             dst_ip=dict(type="str", required=True),
             dst_port=dict(type="str", required=True),
@@ -188,7 +188,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                         ):
                             # Check Action
                             if acl["rule_action"] == "allow":
-                                return True
+                                break
                             else:
                                 self.fail_json(
                                     msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
@@ -218,7 +218,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                         ):
                             # Check Action
                             if acl["rule_action"] == "allow":
-                                return True
+                                break
                             else:
                                 self.fail_json(
                                     msg=f"NatGateway Subnet {self.src_subnet_id} Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
@@ -245,7 +245,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                         ):
                             # Check Action
                             if acl["rule_action"] == "allow":
-                                return True
+                                break
                             else:
                                 self.fail_json(
                                     msg=f"NatGateway Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
@@ -275,7 +275,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                         ):
                             # Check Action
                             if acl["rule_action"] == "allow":
-                                return True
+                                break
                             else:
                                 self.fail_json(
                                     msg=f"NatGateway Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
@@ -332,9 +332,7 @@ class EvalNatNetworkAcls(AnsibleModule):
             self.get_nat_next_hop()
             self.exit_json(result="NAT Network ACLs evaluation successful")
         except Exception as e:
-            self.fail_json(
-                msg="NAT Network ACLs evaluation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"NAT Network ACLs evaluation failed: {e}")
 
 
 def main():

@@ -3,6 +3,7 @@
 
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -194,10 +195,10 @@ class EvalNetworkAcls(AnsibleModule):
                                     self.fail_json(
                                         msg=f"Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
                                     )
-                else:
-                    self.fail_json(
-                        msg=f"Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
-                    )
+
+                self.fail_json(
+                    msg=f"Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+                )
 
             def check_ingress_acls(acls, src_ip):
                 for item in acls:
@@ -224,10 +225,10 @@ class EvalNetworkAcls(AnsibleModule):
                                     self.fail_json(
                                         msg=f"Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
                                     )
-                else:
-                    self.fail_json(
-                        msg=f"Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
-                    )
+
+                self.fail_json(
+                    msg=f"Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+                )
 
             egress_acls = [acl["egress"] for acl in acls if acl["egress"]][0]
             ingress_acls = [acl["ingress"] for acl in acls if acl["ingress"]][0]
@@ -259,15 +260,14 @@ class EvalNetworkAcls(AnsibleModule):
                             ):
                                 # Check Action
                                 if acl["rule_action"] == "allow":
-                                    return True
+                                    break
                                 else:
                                     self.fail_json(
                                         msg=f"Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
                                     )
-                else:
-                    self.fail_json(
-                        msg=f"Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
-                    )
+                self.fail_json(
+                    msg=f"Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
+                )
 
             def check_ingress_acls(acls, src_ip, dst_port):
                 for item in acls:
@@ -291,10 +291,10 @@ class EvalNetworkAcls(AnsibleModule):
                                     self.fail_json(
                                         msg=f"Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {self.src_ip} towards destination port {str(self.dst_port)}"
                                     )
-                else:
-                    self.fail_json(
-                        msg=f"Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {self.src_ip} towards destination port {str(self.dst_port)}"
-                    )
+
+                self.fail_json(
+                    msg=f"Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {self.src_ip} towards destination port {str(self.dst_port)}"
+                )
 
             egress_acls = [acl["egress"] for acl in acls if acl["egress"]][0]
             ingress_acls = [acl["ingress"] for acl in acls if acl["ingress"]][0]
@@ -316,9 +316,7 @@ class EvalNetworkAcls(AnsibleModule):
             self.eval_nacls()
             self.exit_json(result="Network ACLs evaluation successful")
         except Exception as e:
-            self.fail_json(
-                msg="Network ACLs evaluation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Network ACLs evaluation failed: {e}")
 
 
 def main():

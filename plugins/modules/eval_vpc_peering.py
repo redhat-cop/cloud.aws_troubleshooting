@@ -30,7 +30,7 @@ options:
         - The ID of the Amazon VPC you want to test connectivity to.
         type: str
         required: false
-    dst_peering_id:
+    peering_id:
         description:
         - The ID of the Destination Peering Connection.
         type: str
@@ -70,14 +70,14 @@ EXAMPLES = r"""
         requester_vpc_info:
             cidr_block: "173.24.0.0/28"
             cidr_block_set:
-                - cidr_block": "173.24.0.0/28"
+                - cidr_block: "173.24.0.0/28"
             owner_id: "721066863947"
             peering_options:
                 allow_dns_resolution_from_remote_vpc: false
                 allow_egress_from_local_classic_link_to_remote_vpc: false
                 allow_egress_from_local_vpc_to_remote_classic_link: false
             region: "us-east-1"
-            vpc_id": "vpc-09620d5e5c8622e06"
+            vpc_id: "vpc-09620d5e5c8622e06"
         status:
             code: "active"
             message: "Active"
@@ -96,7 +96,7 @@ EXAMPLES = r"""
           gateway_id: "local"
           instance_id: null
           interface_id: null
-          network_interface_id": null
+          network_interface_id: null
           origin: "CreateRouteTable"
           state: "active"
 """
@@ -183,9 +183,7 @@ class EvalVpcPeering(AnsibleModule):
             self.eval_peer_route_table()
             self.exit_json(result="VPC peering evaluation successful")
         except Exception as e:
-            self.fail_json(
-                msg="VPC peering evaluation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"VPC peering evaluation failed: {e}")
 
 
 def main():

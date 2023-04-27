@@ -3,6 +3,7 @@
 
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -34,7 +35,7 @@ options:
   dest_port:
     description:
     - Destination Endpoint Port.
-    type: str
+    type: int
     required: true
   protocol:
     description:
@@ -59,8 +60,8 @@ EXAMPLES = r"""
 - name: Evaluate Security group rules from EC2 instance to RDS Instance
   cloud.aws_troubleshooting.validate_security_group_rules:
     dest_subnet_cidrs:
-        - 10.1.0.0/24
-        - 10.1.2.0/24
+        - "10.1.0.0/24"
+        - "10.1.2.0/24"
     dest_security_groups:
         - description: "Security group for EC2 instance"
           group_id: "sg-0bd2d9a14af754812"
@@ -69,13 +70,13 @@ EXAMPLES = r"""
             - from_port: 5432
               to_port: 5432
               ip_protocol: "tcp"
-              ip_ranges":
+              ip_ranges:
                 - cidr_ip: "0.0.0.0/0"
               ipv6_ranges: []
               prefix_list_ids: []
               user_id_group_pairs: []
           ip_permissions_egress:
-            - ip_protocol": -1
+            - ip_protocol: -1
               ip_ranges:
                 - cidr_ip: "0.0.0.0/0"
               ipv6_ranges: []
@@ -92,13 +93,13 @@ EXAMPLES = r"""
             - from_port: 22
               to_port: 22
               ip_protocol: "tcp"
-              ip_ranges":
+              ip_ranges:
                 - cidr_ip: "0.0.0.0/0"
               ipv6_ranges: []
               prefix_list_ids: []
               user_id_group_pairs: []
           ip_permissions_egress:
-            - ip_protocol": -1
+            - ip_protocol: -1
               ip_ranges:
                 - cidr_ip: "0.0.0.0/0"
               ipv6_ranges: []
@@ -130,7 +131,7 @@ class ValidateSecurityGroupRules(AnsibleModule):
         argument_spec = dict(
             dest_subnet_cidrs=dict(type="list", elements="str", required=True),
             dest_security_groups=dict(type="list", elements="dict", required=True),
-            dest_port=dict(type="list", elements="int", required=True),
+            dest_port=dict(type="int", required=True),
             src_security_groups=dict(type="list", elements="dict", required=True),
             src_private_ip=dict(type="str", required=True),
             protocol=dict(type="str", default="tcp"),
@@ -244,9 +245,7 @@ class ValidateSecurityGroupRules(AnsibleModule):
             self.exit_json(result="Security Group validation successful")
 
         except Exception as e:
-            self.fail_json(
-                msg="Security Group validation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Security Group validation failed: {e}")
 
 
 def main():

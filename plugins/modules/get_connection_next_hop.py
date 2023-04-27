@@ -36,7 +36,7 @@ options:
 EXAMPLES = r"""
 - name: Get connection next hop type
   cloud.aws_troubleshooting.get_connection_next_hop:
-    dst_ip: 172.32.2.13
+    dst_ip: "172.32.2.13"
     routes:
       - destination_cidr_block: "172.32.0.0/16"
         gateway_id: "local"
@@ -120,9 +120,7 @@ class GetConnectionNextHopType(AnsibleModule):
             next_hop = self.get_next_hop()
             self.exit_json(next_hop=next_hop)
         except Exception as e:
-            self.fail_json(
-                msg="Failed to get connection next hop type: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Failed to get connection next hop type: {e}")
 
 
 def main():
