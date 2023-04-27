@@ -4,7 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -59,13 +58,13 @@ options:
 EXAMPLES = r"""
 - name: Evaluate ingress and egress security group rules
   cloud.aws_troubleshooting.eval_security_groups:
-    src_ip: 172.32.1.31
+    src_ip: "172.32.1.31"
     src_security_groups:
-        - sg-0258afe8541042bac
-    dst_ip: 172.32.2.13
+        - "sg-0258afe8541042bac"
+    dst_ip: "172.32.2.13"
     dst_port: 3389
     dst_security_groups:
-        - sg-05f6695f90530a499
+        - "sg-05f6695f90530a499"
     security_groups:
         - description: "security group for jumphosts within the public subnet of ansible VPC"
           group_id: "sg-0258afe8541042bac"
@@ -82,13 +81,13 @@ EXAMPLES = r"""
               user_id_group_pairs: []
           ip_permissions_egress:
             - ip_protocol: "-1"
-              ip_ranges":
+              ip_ranges:
                 - cidr_ip: "0.0.0.0/0"
-              ipv6_ranges: [],
+              ipv6_ranges: []
               prefix_list_ids: []
               user_id_group_pairs: []
           owner_id: "721066863947"
-          tags: {},
+          tags: {}
           vpc_id: "vpc-097bb89457aa6d8f3"
         - description: "security group for private subnet that allows limited access from public subnet"
           group_id: "sg-05f6695f90530a499"
@@ -173,13 +172,12 @@ class EvalSecurityGroups(AnsibleModule):
                         for cidr in rule["ip_ranges"]:
                             if dst_ip in ip_network(cidr["cidr_ip"], strict=False):
                                 return True
-                        else:
-                            for group in rule["user_id_group_pairs"]:
-                                if any(
-                                    sg in group["group_id"]
-                                    for sg in self.dst_security_groups
-                                ):
-                                    return True
+                        for group in rule["user_id_group_pairs"]:
+                            if any(
+                                sg in group["group_id"]
+                                for sg in self.dst_security_groups
+                            ):
+                                return True
             self.fail_json(
                 msg=f"Egress rules on source do not allow traffic towards destination: {self.dst_ip} : {str(dst_port)}"
             )
@@ -203,13 +201,12 @@ class EvalSecurityGroups(AnsibleModule):
                         for cidr in rule["ip_ranges"]:
                             if src_ip in ip_network(cidr["cidr_ip"], strict=False):
                                 return True
-                        else:
-                            for group in rule["user_id_group_pairs"]:
-                                if any(
-                                    sg in group["group_id"]
-                                    for sg in self.src_security_groups
-                                ):
-                                    return True
+                        for group in rule["user_id_group_pairs"]:
+                            if any(
+                                sg in group["group_id"]
+                                for sg in self.src_security_groups
+                            ):
+                                return True
             self.fail_json(
                 msg=f"Ingress rules on destination do not allow traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
             )
@@ -240,10 +237,7 @@ class EvalSecurityGroups(AnsibleModule):
                         if dst_ip in ip_network(cidr["cidr_ip"], strict=False):
                             return True
         self.fail_json(
-            msg="Egress rules on source do not allow traffic towards destination: "
-            + self.dst_ip
-            + ":"
-            + str(dst_port)
+            msg=f"Egress rules on source do not allow traffic towards destination: {self.dst_ip} : {str(dst_port)}"
         )
 
     def execute_module(self):
@@ -253,9 +247,7 @@ class EvalSecurityGroups(AnsibleModule):
             self.eval_sg_rules()
             self.exit_json(result="Security Groups rules validation successful")
         except Exception as e:
-            self.fail_json(
-                msg="Security Groups rules validation failed: {}".format(e), exception=e
-            )
+            self.fail_json(msg=f"Security Groups rules validation failed: {e}")
 
 
 def main():
