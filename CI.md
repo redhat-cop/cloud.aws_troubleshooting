@@ -2,7 +2,7 @@
 
 ##  cloud.aws_troubleshooting Collection
 
-GitHub Actions are used to run the Continuous Integration for redhat-cop/cloud.aws_ops collection. The workflows used for the CI can be found [here](https://github.com/redhat-cop/cloud.aws_troubleshooting/tree/main/.github/workflows). These workflows include jobs to run the sanity tests, linters and changelog check. The following table lists the python and ansible versions against which these jobs are run.
+GitHub Actions are used to run the Continuous Integration for redhat-cop/cloud.aws_troubleshooting collection. The workflows used for the CI can be found [here](https://github.com/redhat-cop/cloud.aws_troubleshooting/tree/main/.github/workflows). These workflows include jobs to run the sanity tests, linters and changelog check. The following table lists the python and ansible versions against which these jobs are run.
 
 | Jobs | Description | Python Versions | Ansible Versions |
 | ------ |-------| ------ | -----------|
