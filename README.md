@@ -93,7 +93,7 @@ If you want to run cloud integration tests, ensure you log in to the cloud:
   ansible-test integration [target]
 ```
 
-This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CI.md).
+This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CI.md).
 
 ## License
 GNU General Public License v3.0 or later
