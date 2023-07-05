@@ -1,7 +1,6 @@
-aws_setup_credentials
-==================
+# aws_setup_credentials
 
-A role to define credentials for aws modules. The role defines a variable named **aws_role_credentials** which contains AWS credentials for Amazon modules based on user input.
+A role to define credentials for aws modules. The role defines a variable named **aws_setup_credentials\_\_output** which contains AWS credentials for Amazon modules based on user input.
 
 Requirements
 ------------
@@ -19,7 +18,7 @@ Role Variables
 * **aws_access_key**:
     - The AWS access key to use.
     - Mutually exclusive with option aws_profile.
-    - Environment variable: 
+    - Environment variable:
         - AWS_ACCESS_KEY_ID
         - AWS_ACCESS_KEY
         - EC2_ACCESS_KEY.
@@ -33,7 +32,7 @@ Role Variables
 * **aws_security_token**:
     - The AWS security token if using temporary access and secret keys.
     - Mutually exclusive with option aws_profile.
-    - Environment variable: 
+    - Environment variable:
         - AWS_SECURITY_TOKEN
         - EC2_SECURITY_TOKEN
 * **aws_ca_bundle**:
@@ -42,7 +41,7 @@ Role Variables
         - AWS_CA_BUNDLE
 * **aws_validate_certs**:
     - When set to "false", SSL certificates will not be validated for communication with the AWS APIs.
-    - Environment variable: 
+    - Environment variable:
         - AWS_VALIDATE_CERTS
 * **aws_profile**:
     - The AWS profile to use.
@@ -54,8 +53,8 @@ Role Variables
     - A dictionary to modify the botocore configuration.
     - Parameters can be found at [botocore config](https://botocore.amazonaws.com/v1/documentation/api/latest/reference/config.html#botocore.config.Config).
 * **aws_region**:
-    - The AWS region to use. 
-    - Environment variable: 
+    - The AWS region to use.
+    - Environment variable:
         - AWS_REGION
         - EC2_REGION.
 
@@ -82,7 +81,7 @@ Example Playbook
                 zone-name: eu-east-1
         module_defaults:
           group/aws:
-            '{{ aws_role_credentials }}'
+            '{{ aws_setup_credentials__output }}'
 
 License
 -------

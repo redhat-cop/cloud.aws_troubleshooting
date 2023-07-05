@@ -3,12 +3,12 @@
   ansible.builtin.include_role:
     name: cloud.aws_troubleshooting.aws_setup_credentials
   vars:
-    aws_profile: profile-1
+    aws_profile: default
 
 - name: Ensure credentials contain only aws_profile key
   ansible.builtin.assert:
     that:
-      - aws_setup_credentials__aws_role_credentials is defined
-      - aws_setup_credentials__aws_role_credentials.keys() | length == 1
-      - '"aws_profile" in aws_setup_credentials__aws_role_credentials'
-      - aws_setup_credentials__aws_role_credentials.aws_profile == 'profile-1'
+      - aws_setup_credentials__output is defined
+      - aws_setup_credentials__output.keys() | length == 1
+      - '"aws_profile" in aws_setup_credentials__output'
+      - aws_setup_credentials__output.aws_profile == 'default'

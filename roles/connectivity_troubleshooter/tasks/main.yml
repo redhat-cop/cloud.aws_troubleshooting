@@ -2,7 +2,7 @@
 # tasks file for roles/connectivity_troubleshooter
 - name: Run 'connectivity_troubleshooter'
   module_defaults:
-    group/aws: "{{ aws_setup_credentials__aws_role_credentials }}"
+    group/aws: "{{ aws_setup_credentials__output }}"
 
   block:
     - name: Include 'connectivity_troubleshooter_validate' role

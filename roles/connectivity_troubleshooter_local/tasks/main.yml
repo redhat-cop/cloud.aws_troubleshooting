@@ -37,23 +37,23 @@
         filters:
           group_id: "{{ item }}"
       register: connectivity_troubleshooter_local__src_security_groups_info
-      with_items: "{{ src_security_groups }}"
+      with_items: "{{ connectivity_troubleshooter_local__src_security_groups }}"
 
     - name: Gather information about Destination security group
       amazon.aws.ec2_security_group_info:
         filters:
           group_id: "{{ item }}"
       register: connectivity_troubleshooter_local__dst_security_groups_info
-      with_items: "{{ dst_security_groups }}"
+      with_items: "{{ connectivity_troubleshooter_local__dst_security_groups }}"
 
-    - name: Set 'src_security_groups_info' and 'dst_security_groups_info' variables
+    - name: Set 'connectivity_troubleshooter_local__src_security_groups_info' and 'connectivity_troubleshooter_local__dst_security_groups_info' variables
       ansible.builtin.set_fact:
-        src_security_groups_info: "{{ connectivity_troubleshooter_local__src_security_groups_info.results | sum(attribute='security_groups', start=[]) }}"
-        dst_security_groups_info: "{{ connectivity_troubleshooter_local__dst_security_groups_info.results | sum(attribute='security_groups', start=[]) }}"
+        connectivity_troubleshooter_local__src_security_groups_info: "{{ connectivity_troubleshooter_local__src_security_groups_info.results | sum(attribute='security_groups', start=[]) }}"
+        connectivity_troubleshooter_local__dst_security_groups_info: "{{ connectivity_troubleshooter_local__dst_security_groups_info.results | sum(attribute='security_groups', start=[]) }}"
 
-    - name: Set 'security_groups_info' variable
+    - name: Set 'connectivity_troubleshooter_local__security_groups_info' variable
       ansible.builtin.set_fact:
-        security_groups_info: "{{ security_groups_info | default([]) + item.security_groups }}"
+        connectivity_troubleshooter_local__security_groups_info: "{{ connectivity_troubleshooter_local__security_groups_info | default([]) + item.security_groups }}"
       with_items:
         - "{{ connectivity_troubleshooter_local__src_security_groups_info.results }}"
         - "{{ connectivity_troubleshooter_local__dst_security_groups_info.results }}"
@@ -61,11 +61,11 @@
     - name: Evaluate ingress and egress security group rules
       cloud.aws_troubleshooting.eval_security_groups:
         src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
-        src_security_groups: "{{ src_security_groups }}"
+        src_security_groups: "{{ connectivity_troubleshooter_local__src_security_groups }}"
         dst_ip: "{{ connectivity_troubleshooter_local_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_local_destination_port }}"
-        dst_security_groups: "{{ dst_security_groups }}"
-        security_groups: "{{ security_groups_info }}"
+        dst_security_groups: "{{ connectivity_troubleshooter_local__dst_security_groups }}"
+        security_groups: "{{ connectivity_troubleshooter_local__security_groups_info }}"
       register: connectivity_troubleshooter_local__result_eval_security_groups
 
     - name: Gather information about Source subnet network ACLs
@@ -101,7 +101,7 @@
     - name: Evaluate ingress and egress netwok ACLs
       cloud.aws_troubleshooting.eval_network_acls:
         src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
-        src_subnet_id: "{{ connectivity_troubleshooter_local__src_subnet_id }}"
+        src_subnet_id: "{{ src_subnet_id }}"
         src_port_range: "{{ connectivity_troubleshooter_local_source_port_range }}"
         dst_ip: "{{ connectivity_troubleshooter_local_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_local_destination_port }}"
