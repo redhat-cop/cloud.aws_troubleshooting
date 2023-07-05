@@ -16,10 +16,10 @@
 
     - name: Set 'connectivity_troubleshooter_nat__nat_subnet_id' and 'connectivity_troubleshooter_nat__nat_vpc_id' variables
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__nat_subnet_id: "{{ __nat_gw_info.subnet_id }}"
-        connectivity_troubleshooter_nat__nat_vpc_id: "{{ __nat_gw_info.vpc_id }}"
+        connectivity_troubleshooter_nat__nat_subnet_id: "{{ connectivity_troubleshooter_nat__nat_gw_info.subnet_id }}"
+        connectivity_troubleshooter_nat__nat_vpc_id: "{{ connectivity_troubleshooter_nat__nat_gw_info.vpc_id }}"
       vars:
-        __nat_gw_info: "{{ connectivity_troubleshooter_nat__describe_nat_gw.result.0 }}"
+        connectivity_troubleshooter_nat__nat_gw_info: "{{ connectivity_troubleshooter_nat__describe_nat_gw.result.0 }}"
 
     - name: Gather information about NAT gateway subnet networks ACLs
       community.aws.ec2_vpc_nacl_info:
@@ -29,11 +29,11 @@
 
     - name: Set 'connectivity_troubleshooter__nat_network_acls' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(_keys | zip(_vals))] }}"
+        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(connectivity_troubleshooter_nat__keys | zip(connectivity_troubleshooter_nat__vals))] }}"
       loop: "{{ connectivity_troubleshooter_nat__nat_network_acls_info.nacls }}"
       vars:
-        _keys: "{{ ['egress', 'ingress'] }}"
-        _vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
+        connectivity_troubleshooter_nat__keys: "{{ ['egress', 'ingress'] }}"
+        connectivity_troubleshooter_nat__vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
 
     - name: Gather information about VPC route table
       amazon.aws.ec2_vpc_route_table_info:

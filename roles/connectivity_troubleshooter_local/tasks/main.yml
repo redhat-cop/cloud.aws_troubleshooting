@@ -16,11 +16,11 @@
 
     - name: Set 'connectivity_troubleshooter_local__dst_vpc_id', 'connectivity_troubleshooter_local__dst_subnet_id' and 'connectivity_troubleshooter_local__dst_security_groups' variables
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_local__dst_vpc_id: "{{ __dst_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_local__dst_subnet_id: "{{ __dst_network_interface_info.subnet_id }}"
-        connectivity_troubleshooter_local__dst_security_groups: "{{ __dst_network_interface_info.groups | map(attribute='group_id') | list }}"
+        connectivity_troubleshooter_local__dst_vpc_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.vpc_id }}"
+        connectivity_troubleshooter_local__dst_subnet_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.subnet_id }}"
+        connectivity_troubleshooter_local__dst_security_groups: "{{ connectivity_troubleshooter_local__dst_network_interface_info.groups | map(attribute='group_id') | list }}"
       vars:
-        __dst_network_interface_info: "{{ connectivity_troubleshooter_local__describe_dst_eni.network_interfaces.0 }}"
+        connectivity_troubleshooter_local__dst_network_interface_info: "{{ connectivity_troubleshooter_local__describe_dst_eni.network_interfaces.0 }}"
 
     - name: Fail when no network interface found
       ansible.builtin.fail:
@@ -90,13 +90,13 @@
             - "{{ dst_subnet_id }}"
       register: connectivity_troubleshooter_local__network_acls_info
 
-    - name: Set 'dst_network_acls_info' variable
+    - name: Set 'connectivity_troubleshooter_local__dst_network_acls_info' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_local__dst_network_acls_info: "{{ connectivity_troubleshooter_local__dst_network_acls_info | d([]) + [dict(_keys | zip(_vals))] }}"
+        connectivity_troubleshooter_local__dst_network_acls_info: "{{ connectivity_troubleshooter_local__dst_network_acls_info | d([]) + [dict(connectivity_troubleshooter_local__keys | zip(connectivity_troubleshooter_local__vals))] }}"
       loop: "{{ connectivity_troubleshooter_local__network_acls_info.nacls }}"
       vars:
-        _keys: "{{ ['egress', 'ingress'] }}"
-        _vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
+        connectivity_troubleshooter_local__keys: "{{ ['egress', 'ingress'] }}"
+        connectivity_troubleshooter_local__vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
 
     - name: Evaluate ingress and egress netwok ACLs
       cloud.aws_troubleshooting.eval_network_acls:

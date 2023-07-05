@@ -49,7 +49,7 @@
         connectivity_troubleshooter_validate__src_security_groups: "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups | map(attribute='group_id') | list }}"
         connectivity_troubleshooter_validate__src_network_interface: "{{ connectivity_troubleshooter_validate__src_network_interface_info }}"
       vars:
-        __src_network_interface_info: "{{ connectivity_troubleshooter_validate__describe_src_eni.network_interfaces.0 }}"
+        connectivity_troubleshooter_validate__src_network_interface_info: "{{ connectivity_troubleshooter_validate__describe_src_eni.network_interfaces.0 }}"
 
     - name: Gather information about Source VPC route table
       amazon.aws.ec2_vpc_route_table_info:
@@ -78,7 +78,7 @@
             msg: Could not find route table for connectivity_troubleshooter_validate_source_ip
           when: connectivity_troubleshooter_validate__src_route_table_retry.route_tables | length == 0
 
-        - name: Set 'routes' variable
+        - name: Set 'connectivity_troubleshooter_validate__routes' variable
           ansible.builtin.set_fact:
             connectivity_troubleshooter_validate__routes: "{{ connectivity_troubleshooter_validate__src_route_table_retry.route_tables.0.routes }}"
 
