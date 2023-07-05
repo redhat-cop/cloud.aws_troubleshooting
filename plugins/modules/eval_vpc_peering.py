@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -117,7 +113,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class EvalVpcPeering(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
             dst_vpc=dict(type="str", required=False),
@@ -174,7 +169,9 @@ class EvalVpcPeering(AnsibleModule):
             return True
         else:
             self.fail_json(
-                msg=f"Destination Subnet route table does not contain a valid peering route for source: {self.scr_ip}"
+                msg="Destination Subnet route table does not contain a valid peering route for source: {0}".format(
+                    self.scr_ip
+                )
             )
 
     def execute_module(self):
@@ -183,11 +180,10 @@ class EvalVpcPeering(AnsibleModule):
             self.eval_peer_route_table()
             self.exit_json(result="VPC peering evaluation successful")
         except Exception as e:
-            self.fail_json(msg=f"VPC peering evaluation failed: {e}")
+            self.fail_json(msg="VPC peering evaluation failed: {0}".format(e))
 
 
 def main():
-
     EvalVpcPeering()
 
 

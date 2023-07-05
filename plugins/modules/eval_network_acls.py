@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -129,7 +125,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class EvalNetworkAcls(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
             src_subnet_id=dict(type="str", required=True),
@@ -193,12 +188,15 @@ class EvalNetworkAcls(AnsibleModule):
                                     return True
                                 else:
                                     self.fail_json(
-                                        msg=f"Source Subnet Network Acl Egress Rules \
-                                              do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+                                        msg=f"Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {0} : {1}".format(
+                                            self.dst_ip, str(dst_port)
+                                        )
                                     )
 
                 self.fail_json(
-                    msg=f"Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+                    msg="Source Subnet Network Acl Egress Rules do not allow outbound traffic to destination: {0} : {1}".format(
+                        self.dst_ip, str(dst_port)
+                    )
                 )
 
             def check_ingress_acls(acls, src_ip):
@@ -224,11 +222,15 @@ class EvalNetworkAcls(AnsibleModule):
                                     return True
                                 else:
                                     self.fail_json(
-                                        msg=f"Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+                                        msg="Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {0}".format(
+                                            self.dst_ip
+                                        )
                                     )
 
                 self.fail_json(
-                    msg=f"Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {self.dst_ip}"
+                    msg="Source Subnet Network Acl Ingress Rules do not allow inbound traffic from destination: {0}".format(
+                        self.dst_ip
+                    )
                 )
 
             egress_acls = [acl["egress"] for acl in acls if acl["egress"]][0]
@@ -264,10 +266,14 @@ class EvalNetworkAcls(AnsibleModule):
                                     break
                                 else:
                                     self.fail_json(
-                                        msg=f"Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
+                                        msg="Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {0}".format(
+                                            self.src_ip
+                                        )
                                     )
                 self.fail_json(
-                    msg=f"Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
+                    msg="Destination Subnet Network Acl Egress Rules do not allow outbound traffic to source: {0}".format(
+                        self.src_ip
+                    )
                 )
 
             def check_ingress_acls(acls, src_ip, dst_port):
@@ -290,14 +296,15 @@ class EvalNetworkAcls(AnsibleModule):
                                     return True
                                 else:
                                     self.fail_json(
-                                        msg=f"Destination Subnet Network Acl Ingress Rules \
-                                              do not allow inbound traffic from source: \
-                                              {self.src_ip} towards destination port {str(self.dst_port)}"
+                                        msg="Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {0} towards destination port {1}".format(
+                                            self.src_ip, str(self.dst_port)
+                                        )
                                     )
 
                 self.fail_json(
-                    msg=f"Destination Subnet Network Acl Ingress Rules do not allow\
-                          inbound traffic from source: {self.src_ip} towards destination port {str(self.dst_port)}"
+                    msg="Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {0} towards destination port {1}".format(
+                        self.src_ip, str(self.dst_port)
+                    )
                 )
 
             egress_acls = [acl["egress"] for acl in acls if acl["egress"]][0]
@@ -320,11 +327,10 @@ class EvalNetworkAcls(AnsibleModule):
             self.eval_nacls()
             self.exit_json(result="Network ACLs evaluation successful")
         except Exception as e:
-            self.fail_json(msg=f"Network ACLs evaluation failed: {e}")
+            self.fail_json(msg="Network ACLs evaluation failed: {0}".format(e))
 
 
 def main():
-
     EvalNetworkAcls()
 
 
