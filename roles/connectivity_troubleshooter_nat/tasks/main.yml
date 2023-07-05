@@ -5,32 +5,32 @@
   block:
     - name: Fail when next hop type is not supported by this role
       ansible.builtin.fail:
-        msg: Next hop type '{{ next_hop }}' is not supported by this role
-      when: "'nat-' not in next_hop"
+        msg: Next hop type '{{ connectivity_troubleshooter_validate__next_hop }}' is not supported by this role
+      when: "'nat-' not in connectivity_troubleshooter_validate__next_hop"
 
     - name: Gather information about NAT gateway
       amazon.aws.ec2_vpc_nat_gateway_info:
         filters:
-          nat-gateway-id: "{{ next_hop }}"
-      register: __describe_nat_gw
+          nat-gateway-id: "{{ connectivity_troubleshooter_validate__next_hop }}"
+      register: connectivity_troubleshooter_nat__describe_nat_gw
 
-    - name: Set 'nat_subnet_id' and 'nat_vpc_id' variables
+    - name: Set 'connectivity_troubleshooter_nat__nat_subnet_id' and 'connectivity_troubleshooter_nat__nat_vpc_id' variables
       ansible.builtin.set_fact:
-        nat_subnet_id: "{{ __nat_gw_info.subnet_id }}"
-        nat_vpc_id: "{{ __nat_gw_info.vpc_id }}"
+        connectivity_troubleshooter_nat__nat_subnet_id: "{{ __nat_gw_info.subnet_id }}"
+        connectivity_troubleshooter_nat__nat_vpc_id: "{{ __nat_gw_info.vpc_id }}"
       vars:
-        __nat_gw_info: "{{ __describe_nat_gw.result.0 }}"
+        __nat_gw_info: "{{ connectivity_troubleshooter_nat__describe_nat_gw.result.0 }}"
 
     - name: Gather information about NAT gateway subnet networks ACLs
       community.aws.ec2_vpc_nacl_info:
         filters:
-          association.subnet-id: "{{ nat_subnet_id }}"
-      register: __nat_network_acls_info
+          association.subnet-id: "{{ connectivity_troubleshooter_nat__describe_nat_gwnat_subnet_id }}"
+      register: connectivity_troubleshooter_nat__nat_network_acls_info
 
-    - name: Set 'nat_network_acls' variable
+    - name: Set 'connectivity_troubleshooter__nat_network_acls' variable
       ansible.builtin.set_fact:
-        nat_network_acls: "{{ nat_network_acls | d([]) + [dict(_keys | zip(_vals))] }}"
-      loop: "{{ __nat_network_acls_info.nacls }}"
+        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(_keys | zip(_vals))] }}"
+      loop: "{{ connectivity_troubleshooter_nat__nat_network_acls_info.nacls }}"
       vars:
         _keys: "{{ ['egress', 'ingress'] }}"
         _vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
@@ -39,13 +39,13 @@
       amazon.aws.ec2_vpc_route_table_info:
         filters:
           association.subnet-id:
-            - "{{ nat_subnet_id }}"
-      register: __nat_route_table
+            - "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
+      register: connectivity_troubleshooter_nat__nat_route_table
 
     - name: Set 'nat_routes' variable
       ansible.builtin.set_fact:
-        nat_routes: "{{ __nat_route_table.route_tables.0.routes  }}"
-      when: __nat_route_table.route_tables | length > 0
+        connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table.route_tables.0.routes  }}"
+      when: connectivity_troubleshooter_nat__nat_route_table.route_tables | length > 0
 
     # if RouteTable is not returned, this indicates association of subnet with main route table
     - name: Gather information about VPC route table using association.main=true
@@ -55,17 +55,17 @@
           amazon.aws.ec2_vpc_route_table_info:
             filters:
               association.main: "true"
-              vpc-id: "{{ nat_vpc_id }}"
-          register: __nat_route_table_retry
+              vpc-id: "{{ connectivity_troubleshooter_nat__nat_vpc_id }}"
+          register: connectivity_troubleshooter_nat__nat_route_table_retry
 
         - name: Fail when route table for NAT Gateway is found
           ansible.builtin.fail:
             msg: Could not find route table for NAT Gateway
-          when: __nat_route_table_retry.route_tables | length == 0
+          when: connectivity_troubleshooter_nat__nat_route_table_retry.route_tables | length == 0
 
         - name: Set 'nat_routes' variable
           ansible.builtin.set_fact:
-            nat_routes: "{{ __nat_route_table_retry.route_tables.0.routes }}"
+            connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table_retry.route_tables.0.routes }}"
 
     - name: Evaluate ingress and egress NAT netwok ACLs
       cloud.aws_troubleshooting.eval_nat_network_acls:
@@ -74,7 +74,7 @@
         src_port_range: "{{ connectivity_troubleshooter_nat_source_port_range }}"
         dst_ip: "{{ connectivity_troubleshooter_nat_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_nat_destination_port }}"
-        nat_subnet_id: "{{ nat_subnet_id }}"
-        nat_network_acls: "{{ nat_network_acls }}"
-        routes: "{{ nat_routes }}"
+        nat_subnet_id: "{{ connectivity_troubleshooter__nat_subnet_id }}"
+        nat_network_acls: "{{ connectivity_troubleshooter__nat_network_acls }}"
+        routes: "{{ connectivity_troubleshooter__nat_routes }}"
       register: __result_eval_nat_network_acls

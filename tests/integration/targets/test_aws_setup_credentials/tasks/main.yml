@@ -8,7 +8,7 @@
 - name: Ensure credentials contain only aws_profile key
   ansible.builtin.assert:
     that:
-      - aws_role_credentials is defined
-      - aws_role_credentials.keys() | length == 1
-      - '"aws_profile" in aws_role_credentials'
-      - aws_role_credentials.aws_profile == 'profile-1'
+      - aws_setup_credentials__aws_role_credentials is defined
+      - aws_setup_credentials__aws_role_credentials.keys() | length == 1
+      - '"aws_profile" in aws_setup_credentials__aws_role_credentials'
+      - aws_setup_credentials__aws_role_credentials.aws_profile == 'profile-1'

@@ -2,7 +2,7 @@
 # tasks file for roles/connectivity_troubleshooter
 - name: Run 'connectivity_troubleshooter'
   module_defaults:
-    group/aws: "{{ aws_role_credentials }}"
+    group/aws: "{{ aws_setup_credentials__aws_role_credentials }}"
 
   block:
     - name: Include 'connectivity_troubleshooter_validate' role
@@ -16,8 +16,8 @@
 
     - name: Fail when next hop type is not supported by this role
       ansible.builtin.fail:
-        msg: Next hop type '{{ next_hop }}' is not supported by this role
-      when: next_hop != 'local' and not next_hop.startswith('nat-') and not next_hop.startswith('igw-') and not next_hop.startswith('pcx-')
+        msg: Next hop type '{{ connectivity_troubleshooter_validate__next_hop }}' is not supported by this role
+      when: connectivity_troubleshooter_validate__next_hop != 'local' and not connectivity_troubleshooter_validate__next_hop.startswith('nat-') and not connectivity_troubleshooter_validate__next_hop.startswith('igw-') and not connectivity_troubleshooter_validate__next_hop.startswith('pcx-')
 
     - name: Include 'connectivity_troubleshooter_local' role
       ansible.builtin.include_role:
@@ -28,7 +28,7 @@
         connectivity_troubleshooter_local_source_ip: "{{ connectivity_troubleshooter_source_ip }}"
         connectivity_troubleshooter_local_destination_vpc: "{{ connectivity_troubleshooter_destination_vpc }}"
         connectivity_troubleshooter_local_source_port_range: "{{ connectivity_troubleshooter_source_port_range }}"
-      when: "'local' == next_hop"
+      when: "'local' == connectivity_troubleshooter_validate__next_hop"
 
     - name: Include 'connectivity_troubleshooter_igw' role
       ansible.builtin.include_role:
@@ -40,7 +40,7 @@
         connectivity_troubleshooter_igw_destination_vpc: "{{ connectivity_troubleshooter_destination_vpc }}"
         connectivity_troubleshooter_igw_source_vpc: "{{ connectivity_troubleshooter_source_vpc }}"
         connectivity_troubleshooter_igw_source_port_range: "{{ connectivity_troubleshooter_source_port_range }}"
-      when: "'igw-' in next_hop"
+      when: "'igw-' in connectivity_troubleshooter_validate__next_hop"
 
     - name: Include 'connectivity_troubleshooter_nat' role
       ansible.builtin.include_role:
@@ -50,7 +50,7 @@
         connectivity_troubleshooter_nat_destination_port: "{{ connectivity_troubleshooter_destination_port }}"
         connectivity_troubleshooter_nat_source_ip: "{{ connectivity_troubleshooter_source_ip }}"
         connectivity_troubleshooter_nat_source_port_range: "{{ connectivity_troubleshooter_source_port_range }}"
-      when: "'nat-' in next_hop"
+      when: "'nat-' in connectivity_troubleshooter_validate__next_hop"
 
     - name: Include 'connectivity_troubleshooter_peering' role
       ansible.builtin.include_role:
@@ -61,4 +61,4 @@
         connectivity_troubleshooter_peering_source_ip: "{{ connectivity_troubleshooter_source_ip }}"
         connectivity_troubleshooter_peering_destination_vpc: "{{ connectivity_troubleshooter_destination_vpc }}"
         connectivity_troubleshooter_peering_source_vpc: "{{ connectivity_troubleshooter_source_vpc }}"
-      when: "'pcx-' in next_hop"
+      when: "'pcx-' in connectivity_troubleshooter_validate__next_hop"

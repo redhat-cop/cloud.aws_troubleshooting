@@ -1,23 +1,23 @@
 ---
 - name: Set 'option_key' and 'option_value' from Environment
   ansible.builtin.set_fact:
-    option_key: "{{ ('dest' in item.value) | ternary(item.value.dest, item.key) }}"
-    option_value: "{{ lookup('vars', item.key, default='') }}"
+    aws_setup_credentials__option_key: "{{ ('dest' in item.value) | ternary(item.value.dest, item.key) }}"
+    aws_setup_credentials__option_value: "{{ lookup('vars', item.key, default='') }}"
 
 - name: Combine user-defined variable
   ansible.builtin.set_fact:
-    aws_role_credentials: "{{ aws_role_credentials | combine({option_key: option_value}) }}"
-  when: option_value | length > 0
+    aws_setup_credentials__aws_role_credentials: "{{ aws_setup_credentials__aws_role_credentials | combine({aws_setup_credentials__option_key: aws_setup_credentials__option_value}) }}"
+  when: aws_setup_credentials__option_value | length > 0
 
 - name: Read value from Environment
-  when: option_value | length == 0
+  when: aws_setup_credentials__option_value | length == 0
   block:
     - name: Set 'env_values' variable
       ansible.builtin.set_fact:
-        env_values: []
+        aws_setup_credentials__env_values: []
     - name: Set 'env_values' from Environment
       ansible.builtin.set_fact:
-        env_values: "{{ env_values + [current_value] }}"
+        aws_setup_credentials__env_values: "{{ aws_setup_credentials__env_values + [current_value] }}"
       with_items: "{{ ('env' in item.value) | ternary(item.value.env, []) }}"
       when: current_value | length > 0
       loop_control:
@@ -27,5 +27,5 @@
 
     - name: Combine with environment-defined variable
       ansible.builtin.set_fact:
-        aws_role_credentials: "{{ aws_role_credentials | combine({option_key: env_values[0]}) }}"
-      when: env_values | length > 0
+        aws_setup_credentials__aws_role_credentials: "{{ aws_setup_credentials__aws_role_credentials | combine({aws_setup_credentials__option_key: aws_setup_credentials__env_values[0]}) }}"
+      when: aws_setup_credentials__env_values | length > 0
