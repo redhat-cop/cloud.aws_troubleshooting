@@ -21,7 +21,7 @@
           addresses.private-ip-address: "{{ connectivity_troubleshooter_peering_destination_ip }}"
       register: connectivity_troubleshooter_peering__dst_peer_eni
 
-    - name: Set destination peer VPC id and subnet id
+    - name: Set 'connectivity_troubleshooter_peering__dst_peer_vpc_id' and 'connectivity_troubleshooter_peering__dst_peer_subnet_id' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_peering__dst_peer_vpc_id: "{{ connectivity_troubleshooter_peering__dst_peer_eni_info.vpc_id }}"
         connectivity_troubleshooter_peering__dst_peer_subnet_id: "{{ connectivity_troubleshooter_peering__dst_peer_eni_info.subnet_id }}"
@@ -35,7 +35,7 @@
             - "{{ connectivity_troubleshooter_peering__dst_peer_subnet_id }}"
       register: connectivity_troubleshooter_peering__dst_peer_route_table
 
-    - name: Set routes
+    - name: Set 'connectivity_troubleshooter_validate__routes' variable
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__routes: "{{ connectivity_troubleshooter_peering__dst_peer_route_table.route_tables.0.routes  }}"
       when: connectivity_troubleshooter_peering__dst_peer_route_table.route_tables | length > 0
@@ -56,7 +56,7 @@
             msg: Could not find route table for Destination peer
           when: connectivity_troubleshooter_peering__dst_peer_route_table_retry.route_tables | length == 0
 
-        - name: Set routes
+        - name: Set 'connectivity_troubleshooter_peering__routes' variable
           ansible.builtin.set_fact:
             connectivity_troubleshooter_peering__routes: "{{ connectivity_troubleshooter_peering__dst_peer_route_table_retry.route_tables.0.routes }}"
 

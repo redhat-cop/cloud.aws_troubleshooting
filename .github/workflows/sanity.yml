@@ -5,13 +5,6 @@ concurrency:
 
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - labeled
-      - unlabeled
-      - synchronize
-      - closed
     branches:
       - main
       - stable-*
@@ -69,12 +62,20 @@ jobs:
               "python-version": "3.8"
             },
             {
+              "ansible-version": "milestone",
+              "python-version": "3.9"
+            },
+            {
               "ansible-version": "devel",
               "python-version": "3.7"
             },
             {
               "ansible-version": "devel",
               "python-version": "3.8"
+            },
+            {
+              "ansible-version": "devel",
+              "python-version": "3.9"
             }
           ]
   all_green:

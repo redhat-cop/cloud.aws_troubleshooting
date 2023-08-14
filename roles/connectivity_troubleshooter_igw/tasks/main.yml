@@ -1,6 +1,6 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_igw
-- name: Run cloud.aws_troubleshooting.connectivity_troubleshooter_igw role
+- name: Run 'cloud.aws_troubleshooting.connectivity_troubleshooter_igw' role
   block:
     - name: Fail when next hop type is not supported by this role
       ansible.legacy.fail:
@@ -21,9 +21,9 @@
             - "{{ src_subnet_id }}"
       register: connectivity_troubleshooter_igw__src_subnet_nacls
 
-    - name: Set source subnet NACLs
+    - name: Set 'connectivity_troubleshooter_igw__src_subnet_nacls' variable
       ansible.legacy.set_fact:
-        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys | zip(connectivity_troubleshooter_igw__vals))]
+        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ connectivity_troubleshooter_igw__src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys | zip(connectivity_troubleshooter_igw__vals))]
           }}"
       loop: "{{ connectivity_troubleshooter_igw__src_subnet_nacls.nacls }}"
       vars:

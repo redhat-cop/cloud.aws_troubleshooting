@@ -1,7 +1,7 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_local
 
-- name: Run cloud.aws_troubleshooting.connectivity_troubleshooter_local role
+- name: Run 'cloud.aws_troubleshooting.connectivity_troubleshooter_local' role
   block:
     - name: Fail when next hop type is not supported by this role
       ansible.builtin.fail:
@@ -14,7 +14,7 @@
           addresses.private-ip-address: "{{ connectivity_troubleshooter_local_destination_ip }}"
       register: connectivity_troubleshooter_local__describe_dst_eni
 
-    - name: Set destination VPC id, subnet id and security groups
+    - name: Set 'connectivity_troubleshooter_local__dst_vpc_id', 'connectivity_troubleshooter_local__dst_subnet_id' and 'connectivity_troubleshooter_local__dst_security_groups' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__dst_vpc_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.vpc_id }}"
         connectivity_troubleshooter_local__dst_subnet_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.subnet_id }}"
@@ -47,14 +47,14 @@
       register: connectivity_troubleshooter_local__dst_security_groups_info
       with_items: "{{ connectivity_troubleshooter_local__dst_security_groups }}"
 
-    - name: Set source and destination security groups info
+    - name: Set 'connectivity_troubleshooter_local__src_security_groups_info' and 'connectivity_troubleshooter_local__dst_security_groups_info' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__src_security_groups_info: "{{ connectivity_troubleshooter_local__src_security_groups_info.results | sum(attribute='security_groups',
           start=[]) }}"
         connectivity_troubleshooter_local__dst_security_groups_info: "{{ connectivity_troubleshooter_local__dst_security_groups_info.results | sum(attribute='security_groups',
           start=[]) }}"
 
-    - name: Set security groups info
+    - name: Set 'connectivity_troubleshooter_local__security_groups_info' variable
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__security_groups_info: "{{ connectivity_troubleshooter_local__security_groups_info | default([]) + item.security_groups
           }}"
@@ -79,7 +79,7 @@
             - "{{ src_subnet_id }}"
       register: connectivity_troubleshooter_local__network_acls_info
 
-    - name: Set source NACLs info
+    - name: Set 'connectivity_troubleshooter_local__src_network_acls_info' variable
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__src_network_acls_info: "{{ connectivity_troubleshooter_local__src_network_acls_info | d([]) + [dict(_keys | zip(_vals))]
           }}"
@@ -95,7 +95,7 @@
             - "{{ dst_subnet_id }}"
       register: connectivity_troubleshooter_local__network_acls_info
 
-    - name: Set destination NACLs info
+    - name: Set 'connectivity_troubleshooter_local__dst_network_acls_info' variable
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__dst_network_acls_info: "{{ connectivity_troubleshooter_local__dst_network_acls_info | d([]) + [dict(connectivity_troubleshooter_local__keys
           | zip(connectivity_troubleshooter_local__vals))] }}"
