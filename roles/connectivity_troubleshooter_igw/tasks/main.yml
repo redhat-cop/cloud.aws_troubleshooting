@@ -1,37 +1,39 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_igw
-- name: Run 'connectivity_troubleshooter_igw' role
+- name: Run cloud.aws_troubleshooting.connectivity_troubleshooter_igw role
   block:
     - name: Fail when next hop type is not supported by this role
       ansible.legacy.fail:
         msg: Next hop type '{{ connectivity_troubleshooter_validate__next_hop }}' is not supported by this role
       when: "'igw-' not in connectivity_troubleshooter_validate__next_hop"
 
-    - name: Gather information about Source security groups
+    - name: Gather information about source security groups
       amazon.aws.ec2_security_group_info:
         filters:
           group_id: "{{ item }}"
       register: connectivity_troubleshooter_igw__src_security_groups
       with_items: "{{ connectivity_troubleshooter_igw__src_security_groups }}"
 
-    - name: Gather information about Source subnet network ACLs
+    - name: Gather information about source subnet network ACLs
       community.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
             - "{{ src_subnet_id }}"
       register: connectivity_troubleshooter_igw__src_subnet_nacls
 
-    - name: Set 'src_subnet_nacls' variable
+    - name: Set source subnet NACLs
       ansible.legacy.set_fact:
-        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys | zip(connectivity_troubleshooter_igw__vals))] }}"
+        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys | zip(connectivity_troubleshooter_igw__vals))]
+          }}"
       loop: "{{ connectivity_troubleshooter_igw__src_subnet_nacls.nacls }}"
       vars:
         connectivity_troubleshooter_igw__keys: "{{ ['egress', 'ingress'] }}"
         connectivity_troubleshooter_igw__vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
 
-    - name: Set 'connectivity_troubleshooter_igw__src_security_groups_info' variable
+    - name: Set source security groups info
       ansible.legacy.set_fact:
-        connectivity_troubleshooter_igw__src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups.results | sum(attribute='security_groups', start=[]) }}"
+        connectivity_troubleshooter_igw__src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups.results | sum(attribute='security_groups',
+          start=[]) }}"
 
     - name: Evaluate ingress and egress netwok ACLs
       cloud.aws_troubleshooting.eval_src_igw_route:
@@ -42,5 +44,5 @@
         dst_port: "{{ connectivity_troubleshooter_igw_destination_port }}"
         src_network_interface: "{{ src_network_interface }}"
         src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups_info }}"
-        src_network_acls: "{{connectivity_troubleshooter_igw__src_subnet_nacls }}"
+        src_network_acls: "{{ connectivity_troubleshooter_igw__src_subnet_nacls }}"
       register: connectivity_troubleshooter_igw__result_eval_src_igw_route

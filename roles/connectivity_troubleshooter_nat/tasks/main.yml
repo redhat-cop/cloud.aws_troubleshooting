@@ -1,7 +1,7 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_nat
 
-- name: Run 'connectivity_troubleshooter_nat' role
+- name: Run cloud.aws_troubleshooting.connectivity_troubleshooter_nat role
   block:
     - name: Fail when next hop type is not supported by this role
       ansible.builtin.fail:
@@ -14,7 +14,7 @@
           nat-gateway-id: "{{ connectivity_troubleshooter_validate__next_hop }}"
       register: connectivity_troubleshooter_nat__describe_nat_gw
 
-    - name: Set 'connectivity_troubleshooter_nat__nat_subnet_id' and 'connectivity_troubleshooter_nat__nat_vpc_id' variables
+    - name: Set NAT subnet id and NAT VPC id
       ansible.builtin.set_fact:
         connectivity_troubleshooter_nat__nat_subnet_id: "{{ connectivity_troubleshooter_nat__nat_gw_info.subnet_id }}"
         connectivity_troubleshooter_nat__nat_vpc_id: "{{ connectivity_troubleshooter_nat__nat_gw_info.vpc_id }}"
@@ -27,9 +27,10 @@
           association.subnet-id: "{{ connectivity_troubleshooter_nat__describe_nat_gwnat_subnet_id }}"
       register: connectivity_troubleshooter_nat__nat_network_acls_info
 
-    - name: Set 'connectivity_troubleshooter__nat_network_acls' variable
+    - name: Set NAT NACLs
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(connectivity_troubleshooter_nat__keys | zip(connectivity_troubleshooter_nat__vals))] }}"
+        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(connectivity_troubleshooter_nat__keys
+          | zip(connectivity_troubleshooter_nat__vals))] }}"
       loop: "{{ connectivity_troubleshooter_nat__nat_network_acls_info.nacls }}"
       vars:
         connectivity_troubleshooter_nat__keys: "{{ ['egress', 'ingress'] }}"
@@ -42,7 +43,7 @@
             - "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
       register: connectivity_troubleshooter_nat__nat_route_table
 
-    - name: Set 'nat_routes' variable
+    - name: Set NAT routes
       ansible.builtin.set_fact:
         connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table.route_tables.0.routes  }}"
       when: connectivity_troubleshooter_nat__nat_route_table.route_tables | length > 0
@@ -63,7 +64,7 @@
             msg: Could not find route table for NAT Gateway
           when: connectivity_troubleshooter_nat__nat_route_table_retry.route_tables | length == 0
 
-        - name: Set 'nat_routes' variable
+        - name: Set NAT routest
           ansible.builtin.set_fact:
             connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table_retry.route_tables.0.routes }}"
 

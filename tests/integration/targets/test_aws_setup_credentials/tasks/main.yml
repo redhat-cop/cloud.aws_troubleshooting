@@ -1,14 +1,16 @@
 ---
-- name: Test 'aws_setup_credentials' role
+- name: Test cloud.aws_troubleshooting.aws_setup_credentials
   ansible.builtin.include_role:
     name: cloud.aws_troubleshooting.aws_setup_credentials
   vars:
-    aws_profile: default
+    aws_security_token: '{{ security_token | default(omit) }}'
 
-- name: Ensure credentials contain only aws_profile key
-  ansible.builtin.assert:
-    that:
-      - aws_setup_credentials__output is defined
-      - aws_setup_credentials__output.keys() | length == 1
-      - '"aws_profile" in aws_setup_credentials__output'
-      - aws_setup_credentials__output.aws_profile == 'default'
+- name: Trying calling module using generating credentials
+  module_defaults:
+    group/aws:
+      "{{ aws_setup_credentials__output }}"
+  block:
+    - name: Get instances to be terminated
+      amazon.aws.ec2_instance_info:
+        filters:
+          instance-state-name: 'running'

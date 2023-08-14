@@ -1,7 +1,7 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_validate
 
-- name: Run 'connectivity_troubleshooter_validate' role
+- name: Run cloud.aws_troubleshooting.connectivity_troubleshooter_validate role
   block:
     - name: Fail when the IPv4 address of the resource you want to connect is not defined
       ansible.builtin.fail:
@@ -23,15 +23,16 @@
         msg: connectivity_troubleshooter_validate_source_ip and connectivity_troubleshooter_validate_destination_ip are same, kindly provide different values
       when: connectivity_troubleshooter_validate_source_ip == connectivity_troubleshooter_validate_destination_ip
 
-    - name: Set 'connectivity_troubleshooter_validate__filter_eni' variable
+    - name: Set connectivity_troubleshooter_validate__filter_eni variable
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__filter_eni: { addresses.private-ip-address: "{{ connectivity_troubleshooter_validate_source_ip }}" }
-    - name: Set 'connectivity_troubleshooter_validate__filter_eni' variable
+    - name: Set connectivity_troubleshooter_validate__filter_eni variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_validate__filter_eni: "{{ connectivity_troubleshooter_validate__filter_eni | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc}) }}"
+        connectivity_troubleshooter_validate__filter_eni: "{{ connectivity_troubleshooter_validate__filter_eni | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc})
+          }}"
       when: connectivity_troubleshooter_validate_source_vpc | default('', true) | trim != ''
 
-    - name: Gather information about Source ENI
+    - name: Gather information about source ENI
       amazon.aws.ec2_eni_info:
         filters: "{{ connectivity_troubleshooter_validate__filter_eni }}"
       register: connectivity_troubleshooter_validate__describe_src_eni
@@ -42,22 +43,23 @@
           found
       when: connectivity_troubleshooter_validate__describe_src_eni['network_interfaces'] | length == 0
 
-    - name: Set 'connectivity_troubleshooter_validate__src_subnet_id', 'connectivity_troubleshooter_validate__src_vpc_id', 'connectivity_troubleshooter_validate__src_security_groups' and 'connectivity_troubleshooter_validate__src_network_interface' variables
+    - name: Set source subnet id, VPC id, security groups and network interface
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__src_subnet_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.subnet_id }}"
         connectivity_troubleshooter_validate__src_vpc_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_validate__src_security_groups: "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups | map(attribute='group_id') | list }}"
+        connectivity_troubleshooter_validate__src_security_groups: "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups | map(attribute='group_id')
+          | list }}"
         connectivity_troubleshooter_validate__src_network_interface: "{{ connectivity_troubleshooter_validate__src_network_interface_info }}"
       vars:
         connectivity_troubleshooter_validate__src_network_interface_info: "{{ connectivity_troubleshooter_validate__describe_src_eni.network_interfaces.0 }}"
 
-    - name: Gather information about Source VPC route table
+    - name: Gather information about source VPC route table
       amazon.aws.ec2_vpc_route_table_info:
         filters:
           association.subnet-id: "{{ connectivity_troubleshooter_validate__src_subnet_id }}"
       register: connectivity_troubleshooter_validate__src_route_table
 
-    - name: Set 'connectivity_troubleshooter_validate__routes' variable
+    - name: Set routes
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__routes: "{{ connectivity_troubleshooter_validate__src_route_table.route_tables.0.routes }}"
       when: connectivity_troubleshooter_validate__src_route_table.route_tables | length > 0
@@ -78,7 +80,7 @@
             msg: Could not find route table for connectivity_troubleshooter_validate_source_ip
           when: connectivity_troubleshooter_validate__src_route_table_retry.route_tables | length == 0
 
-        - name: Set 'connectivity_troubleshooter_validate__routes' variable
+        - name: Set routes
           ansible.builtin.set_fact:
             connectivity_troubleshooter_validate__routes: "{{ connectivity_troubleshooter_validate__src_route_table_retry.route_tables.0.routes }}"
 
@@ -88,6 +90,6 @@
         routes: "{{ connectivity_troubleshooter_validate__routes }}"
       register: connectivity_troubleshooter_validate__result_next_hop
 
-    - name: Set 'connectivity_troubleshooter_validate__next_hop' variable
+    - name: Set next hop
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__next_hop: "{{ connectivity_troubleshooter_validate__result_next_hop.next_hop }}"

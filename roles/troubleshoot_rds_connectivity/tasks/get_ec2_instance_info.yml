@@ -10,13 +10,14 @@
     msg: "EC2 instance not found with id: {{ troubleshoot_rds_connectivity_ec2_instance_id }}"
   when: troubleshoot_rds_connectivity__result.instances | length == 0
 
-- name: Set 'roubleshoot_rds_connectivity__ec2_security_group_ids', 'roubleshoot_rds_connectivity__ec2_subnet_id', 'roubleshoot_rds_connectivity__ec2_vpc_id' and 'roubleshoot_rds_connectivity__ec2_private_ip_addrs' variables
+- name: Set 'roubleshoot_rds_connectivity__ec2_security_group_ids', 'roubleshoot_rds_connectivity__ec2_subnet_id', 'roubleshoot_rds_connectivity__ec2_vpc_id' and
+    'roubleshoot_rds_connectivity__ec2_private_ip_addrs' variables
   ansible.builtin.set_fact:
     troubleshoot_rds_connectivity__ec2_security_group_ids: "{{ ec2_instance_info.security_groups | map(attribute='group_id') | list }}"
     troubleshoot_rds_connectivity__ec2_subnet_id: "{{ ec2_instance_info.subnet_id }}"
     troubleshoot_rds_connectivity__ec2_vpc_id: "{{ ec2_instance_info.vpc_id }}"
-    troubleshoot_rds_connectivity__ec2_private_ip_addrs: "{{ ec2_instance_info.network_interfaces | map(attribute='private_ip_addresses') | flatten | map(attribute='private_ip_address') | list\
-      \ }}"
+    troubleshoot_rds_connectivity__ec2_private_ip_addrs: "{{ ec2_instance_info.network_interfaces | map(attribute='private_ip_addresses') | flatten | map(attribute='private_ip_address')
+      | list }}"
   vars:
     ec2_instance_info: "{{ troubleshoot_rds_connectivity__result.instances.0 }}"
 
