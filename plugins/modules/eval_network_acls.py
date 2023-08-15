@@ -296,7 +296,8 @@ class EvalNetworkAcls(AnsibleModule):
                                     return True
                                 else:
                                     self.fail_json(
-                                        msg="Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {0} towards destination port {1}".format(
+                                        msg="Destination Subnet Network Acl Ingress Rules do not allow inbound traffic from source: {0} \
+                                            towards destination port {1}".format(
                                             self.src_ip, str(self.dst_port)
                                         )
                                     )
