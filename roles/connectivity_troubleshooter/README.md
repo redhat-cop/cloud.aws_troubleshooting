@@ -15,7 +15,7 @@ Authentication against AWS is managed by the `aws_setup_credentials` role.
 It also requires the folllowing roles:
 - cloud.aws_troubleshooting.connectivity_troubleshooter_validate
 - cloud.aws_troubleshooting.connectivity_troubleshooter_igw
-- cloud.aws_troubleshooting.connectivity_troubleshooter_local 
+- cloud.aws_troubleshooting.connectivity_troubleshooter_local
 - cloud.aws_troubleshooting.connectivity_troubleshooter_nat
 - cloud.aws_troubleshooting.connectivity_troubleshooter_peering
 

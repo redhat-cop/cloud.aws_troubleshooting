@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -270,7 +266,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class ValidateRouteTables(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             dest_subnets=dict(type="list", elements="dict", required=True),
             dest_route_tables=dict(type="list", elements="dict", required=True),
@@ -319,7 +314,9 @@ class ValidateRouteTables(AnsibleModule):
             and not b_check_vpc_rtb_rds
         ):
             self.exit_json(
-                result=f"Source and destination resources are using the same route table(s): {self.ec2_rtb_list}"
+                result="Source and destination resources are using the same route table(s): {0}".format(
+                    self.ec2_rtb_list
+                )
             )
 
     def validate_route_connection(
@@ -329,7 +326,6 @@ class ValidateRouteTables(AnsibleModule):
         dest_route_tables,
         b_check_vpc_rtb_rds,
     ):
-
         # Third verification: Check wheter route is through a peering connection
         # Verify whether Destination RTBs contains route to Source network
         for rtb in dest_route_tables:
@@ -371,7 +367,6 @@ class ValidateRouteTables(AnsibleModule):
         dest_subnet_cidrs,
         b_check_vpc_rtb_ec2,
     ):
-
         # Verify whether Source RTB contains route to Destination network
         for rtb in src_route_tables:
             required_cidrs = copy.deepcopy(dest_subnet_cidrs)
@@ -474,22 +469,25 @@ class ValidateRouteTables(AnsibleModule):
 
             if len(self.rds_rtb_list) > 0:
                 self.fail_json(
-                    msg=f"Please review route table(s) {self.rds_rtb_list} for entries matching {src_private_ips} Cidr"
+                    msg="Please review route table(s) {0} for entries matching {1} Cidr".format(
+                        self.rds_rtb_list, src_private_ips
+                    )
                 )
 
             if len(self.ec2_rtb_list) > 0:
                 self.fail_json(
-                    msg=f"Please review route table(s) {self.ec2_rtb_list} for entries matching {dest_subnet_cidrs} Cidr"
+                    msg="Please review route table(s) {0} for entries matching {1} Cidr".format(
+                        self.ec2_rtb_list, dest_subnet_cidrs
+                    )
                 )
 
             self.exit_json(result="Route table validation successful")
 
         except Exception as e:
-            self.fail_json(msg=f"Route table validation failed: {e}")
+            self.fail_json(msg="Route table validation failed: {0}".format(e))
 
 
 def main():
-
     ValidateRouteTables()
 
 

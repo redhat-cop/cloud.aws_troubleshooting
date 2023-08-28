@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -137,7 +133,6 @@ def is_port_in_range(port, from_port, to_port):
 
 class ValidateNetworkACL(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             dest_subnet_cidrs=dict(type="list", elements="str", required=True),
             dest_network_acl_rules=dict(type="list", elements="dict", required=True),
@@ -216,11 +211,10 @@ class ValidateNetworkACL(AnsibleModule):
             self.exit_json(result="Network ACL validation successful")
 
         except Exception as e:
-            self.fail_json(msg=f"Network ACL validation failed: {e}")
+            self.fail_json(msg="Network ACL validation failed: {0}".format(e))
 
 
 def main():
-
     ValidateNetworkACL()
 
 

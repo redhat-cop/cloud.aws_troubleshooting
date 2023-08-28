@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -131,7 +127,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class EvalSecurityGroups(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
             src_security_groups=dict(type="list", elements="str", required=True),
@@ -179,7 +174,9 @@ class EvalSecurityGroups(AnsibleModule):
                             ):
                                 return True
             self.fail_json(
-                msg=f"Egress rules on source do not allow traffic towards destination: {self.dst_ip} : {str(dst_port)}"
+                msg="Egress rules on source do not allow traffic towards destination: {0} : {1}".format(
+                    self.dst_ip, str(dst_port)
+                )
             )
 
         def eval_dst_ingress_rules():
@@ -208,7 +205,9 @@ class EvalSecurityGroups(AnsibleModule):
                             ):
                                 return True
             self.fail_json(
-                msg=f"Ingress rules on destination do not allow traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
+                msg="Ingress rules on destination do not allow traffic from source: {0} towards destination port {1}".format(
+                    self.src_ip, str(dst_port)
+                )
             )
 
         eval_src_egress_rules()
@@ -237,7 +236,9 @@ class EvalSecurityGroups(AnsibleModule):
                         if dst_ip in ip_network(cidr["cidr_ip"], strict=False):
                             return True
         self.fail_json(
-            msg=f"Egress rules on source do not allow traffic towards destination: {self.dst_ip} : {str(dst_port)}"
+            msg="Egress rules on source do not allow traffic towards destination: {0} : {1}".format(
+                self.dst_ip, str(dst_port)
+            )
         )
 
     def execute_module(self):
@@ -247,11 +248,10 @@ class EvalSecurityGroups(AnsibleModule):
             self.eval_sg_rules()
             self.exit_json(result="Security Groups rules validation successful")
         except Exception as e:
-            self.fail_json(msg=f"Security Groups rules validation failed: {e}")
+            self.fail_json(msg="Security Groups rules validation failed: {0}".format(e))
 
 
 def main():
-
     EvalSecurityGroups()
 
 

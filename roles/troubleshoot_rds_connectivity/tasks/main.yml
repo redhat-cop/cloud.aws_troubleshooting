@@ -16,7 +16,7 @@
 
 - name: Run 'troubleshoot_rds_connectivity' roles
   module_defaults:
-    group/aws: "{{ aws_role_credentials }}"
+    group/aws: "{{ aws_setup_credentials__output }}"
 
   block:
     - name: Include 'get_rds_instance_info.yml'
@@ -28,29 +28,29 @@
     # Evaluates security group rules.
     - name: Evaluate Security Group Rules
       cloud.aws_troubleshooting.validate_security_group_rules:
-        dest_subnet_cidrs: "{{ rds_subnets_cidrs }}"
-        dest_security_groups: "{{ rds_security_groups.security_groups }}"
-        dest_port: "{{ rds_instance_endpoint_port }}"
-        src_security_groups: "{{ ec2_security_groups.security_groups }}"
-        src_private_ip: "{{ ec2_private_ip_addrs | first }}"
+        dest_subnet_cidrs: "{{ troubleshoot_rds_connectivity__rds_subnets_cidrs }}"
+        dest_security_groups: "{{ troubleshoot_rds_connectivity__rds_security_groups.security_groups }}"
+        dest_port: "{{ troubleshoot_rds_connectivity__rds_instance_endpoint_port }}"
+        src_security_groups: "{{ troubleshoot_rds_connectivity__ec2_security_groups.security_groups }}"
+        src_private_ip: "{{ troubleshoot_rds_connectivity__ec2_private_ip_addrs | first }}"
 
     # Evaluates network ACLs.
     - name: Evaluate network ACLS
       cloud.aws_troubleshooting.validate_network_acls:
-        dest_subnet_cidrs: "{{ rds_subnets_cidrs }}"
-        dest_network_acl_rules: "{{ rds_network_acl.nacls }}"
+        dest_subnet_cidrs: "{{ troubleshoot_rds_connectivity__rds_subnets_cidrs }}"
+        dest_network_acl_rules: "{{ troubleshoot_rds_connectivity__rds_network_acl.nacls }}"
         dest_port:
-          - "{{ rds_instance_endpoint_port }}"
-        src_network_acl_rules: "{{ ec2_network_acl.nacls }}"
-        src_private_ip: "{{ ec2_private_ip_addrs }}"
+          - "{{ troubleshoot_rds_connectivity__rds_instance_endpoint_port }}"
+        src_network_acl_rules: "{{ troubleshoot_rds_connectivity__ec2_network_acl.nacls }}"
+        src_private_ip: "{{ troubleshoot_rds_connectivity__ec2_private_ip_addrs }}"
 
     # Evaluates route tables.
     - name: Evaluate route tables
       cloud.aws_troubleshooting.validate_route_tables:
-        dest_subnets: "{{ rds_subnets_info.subnets }}"
-        dest_route_tables: "{{ rds_subnet_route_table.route_tables }}"
-        dest_vpc_route_tables: "{{ rds_vpc_route_table.route_tables }}"
-        src_subnets: "{{ ec2_subnets_info.subnets }}"
-        src_private_ip: "{{ ec2_private_ip_addrs }}"
-        src_route_tables: "{{ ec2_subnet_route_table.route_tables }}"
-        src_vpc_route_tables: "{{ ec2_vpc_route_table.route_tables }}"
+        dest_subnets: "{{ troubleshoot_rds_connectivity__rds_subnets_info.subnets }}"
+        dest_route_tables: "{{ troubleshoot_rds_connectivity__rds_subnet_route_table.route_tables }}"
+        dest_vpc_route_tables: "{{ troubleshoot_rds_connectivity__rds_vpc_route_table.route_tables }}"
+        src_subnets: "{{ troubleshoot_rds_connectivity__ec2_subnets_info.subnets }}"
+        src_private_ip: "{{ troubleshoot_rds_connectivity__ec2_private_ip_addrs }}"
+        src_route_tables: "{{ troubleshoot_rds_connectivity__ec2_subnet_route_table.route_tables }}"
+        src_vpc_route_tables: "{{ troubleshoot_rds_connectivity__ec2_vpc_route_table.route_tables }}"

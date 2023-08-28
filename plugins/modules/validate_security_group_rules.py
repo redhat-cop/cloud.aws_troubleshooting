@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -127,7 +123,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class ValidateSecurityGroupRules(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             dest_subnet_cidrs=dict(type="list", elements="str", required=True),
             dest_security_groups=dict(type="list", elements="dict", required=True),
@@ -198,7 +193,6 @@ class ValidateSecurityGroupRules(AnsibleModule):
         )
 
     def execute_module(self):
-
         try:
             dest_secgroup_ids = [
                 x["group_id"] for x in self.params.get("dest_security_groups")
@@ -245,11 +239,10 @@ class ValidateSecurityGroupRules(AnsibleModule):
             self.exit_json(result="Security Group validation successful")
 
         except Exception as e:
-            self.fail_json(msg=f"Security Group validation failed: {e}")
+            self.fail_json(msg="Security Group validation failed: {0}".format(e))
 
 
 def main():
-
     ValidateSecurityGroupRules()
 
 

@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -123,7 +119,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class EvalNatNetworkAcls(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             src_ip=dict(type="str", required=True),
             src_port_range=dict(type="str"),
@@ -195,11 +190,12 @@ class EvalNatNetworkAcls(AnsibleModule):
                                        outbound traffic to destination: \
                                        {self.dst_ip} : {str(dst_port)}"
                                 )
-            else:
-                self.fail_json(
-                    msg=f"NatGateway Subnet {self.src_subnet_id} \
-                          Network Acl Egress Rules do not allow outbound traffic to destination: {self.dst_ip} : {str(dst_port)}"
+
+            self.fail_json(
+                msg="NatGateway Subnet {0} Network Acl Egress Rules do not allow outbound traffic to destination: {1} : {2}".format(
+                    self.src_subnet_id, self.dst_ip, str(dst_port)
                 )
+            )
 
         def check_ingress_from_dst(acls, src_ip):
             for item in acls:
@@ -228,12 +224,12 @@ class EvalNatNetworkAcls(AnsibleModule):
                                         Network Acl Ingress Rules do not allow \
                                         inbound traffic from destination: {self.dst_ip}"
                                 )
-            else:
-                self.fail_json(
-                    msg=f"NatGateway Subnet {self.src_subnet_id} \
-                          Network Acl Ingress Rules do not allow \
-                          inbound traffic from destination: {self.dst_ip}"
+
+            self.fail_json(
+                msg="NatGateway Subnet {0} Network Acl Ingress Rules do not allow inbound traffic from destination: {1}".format(
+                    self.src_subnet_id, self.dst_ip
                 )
+            )
 
         def check_ingress_from_src(acls, src_ip, dst_port):
             for item in acls:
@@ -255,15 +251,18 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 break
                             else:
                                 self.fail_json(
-                                    msg=f"NatGateway Subnet Network Acl \
+                                    msg="NatGateway Subnet Network Acl \
                                           Ingress Rules do not allow inbound \
-                                          traffic from source: {self.src_ip} towards destination port {str(dst_port)}"
+                                          traffic from source: {0} towards destination port {1}".format(
+                                        self.src_ip, str(dst_port)
+                                    )
                                 )
-            else:
-                self.fail_json(
-                    msg=f"NatGateway Subnet Network Acl Ingress Rules do not allow \
-                          inbound traffic from source {self.src_ip} towards destination port {str(dst_port)}"
+
+            self.fail_json(
+                msg="NatGateway Subnet Network Acl Ingress Rules do not allow inbound traffic from source {0} towards destination port {1}".format(
+                    self.src_ip, str(dst_port)
                 )
+            )
 
         def check_egress_towards_src(acls, dst_ip):
             for item in acls:
@@ -288,12 +287,16 @@ class EvalNatNetworkAcls(AnsibleModule):
                                 break
                             else:
                                 self.fail_json(
-                                    msg=f"NatGateway Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
+                                    msg="NatGateway Subnet Network Acl Egress Rules do not allow outbound traffic to source: {0}".format(
+                                        self.src_ip
+                                    )
                                 )
-            else:
-                self.fail_json(
-                    msg=f"NatGateway Subnet Network Acl Egress Rules do not allow outbound traffic to source: {self.src_ip}"
+
+            self.fail_json(
+                msg=f"NatGateway Subnet Network Acl Egress Rules do not allow outbound traffic to source: {0}".format(
+                    self.src_ip
                 )
+            )
 
         check_egress_towards_dst(egress_acls, dst_ip, dst_port)
         check_ingress_from_dst(ingress_acls, dst_ip)
@@ -332,7 +335,9 @@ class EvalNatNetworkAcls(AnsibleModule):
         if most_specific >= 0 and "igw-" in str(next_hop):
             return True
         self.fail_json(
-            msg=f"No Internet Gateway route found for destination: {self.dst_ip}"
+            msg="No Internet Gateway route found for destination: {0}".format(
+                self.dst_ip
+            )
         )
 
     def execute_module(self):
@@ -342,11 +347,10 @@ class EvalNatNetworkAcls(AnsibleModule):
             self.get_nat_next_hop()
             self.exit_json(result="NAT Network ACLs evaluation successful")
         except Exception as e:
-            self.fail_json(msg=f"NAT Network ACLs evaluation failed: {e}")
+            self.fail_json(msg="NAT Network ACLs evaluation failed: {0}".format(e))
 
 
 def main():
-
     EvalNatNetworkAcls()
 
 

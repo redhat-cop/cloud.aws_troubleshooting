@@ -2,7 +2,13 @@
 # tasks file for tests/integration/targets/test_connectivity_troubleshooter
 - name: Integration test for connectivity_troublershooter role
   block:
-    - name: Test 'connectivity_troubleshooter' role
+    - name: Setup environment for test
+      module_defaults:
+        group/aws:
+          aws_access_key: "{{ aws_access_key }}"
+          aws_secret_key: "{{ aws_secret_key }}"
+          security_token: "{{ security_token | default(omit) }}"
+          region: "{{ aws_region }}"
       block:
         - name: Get image ID to for EC2 instance
           amazon.aws.ec2_ami_info:

@@ -4,10 +4,6 @@
 # Copyright: (c) 2022, Ansible Project
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 
 DOCUMENTATION = r"""
 ---
@@ -70,7 +66,6 @@ from ansible.module_utils.basic import AnsibleModule
 
 class GetConnectionNextHopType(AnsibleModule):
     def __init__(self):
-
         argument_spec = dict(
             dst_ip=dict(type="str", required=True),
             routes=dict(type="list", elements="dict", required=True),
@@ -111,7 +106,7 @@ class GetConnectionNextHopType(AnsibleModule):
                 or next_hop.get("transit_gateway_id")
                 or next_hop.get("vpc_peering_connection_id")
             )
-        self.fail_json(msg=f"No route found for destination: {self.dst_ip}")
+        self.fail_json(msg="No route found for destination: {0}".format(self.dst_ip))
 
     def execute_module(self):
         next_hop = None
@@ -120,11 +115,10 @@ class GetConnectionNextHopType(AnsibleModule):
             next_hop = self.get_next_hop()
             self.exit_json(next_hop=next_hop)
         except Exception as e:
-            self.fail_json(msg=f"Failed to get connection next hop type: {e}")
+            self.fail_json(msg="Failed to get connection next hop type: {0}".format(e))
 
 
 def main():
-
     GetConnectionNextHopType()
 
 

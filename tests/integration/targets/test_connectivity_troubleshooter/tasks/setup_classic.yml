@@ -38,7 +38,7 @@
     subnets:
       - "{{ __subnet_private_public.results[0].subnet.id }}"
     routes:
-      - dest: 0.0.0.0/0
+      - dest: "0.0.0.0/0"
         gateway_id: "{{ __create_igw.gateway_id }}"
   register: __route_table_public
 
@@ -57,7 +57,7 @@
     subnets:
       - "{{ __subnet_private_public.results[1].subnet.id }}"
     routes:
-      - dest: 0.0.0.0/0
+      - dest: "0.0.0.0/0"
         gateway_id: "{{ __create_nat_gw.nat_gateway_id }}"
   register: __route_table_private
 
@@ -71,24 +71,24 @@
       - proto: udp
         from_port: 12345
         to_port: 12345
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 22
         to_port: 22
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 443
         to_port: 443
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
     rules_egress:
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
   register: __security_group_in
 
 - name: Create public Security Group
@@ -101,19 +101,19 @@
       - proto: udp
         from_port: 12345
         to_port: 12345
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 22
         to_port: 22
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 443
         to_port: 443
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 80
         to_port: 80
-        cidr_ip: 0.0.0.0/0
+        cidr_ip: "0.0.0.0/0"
       - proto: tcp
         from_port: 3128
         to_port: 3128
