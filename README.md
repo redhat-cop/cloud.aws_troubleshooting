@@ -49,7 +49,7 @@ The token can be obtained from the [Automation Hub Web UI](https://console.redha
 Once the above steps are done, you can run the following command to install the collection.
 
 ```
-ansible-galaxy collection install cloud.aws_ops
+ansible-galaxy collection install cloud.aws_troubleshooting
 ```
 
 ### Using this collection
