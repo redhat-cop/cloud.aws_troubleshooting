@@ -14,8 +14,8 @@
     msg: Bad DB instance status, expecting 'available', found '{{ troubleshoot_rds_connectivity__rds_info.instances.0.db_instance_status }}'
   when: troubleshoot_rds_connectivity__rds_info.instances.0.db_instance_status != "available"
 
-- name: Set RDS instance endpoint address, RDS instance endpoint port, and RDS instance subnets 'troubleshoot_rds_connectivity__rds_instance_vpc_id' and 'troubleshoot_rds_connectivity__rds_instance_vpc_security_groups'
-    variables
+- name: Set RDS instance endpoint address, RDS instance endpoint port, and RDS instance subnets
+    'troubleshoot_rds_connectivity__rds_instance_vpc_id' and 'troubleshoot_rds_connectivity__rds_instance_vpc_security_groups' variables
   ansible.builtin.set_fact:
     troubleshoot_rds_connectivity__rds_instance_endpoint_addr: "{{ rds_instance_info.endpoint.address }}"
     troubleshoot_rds_connectivity__rds_instance_endpoint_port: "{{ rds_instance_info.endpoint.port }}"

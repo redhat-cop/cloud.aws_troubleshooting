@@ -44,8 +44,7 @@
           found
       when: connectivity_troubleshooter_validate__describe_src_eni['network_interfaces'] | length == 0
 
-    - name: Set 'connectivity_troubleshooter_validate__src_subnet_id', 'connectivity_troubleshooter_validate__src_vpc_id', 'connectivity_troubleshooter_validate__src_security_groups'
-        and 'connectivity_troubleshooter_validate__src_network_interface' variables
+    - name: Set 'connectivity_troubleshooter_validate__src_subnet_id', 'connectivity_troubleshooter_validate__src_vpc_id', 'connectivity_troubleshooter_validate__src_security_groups' and 'connectivity_troubleshooter_validate__src_network_interface' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__src_subnet_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.subnet_id }}"
         connectivity_troubleshooter_validate__src_vpc_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.vpc_id }}"

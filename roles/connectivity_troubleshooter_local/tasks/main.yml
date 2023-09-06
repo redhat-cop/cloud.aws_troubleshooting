@@ -14,8 +14,7 @@
           addresses.private-ip-address: "{{ connectivity_troubleshooter_local_destination_ip }}"
       register: connectivity_troubleshooter_local__describe_dst_eni
 
-    - name: Set 'connectivity_troubleshooter_local__dst_vpc_id', 'connectivity_troubleshooter_local__dst_subnet_id' and 'connectivity_troubleshooter_local__dst_security_groups'
-        variables
+    - name: Set 'connectivity_troubleshooter_local__dst_vpc_id', 'connectivity_troubleshooter_local__dst_subnet_id' and 'connectivity_troubleshooter_local__dst_security_groups' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__dst_vpc_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.vpc_id }}"
         connectivity_troubleshooter_local__dst_subnet_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.subnet_id }}"
@@ -23,22 +22,6 @@
           | list }}"
       vars:
         connectivity_troubleshooter_local__dst_network_interface_info: "{{ connectivity_troubleshooter_local__describe_dst_eni.network_interfaces.0 }}"
-
-    - name: Gather information about source ENI
-      amazon.aws.ec2_eni_info:
-        filters:
-          addresses.private-ip-address: "{{ connectivity_troubleshooter_local_source_ip }}"
-      register: connectivity_troubleshooter_local__describe_src_eni
-
-    - name: Set 'connectivity_troubleshooter_local__src_vpc_id', 'connectivity_troubleshooter_local__src_subnet_id' and 'connectivity_troubleshooter_local__src_security_groups'
-        variables
-      ansible.builtin.set_fact:
-        connectivity_troubleshooter_local__src_vpc_id: "{{ connectivity_troubleshooter_local__src_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_local__src_subnet_id: "{{ connectivity_troubleshooter_local__src_network_interface_info.subnet_id }}"
-        connectivity_troubleshooter_local__src_security_groups: "{{ connectivity_troubleshooter_local__src_network_interface_info.groups | map(attribute='group_id')
-          | list }}"
-      vars:
-        connectivity_troubleshooter_local__src_network_interface_info: "{{ connectivity_troubleshooter_local__describe_src_eni.network_interfaces.0 }}"
 
     - name: Fail when no network interface found
       ansible.builtin.fail:
@@ -71,6 +54,14 @@
         connectivity_troubleshooter_local__dst_security_groups_info: "{{ connectivity_troubleshooter_local__dst_security_groups_info.results | sum(attribute='security_groups',
           start=[]) }}"
 
+    - name: Set 'connectivity_troubleshooter_local__security_groups_info' variable
+      ansible.builtin.set_fact:
+        connectivity_troubleshooter_local__security_groups_info: "{{ connectivity_troubleshooter_local__security_groups_info | default([]) + item.security_groups
+          }}"
+      with_items:
+        - "{{ connectivity_troubleshooter_local__src_security_groups_info.results }}"
+        - "{{ connectivity_troubleshooter_local__dst_security_groups_info.results }}"
+
     - name: Evaluate ingress and egress security group rules
       cloud.aws_troubleshooting.eval_security_groups:
         src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
@@ -78,14 +69,14 @@
         dst_ip: "{{ connectivity_troubleshooter_local_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_local_destination_port }}"
         dst_security_groups: "{{ connectivity_troubleshooter_local__dst_security_groups }}"
-        security_groups: "{{ connectivity_troubleshooter_local__src_security_groups_info + connectivity_troubleshooter_local__dst_security_groups_info }}"
+        security_groups: "{{ connectivity_troubleshooter_local__security_groups_info }}"
       register: connectivity_troubleshooter_local__result_eval_security_groups
 
     - name: Gather information about source subnet network ACLs
       community.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
-            - "{{ connectivity_troubleshooter_local__src_subnet_id }}"
+            - "{{ src_subnet_id }}"
       register: connectivity_troubleshooter_local__network_acls_info
 
     - name: Set 'connectivity_troubleshooter_local__src_network_acls_info' variable
@@ -101,7 +92,7 @@
       community.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
-            - "{{ connectivity_troubleshooter_local__dst_subnet_id }}"
+            - "{{ dst_subnet_id }}"
       register: connectivity_troubleshooter_local__network_acls_info
 
     - name: Set 'connectivity_troubleshooter_local__dst_network_acls_info' variable
@@ -116,7 +107,7 @@
     - name: Evaluate ingress and egress netwok ACLs
       cloud.aws_troubleshooting.eval_network_acls:
         src_ip: "{{ connectivity_troubleshooter_local_source_ip }}"
-        src_subnet_id: "{{ connectivity_troubleshooter_local__src_subnet_id }}"
+        src_subnet_id: "{{ src_subnet_id }}"
         src_port_range: "{{ connectivity_troubleshooter_local_source_port_range }}"
         dst_ip: "{{ connectivity_troubleshooter_local_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_local_destination_port }}"

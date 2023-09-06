@@ -24,7 +24,7 @@
     - name: Gather information about NAT gateway subnet networks ACLs
       community.aws.ec2_vpc_nacl_info:
         filters:
-          association.subnet-id: "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
+          association.subnet-id: "{{ connectivity_troubleshooter_nat__describe_nat_gwnat_subnet_id }}"
       register: connectivity_troubleshooter_nat__nat_network_acls_info
 
     - name: Set 'connectivity_troubleshooter_nat__nat_network_acls' variable
@@ -41,16 +41,16 @@
         filters:
           association.subnet-id:
             - "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
-      register: connectivity_troubleshooter_nat__nat_route_table_info
+      register: connectivity_troubleshooter_nat__nat_route_table
 
     - name: Set 'connectivity_troubleshooter_nat__nat_routes' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table_info.route_tables.0.routes  }}"
-      when: connectivity_troubleshooter_nat__nat_route_table_info.route_tables | length > 0
+        connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table.route_tables.0.routes  }}"
+      when: connectivity_troubleshooter_nat__nat_route_table.route_tables | length > 0
 
     # if RouteTable is not returned, this indicates association of subnet with main route table
     - name: Gather information about VPC route table using association.main=true
-      when: connectivity_troubleshooter_nat__nat_route_table_info.route_tables | length == 0
+      when: __nat_route_table.route_tables | length == 0
       block:
         - name: Gather information about VPC route table
           amazon.aws.ec2_vpc_route_table_info:
@@ -68,46 +68,14 @@
           ansible.builtin.set_fact:
             connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table_retry.route_tables.0.routes }}"
 
-    - name: Gather information about NAT subnet network ACLs
-      community.aws.ec2_vpc_nacl_info:
-        filters:
-          association.subnet-id:
-            - "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
-      register: connectivity_troubleshooter_nat__nat_subnet_nacls_info
-
-    - name: Set 'connectivity_troubleshooter_nat__nat_subnet_nacls' variable
-      ansible.legacy.set_fact:
-        connectivity_troubleshooter_nat__nat_subnet_nacls: "{{ connectivity_troubleshooter_nat__nat_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_nat__keys
-          | zip(connectivity_troubleshooter_nat__vals))] }}"
-      loop: "{{ connectivity_troubleshooter_nat__nat_subnet_nacls_info.nacls }}"
-      vars:
-        connectivity_troubleshooter_nat__keys: "{{ ['egress', 'ingress'] }}"
-        connectivity_troubleshooter_nat__vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
-
-    - name: Gather information about source ENI
-      amazon.aws.ec2_eni_info:
-        filters:
-          addresses.private-ip-address: "{{ connectivity_troubleshooter_nat_source_ip }}"
-      register: connectivity_troubleshooter_nat__describe_src_eni
-
-    - name: Set 'connectivity_troubleshooter_nat__src_vpc_id', 'connectivity_troubleshooter_nat__src_subnet_id' and 'connectivity_troubleshooter_nat__src_security_groups'
-        variables
-      ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__src_vpc_id: "{{ connectivity_troubleshooter_nat__src_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_nat__src_subnet_id: "{{ connectivity_troubleshooter_nat__src_network_interface_info.subnet_id }}"
-        connectivity_troubleshooter_nat__src_security_groups: "{{ connectivity_troubleshooter_nat__src_network_interface_info.groups | map(attribute='group_id') |
-          list }}"
-        connectivity_troubleshooter_nat__src_network_interface: "{{ connectivity_troubleshooter_nat__src_network_interface_info }}"
-      vars:
-        connectivity_troubleshooter_nat__src_network_interface_info: "{{ connectivity_troubleshooter_nat__describe_src_eni.network_interfaces.0 }}"
-
     - name: Evaluate ingress and egress NAT netwok ACLs
       cloud.aws_troubleshooting.eval_nat_network_acls:
         src_ip: "{{ connectivity_troubleshooter_nat_source_ip }}"
-        src_subnet_id: "{{ connectivity_troubleshooter_nat__src_subnet_id }}"
+        src_subnet_id: "{{ src_subnet_id }}"
         src_port_range: "{{ connectivity_troubleshooter_nat_source_port_range }}"
         dst_ip: "{{ connectivity_troubleshooter_nat_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_nat_destination_port }}"
-        nat_subnet_id: "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
-        nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_subnet_nacls }}"
-        routes: "{{ connectivity_troubleshooter_nat__nat_routes }}"
+        nat_subnet_id: "{{ connectivity_troubleshooter__nat_subnet_id }}"
+        nat_network_acls: "{{ connectivity_troubleshooter__nat_network_acls }}"
+        routes: "{{ connectivity_troubleshooter__nat_routes }}"
+      register: __result_eval_nat_network_acls
