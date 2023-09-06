@@ -14,7 +14,7 @@
           virtualization-type: hvm
           root-device-type: ebs
           name: Fedora-Cloud-Base-39*
-      no_log: true # very spammy
+      no_log: true  # very spammy
       register: fedora_images
 
     - name: Set 'image_id' variable
