@@ -1,0 +1,22 @@
+---
+- name: Read AMI for EC2 instance to create
+  module_defaults:
+    group/aws:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      security_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+  block:
+    - name: Get image ID to for EC2 instance
+      amazon.aws.ec2_ami_info:
+        filters:
+          architecture: x86_64
+          virtualization-type: hvm
+          root-device-type: ebs
+          name: Fedora-Cloud-Base-39*
+      no_log: true # very spammy
+      register: fedora_images
+
+    - name: Set 'image_id' variable
+      ansible.builtin.set_fact:
+        image_id: "{{ fedora_images.images.0.image_id }}"

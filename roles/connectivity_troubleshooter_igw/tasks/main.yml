@@ -7,42 +7,54 @@
         msg: Next hop type '{{ connectivity_troubleshooter_validate__next_hop }}' is not supported by this role
       when: "'igw-' not in connectivity_troubleshooter_validate__next_hop"
 
+    - name: Gather information about source ENI
+      amazon.aws.ec2_eni_info:
+        filters:
+          addresses.private-ip-address: "{{ connectivity_troubleshooter_igw_source_ip }}"
+      register: connectivity_troubleshooter_igw__describe_src_eni
+
+    - name: Set 'connectivity_troubleshooter_igw__src_vpc_id', 'connectivity_troubleshooter_igw__src_subnet_id' and 'connectivity_troubleshooter_igw__src_security_groups'
+        variables
+      ansible.builtin.set_fact:
+        connectivity_troubleshooter_igw__src_vpc_id: "{{ connectivity_troubleshooter_igw__src_network_interface_info.vpc_id }}"
+        connectivity_troubleshooter_igw__src_subnet_id: "{{ connectivity_troubleshooter_igw__src_network_interface_info.subnet_id }}"
+        connectivity_troubleshooter_igw__src_security_groups: "{{ connectivity_troubleshooter_igw__src_network_interface_info.groups | map(attribute='group_id') |
+          list }}"
+        connectivity_troubleshooter_igw__src_network_interface: "{{ connectivity_troubleshooter_igw__src_network_interface_info }}"
+      vars:
+        connectivity_troubleshooter_igw__src_network_interface_info: "{{ connectivity_troubleshooter_igw__describe_src_eni.network_interfaces.0 }}"
+
     - name: Gather information about source security groups
       amazon.aws.ec2_security_group_info:
         filters:
           group_id: "{{ item }}"
-      register: connectivity_troubleshooter_igw__src_security_groups
+      register: connectivity_troubleshooter_igw__src_security_groups_info
       with_items: "{{ connectivity_troubleshooter_igw__src_security_groups }}"
 
     - name: Gather information about source subnet network ACLs
       community.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
-            - "{{ src_subnet_id }}"
-      register: connectivity_troubleshooter_igw__src_subnet_nacls
+            - "{{ connectivity_troubleshooter_igw__src_subnet_id }}"
+      register: connectivity_troubleshooter_igw__src_subnet_nacls_info
 
     - name: Set 'connectivity_troubleshooter_igw__src_subnet_nacls' variable
       ansible.legacy.set_fact:
-        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ connectivity_troubleshooter_igw__src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys | zip(connectivity_troubleshooter_igw__vals))]
-          }}"
-      loop: "{{ connectivity_troubleshooter_igw__src_subnet_nacls.nacls }}"
+        connectivity_troubleshooter_igw__src_subnet_nacls: "{{ connectivity_troubleshooter_igw__src_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_igw__keys
+          | zip(connectivity_troubleshooter_igw__vals))] }}"
+      loop: "{{ connectivity_troubleshooter_igw__src_subnet_nacls_info.nacls }}"
       vars:
         connectivity_troubleshooter_igw__keys: "{{ ['egress', 'ingress'] }}"
         connectivity_troubleshooter_igw__vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
-
-    - name: Set source security groups info
-      ansible.legacy.set_fact:
-        connectivity_troubleshooter_igw__src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups.results | sum(attribute='security_groups',
-          start=[]) }}"
 
     - name: Evaluate ingress and egress netwok ACLs
       cloud.aws_troubleshooting.eval_src_igw_route:
         src_ip: "{{ connectivity_troubleshooter_igw_source_ip }}"
         src_port_range: "{{ connectivity_troubleshooter_igw_source_port_range }}"
-        src_subnet_id: "{{ src_subnet_id }}"
+        src_subnet_id: "{{ connectivity_troubleshooter_igw__src_subnet_id }}"
         dst_ip: "{{ connectivity_troubleshooter_igw_destination_ip }}"
         dst_port: "{{ connectivity_troubleshooter_igw_destination_port }}"
-        src_network_interface: "{{ src_network_interface }}"
-        src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups_info }}"
+        src_network_interface: "{{ connectivity_troubleshooter_igw__src_network_interface }}"
+        src_security_groups_info: "{{ connectivity_troubleshooter_igw__src_security_groups_info.results | sum(attribute='security_groups', start=[]) }}"
         src_network_acls: "{{ connectivity_troubleshooter_igw__src_subnet_nacls }}"
       register: connectivity_troubleshooter_igw__result_eval_src_igw_route
