@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - add `no_log=true` when setting credentials using role aws_setup_credentials (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/29).
+bugfixes:
+  - fix multiple issues on connectivity_troubleshooter_* roles (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/29).
