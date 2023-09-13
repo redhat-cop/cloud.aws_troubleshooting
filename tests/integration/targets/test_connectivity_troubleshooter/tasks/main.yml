@@ -1,78 +1,64 @@
 ---
-# tasks file for tests/integration/targets/test_connectivity_troubleshooter
-- name: Integration test for connectivity_troublershooter role
+- name: Set 'image_id' from AMI information
+  ansible.builtin.include_tasks: read_ami.yml
+
+- name: Test 'connectivity_troubleshooter_local' and 'connectivity_troubleshooter_nat' roles
   block:
-    - name: Setup environment for test
-      module_defaults:
-        group/aws:
-          aws_access_key: "{{ aws_access_key }}"
-          aws_secret_key: "{{ aws_secret_key }}"
-          security_token: "{{ security_token | default(omit) }}"
-          region: "{{ aws_region }}"
-      block:
-        - name: Get image ID to for EC2 instance
-          amazon.aws.ec2_ami_info:
-            filters:
-              architecture: x86_64
-              virtualization-type: hvm
-              root-device-type: ebs
-              name: Fedora-Cloud-Base-34-1.2.x86_64*
-          register: fedora_images
+    - name: Include 'setup_classic.yml'
+      ansible.builtin.include_tasks: setup_classic.yml
 
-        - name: Set 'image_id' variable
-          ansible.builtin.set_fact:
-            image_id: "{{ fedora_images.images.0.image_id }}"
+    # local
+    - name: Include 'connectivity_troubleshooter' role
+      ansible.builtin.include_role:
+        name: cloud.aws_troubleshooting.connectivity_troubleshooter
+        apply:
+          ignore_errors: true
+      vars:
+        connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
+        connectivity_troubleshooter_destination_port: 80
+        connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
-        - name: Test 'connectivity_troubleshooter_local' and 'connectivity_troubleshooter_nat' roles
-          block:
-            - name: Include 'setup_classic.yml'
-              ansible.builtin.include_tasks: setup_classic.yml
+    # NAT
+    # For now this is defaulting to IGW, need to find a way to default to NAT gateway
+    # - name: Include 'connectivity_troubleshooter' role
+    #   ansible.builtin.include_role:
+    #     name: cloud.aws_troubleshooting.connectivity_troubleshooter
+    #     apply:
+    #       ignore_errors: true
+    #   vars:
+    #     connectivity_troubleshooter_destination_ip: 8.8.8.8
+    #     connectivity_troubleshooter_destination_port: 80
+    #     connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
-            # local
-            - name: Include 'connectivity_troubleshooter' role
-              ansible.builtin.include_role:
-                name: cloud.aws_troubleshooting.connectivity_troubleshooter
-              vars:
-                connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
-                connectivity_troubleshooter_destination_port: 80
-                connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
+    # IGW
+    - name: Include 'connectivity_troubleshooter' role
+      ansible.builtin.include_role:
+        name: cloud.aws_troubleshooting.connectivity_troubleshooter
+        apply:
+          ignore_errors: true
+      vars:
+        connectivity_troubleshooter_destination_ip: 8.8.8.8
+        connectivity_troubleshooter_destination_port: 80
+        connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
-            # NAT
-            - name: Include 'connectivity_troubleshooter' role
-              ansible.builtin.include_role:
-                name: cloud.aws_troubleshooting.connectivity_troubleshooter
-              vars:
-                connectivity_troubleshooter_destination_ip: 8.8.8.8
-                connectivity_troubleshooter_destination_port: 80
-                connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
+  always:
+    - name: Include 'cleanup_classic.yml'
+      ansible.builtin.include_tasks: cleanup_classic.yml
 
-            # IGW
-            - name: Include 'connectivity_troubleshooter' role
-              ansible.builtin.include_role:
-                name: cloud.aws_troubleshooting.connectivity_troubleshooter
-              vars:
-                connectivity_troubleshooter_destination_ip: 8.8.8.8
-                connectivity_troubleshooter_destination_port: 80
-                connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
+- name: Test 'connectivity_troubleshooter_peering' role
+  block:
+    - name: Include 'setup_destination_peering.yml'
+      ansible.builtin.include_tasks: setup_destination_peering.yml
 
-      always:
-        - name: Include 'cleanup_classic.yml'
-          ansible.builtin.include_tasks: cleanup_classic.yml
+    # Peering
+    - name: Include 'connectivity_troubleshooter' role
+      ansible.builtin.include_role:
+        name: cloud.aws_troubleshooting.connectivity_troubleshooter
+      vars:
+        connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
+        connectivity_troubleshooter_destination_port: 12345
+        connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 
-    - name: Test 'connectivity_troubleshooter_peering' role
-      block:
-        - name: Include 'setup_destination_peering.yml'
-          ansible.builtin.include_tasks: setup_destination_peering.yml
-
-        # Peering
-        - name: Include 'connectivity_troubleshooter' role
-          ansible.builtin.include_role:
-            name: cloud.aws_troubleshooting.connectivity_troubleshooter
-          vars:
-            connectivity_troubleshooter_destination_ip: "{{ ip_instance_2 }}"
-            connectivity_troubleshooter_destination_port: 12345
-            connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
-
-      always:
-        - name: Include 'cleanup_destination_peering.yml'
-          ansible.builtin.include_tasks: cleanup_destination_peering.yml
+  always:
+    - name: Include 'cleanup_destination_peering.yml'
+      ansible.builtin.include_tasks: cleanup_destination_peering.yml

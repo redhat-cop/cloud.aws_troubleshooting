@@ -37,7 +37,7 @@
 
     - name: Set 'connectivity_troubleshooter_validate__routes' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_validate__routes: "{{ connectivity_troubleshooter_peering__dst_peer_route_table.route_tables.0.routes  }}"
+        connectivity_troubleshooter_peering__routes: "{{ connectivity_troubleshooter_peering__dst_peer_route_table.route_tables.0.routes  }}"
       when: connectivity_troubleshooter_peering__dst_peer_route_table.route_tables | length > 0
 
     # if RouteTable is not returned, this indicates association of subnet with main route table
