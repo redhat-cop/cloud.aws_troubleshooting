@@ -1,0 +1,62 @@
+- name: Create VPC peering
+  module_defaults:
+    group/aws:
+      access_key: "{{ aws_access_key | default(omit) }}"
+      secret_key: "{{ aws_secret_key | default(omit) }}"
+      session_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+  block:
+    - name: Create VPC Peer
+      community.aws.ec2_vpc_peer:
+        region: "{{ aws_region }}"
+        vpc_id: "{{ rds_vpc_id }}"
+        peer_vpc_id: "{{ ec2_vpc_id }}"
+        state: present
+      register: result
+
+    - name: Set VPC peering id
+      ansible.builtin.set_fact:
+        vpc_peering_id: "{{ result.peering_id }}"
+
+    - name: Ensure VPC peering connection request exists before moving forward
+      community.aws.ec2_vpc_peering_info:
+        peer_connection_ids:
+          - "{{ vpc_peering_id }}"
+        region: "{{ aws_region }}"
+      register: request
+      retries: 3
+      delay: 5
+      until: request.vpc_peering_connections[0].vpc_peering_connection_id is defined
+
+    - name: Accept VPC peering request
+      community.aws.ec2_vpc_peer:
+        region: "{{ aws_region }}"
+        peering_id: "{{ vpc_peering_id }}"
+        state: accept
+
+    - name: Create Route table for VPC peering (on RDS VPC)
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ rds_vpc_id }}"
+        subnets: "{{ rds_subnets_ids }}"
+        routes:
+          - dest: "{{ ec2_vpc_cidr }}"
+            vpc_peering_connection_id: "{{ vpc_peering_id }}"
+        lookup: tag
+        resource_tags:
+          peering: with_ec2_vpc
+        state: present
+
+    - name: Create Route table for VPC peering (on EC2 VPC)
+      amazon.aws.ec2_vpc_route_table:
+        vpc_id: "{{ ec2_vpc_id }}"
+        subnets:
+          - "{{ ec2_subnet_id }}"
+        routes:
+          - dest: "{{ rds_vpc_cidr }}"
+            vpc_peering_connection_id: "{{ vpc_peering_id }}"
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ ec2_internet_gw_id }}"
+        lookup: tag
+        resource_tags:
+          peering: with_rds_vpc
+        state: present

@@ -1,0 +1,102 @@
+---
+- name: Create rds instance
+  module_defaults:
+    group/aws:
+      access_key: "{{ aws_access_key | default(omit) }}"
+      secret_key: "{{ aws_secret_key | default(omit) }}"
+      session_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+  block:
+    - name: Create a VPC for RDS instance
+      amazon.aws.ec2_vpc_net:
+        cidr_block: "{{ rds_vpc_cidr }}"
+        name: "{{ rds_vpc_name }}"
+        resource_tags: "{{ resource_tags }}"
+      register: vpc
+
+    - name: Define VPC id
+      ansible.builtin.set_fact:
+        rds_vpc_id: "{{ vpc.vpc.id }}"
+
+    - name: List Availability zones from aws region
+      amazon.aws.aws_az_info:
+      register: _zones
+
+    - name: Set region_av_zones' variable
+      ansible.builtin.set_fact:
+        aws_region_zones: "{{ _zones.availability_zones | map(attribute='zone_name') }}"
+
+    - name: Create first RDS subnet
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ rds_vpc_id }}"
+        cidr: "{{ rds_subnet_cidr[0] }}"
+        az: "{{ aws_region_zones[0] }}"
+      register: subnet_1
+
+    - name: Create another RDS subnet on a different zone
+      amazon.aws.ec2_vpc_subnet:
+        vpc_id: "{{ rds_vpc_id }}"
+        cidr: "{{ rds_subnet_cidr[1] }}"
+        az: "{{ aws_region_zones[1] }}"
+      register: subnet_2
+
+    - name: Set variable for RDS subnets ids
+      ansible.builtin.set_fact:
+        rds_subnets_ids:
+          - "{{ subnet_1.subnet.id }}"
+          - "{{ subnet_2.subnet.id }}"
+
+    - name: Create subnet group for RDS instance
+      amazon.aws.rds_subnet_group:
+        name: "{{ rds_subnet_group_name }}"
+        description: 'Subnet group for RDS instance to be hidden'
+        subnets: "{{ rds_subnets_ids }}"
+        state: present
+        tags: "{{ resource_tags }}"
+
+    - name: Create security group for RDS instance
+      amazon.aws.ec2_security_group:
+        name: "{{ rds_security_group }}"
+        vpc_id: "{{ rds_vpc_id }}"
+        description: 'Security group to allow RDS instance port'
+        rules:
+          - cidr_ip: 0.0.0.0/0
+            proto: tcp
+            from_port: "{{ rds_port }}"
+            to_port: "{{ rds_port }}"
+        tags: "{{ resource_tags }}"
+        state: present
+      register: _group
+
+    - name: Define RDS security group id
+      ansible.builtin.set_fact:
+        rds_group_id: "{{ _group.group_id }}"
+
+    - name: Create RDS instance (PostGreSQL Database)
+      amazon.aws.rds_instance:
+        force_update_password: true
+        wait: true
+        allocated_storage: 20
+        backup_retention_period: 0
+        db_instance_class: db.m6g.large
+        db_instance_identifier: "{{ rds_identifier }}"
+        db_name: "{{ rds_instance_name }}"
+        engine: postgres
+        engine_version: "14.8"
+        master_user_password: "{{ rds_master_password }}"
+        master_username: "{{ rds_master_user }}"
+        monitoring_interval: 0
+        storage_type: standard
+        skip_final_snapshot: true
+        db_subnet_group_name: "{{ rds_subnet_group_name }}"
+        vpc_security_group_ids:
+          - "{{ rds_group_id }}"
+        tags: "{{ resource_tags }}"
+      register: create_rds
+
+    - name: Set RDS attributes
+      ansible.builtin.set_fact:
+        rds_endpoint_addr: "{{ create_rds.endpoint.address }}"
+        rds_dbname: "{{ create_rds.db_name }}"
+        rds_password: "{{ rds_master_password }}"
+        rds_user: "{{ rds_master_user }}"

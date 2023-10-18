@@ -1,0 +1,92 @@
+---
+- name: Create temporary directory to store all temporary file in
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: "rds_connectivity"
+  register: _testdir
+
+- name: Set path to temporary directory
+  ansible.builtin.set_fact:
+    ansible_test_dir: "{{ _testdir.path }}"
+
+- name: Run tests
+  block:
+    - name: Create ec2 instance
+      ansible.builtin.include_tasks: create_ec2.yml
+
+    - name: Create rds instance
+      ansible.builtin.include_tasks: create_rds.yml
+
+    - name: Validate role is failing with the actual configuration
+      block:
+        - name: Ensure ec2 instance cannot connect to rds instance
+          ping_rds:
+            host: "{{ rds_endpoint_addr }}"
+            dbname: "{{ rds_dbname }}"
+            user: "{{ rds_user }}"
+            password: "{{ rds_password }}"
+          ignore_errors: true
+          register: _result
+          delegate_to: ec2
+          vars:
+            ansible_python_interpreter: "~/env/bin/python"
+
+        - name: Assert that ping operation has failed
+          ansible.builtin.assert:
+            that:
+              - _result is failed
+
+        - name: Validate that role is also failing
+          block:
+            - include_role:
+                name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+              vars:
+                troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
+                troubleshoot_rds_connectivity_ec2_instance_id: "{{ ec2_instance_id }}"
+          rescue:
+            - name: Set role failure info
+              ansible.builtin.set_fact:
+                role_failure_action: "{{ ansible_failed_task.action }}"
+                role_failure_msg: "{{ ansible_failed_result.msg }}"
+
+        - name: Ensure role has failed as expected
+          ansible.builtin.assert:
+            that:
+              - role_failure_action is defined
+              - role_failure_msg is defined
+              - 'role_failure_action == "cloud.aws_troubleshooting.validate_route_tables"'
+              - '"Please review route table(s)" in role_failure_msg'
+
+
+    - name: Create VPC peering
+      ansible.builtin.include_tasks: create_vpc_peering.yml
+
+    - name: EC2 instance should be able now to connect to RDS instance
+      block:
+        - name: Ensure ec2 can connect to RDS instance using module
+          ping_rds:
+            host: "{{ rds_endpoint_addr }}"
+            dbname: "{{ rds_dbname }}"
+            user: "{{ rds_user }}"
+            password: "{{ rds_password }}"
+          register: _result
+          delegate_to: ec2
+          vars:
+            ansible_python_interpreter: "~/env/bin/python"
+
+        - name: Validate that troubleshoot role did not report any error
+          block:
+            - include_role:
+                name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+              vars:
+                troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
+                troubleshoot_rds_connectivity_ec2_instance_id: "{{ ec2_instance_id }}"
+
+  always:
+    - name: Delete test directory
+      ansible.builtin.file:
+        state: absent
+        path: "{{ _testdir.path }}"
+
+    - name: Delete all resources
+      ansible.builtin.include_tasks: terminate.yml

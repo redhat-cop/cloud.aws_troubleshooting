@@ -1,0 +1,29 @@
+---
+aws_security_token: "{{ security_token | default(omit) }}"
+ec2_vpc_cidr: "10.1.0.0/16"
+ec2_vpc_name: "{{ resource_prefix }}-vpc"
+ec2_subnet_cidr: "10.1.1.0/24"
+ec2_security_group: "{{ resource_prefix }}-group-ec2"
+ec2_instance_type: t2.micro
+ec2_vm_name: "{{ resource_prefix }}-vm"
+ec2_key_name: "{{ resource_prefix }}-key"
+ec2_ami_filter:
+  architecture: x86_64
+  virtualization-type: hvm
+  root-device-type: ebs
+  name: "Fedora-Cloud-Base-37-*"
+resource_tags:
+  created_by: ansible-test
+  resource_prefix: "{{ resource_prefix }}"
+rds_vpc_name: "{{ resource_prefix }}-vpc-rds"
+rds_vpc_cidr: "192.168.0.0/16"
+rds_subnet_cidr:
+  - "192.168.1.0/24"
+  - "192.168.2.0/24"
+rds_port: 5432
+rds_security_group: "{{ resource_prefix }}-group-ec2"
+rds_identifier: "{{ resource_prefix }}-rds"
+rds_instance_name: ansibletestdb
+rds_subnet_group_name: "{{ resource_prefix }}-subnet-group"
+rds_master_user: ansible
+rds_master_password: "Cm.aacD!~(M9T_z"
