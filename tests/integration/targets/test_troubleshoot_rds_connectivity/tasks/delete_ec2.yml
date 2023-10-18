@@ -1,5 +1,5 @@
 ---
-- name: 'Delete ec2 instance {{ ec2_instance_id }}'
+- name: Delete ec2 instance {{ ec2_instance_id }}
   amazon.aws.ec2_instance:
     instance_ids:
       - "{{ ec2_instance_id }}"

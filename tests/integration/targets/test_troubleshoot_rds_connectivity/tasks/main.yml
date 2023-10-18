@@ -2,7 +2,7 @@
 - name: Create temporary directory to store all temporary file in
   ansible.builtin.tempfile:
     state: directory
-    suffix: "rds_connectivity"
+    suffix: rds_connectivity
   register: _testdir
 
 - name: Set path to temporary directory
@@ -29,7 +29,7 @@
           register: _result
           delegate_to: ec2
           vars:
-            ansible_python_interpreter: "~/env/bin/python"
+            ansible_python_interpreter: ~/env/bin/python
 
         - name: Assert that ping operation has failed
           ansible.builtin.assert:
@@ -38,7 +38,7 @@
 
         - name: Validate that role is also failing
           block:
-            - include_role:
+            - ansible.builtin.include_role:
                 name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
               vars:
                 troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
@@ -54,9 +54,8 @@
             that:
               - role_failure_action is defined
               - role_failure_msg is defined
-              - 'role_failure_action == "cloud.aws_troubleshooting.validate_route_tables"'
+              - role_failure_action == "cloud.aws_troubleshooting.validate_route_tables"
               - '"Please review route table(s)" in role_failure_msg'
-
 
     - name: Create VPC peering
       ansible.builtin.include_tasks: create_vpc_peering.yml
@@ -72,11 +71,11 @@
           register: _result
           delegate_to: ec2
           vars:
-            ansible_python_interpreter: "~/env/bin/python"
+            ansible_python_interpreter: ~/env/bin/python
 
         - name: Validate that troubleshoot role did not report any error
           block:
-            - include_role:
+            - ansible.builtin.include_role:
                 name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
               vars:
                 troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"

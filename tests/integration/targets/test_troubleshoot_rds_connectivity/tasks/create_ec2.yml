@@ -46,7 +46,7 @@
         subnets:
           - "{{ ec2_subnet_id }}"
         routes:
-          - dest: 0.0.0.0/0
+          - dest: "0.0.0.0/0"
             gateway_id: "{{ ec2_internet_gw_id }}"
         lookup: tag
         resource_tags: "{{ resource_tags }}"
@@ -58,12 +58,12 @@
         vpc_id: "{{ ec2_vpc_id }}"
         description: Security group for Bastion host
         rules:
-          - cidr_ip: 0.0.0.0/0
+          - cidr_ip: "0.0.0.0/0"
             proto: tcp
             from_port: 22
             to_port: 22
         rules_egress:
-          - cidr_ip: 0.0.0.0/0
+          - cidr_ip: "0.0.0.0/0"
             proto: -1
         tags: "{{ resource_tags }}"
         state: present
@@ -82,7 +82,7 @@
       ansible.builtin.copy:
         content: "{{ _key.key.private_key }}"
         dest: "{{ ansible_test_dir }}/id_rsa"
-        mode: 0400
+        mode: "0400"
       when: _key is changed
 
     - name: Get image ID to create an instance
@@ -111,13 +111,13 @@
       ansible.builtin.set_fact:
         ec2_instance_id: "{{ create_vm.instance_ids.0 }}"
 
-    - name: add host to inventory
+    - name: Add host to inventory
       ansible.builtin.add_host:
         hostname: ec2
         ansible_ssh_user: fedora
         ansible_host: "{{ create_vm.instances.0.public_dns_name }}"
         ansible_python_interpreter: auto
-        ansible_ssh_common_args: '-o "UserKnownHostsFile=/dev/null" -o StrictHostKeyChecking=no -i {{ ansible_test_dir }}/id_rsa'
+        ansible_ssh_common_args: -o "UserKnownHostsFile=/dev/null" -o StrictHostKeyChecking=no -i {{ ansible_test_dir }}/id_rsa
 
     - name: Configure EC2 instance
       delegate_to: ec2
@@ -136,7 +136,7 @@
             - regex: ^(# *)?ClientAliveCountMax
               line: ClientAliveCountMax 3
 
-        - name: install required packages
+        - name: Install required packages
           ansible.builtin.yum:
             name:
               - virtualenv

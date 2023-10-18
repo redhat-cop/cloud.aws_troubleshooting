@@ -1,3 +1,4 @@
+---
 - name: Create VPC peering
   module_defaults:
     group/aws:
@@ -54,7 +55,7 @@
         routes:
           - dest: "{{ rds_vpc_cidr }}"
             vpc_peering_connection_id: "{{ vpc_peering_id }}"
-          - dest: 0.0.0.0/0
+          - dest: "0.0.0.0/0"
             gateway_id: "{{ ec2_internet_gw_id }}"
         lookup: tag
         resource_tags:

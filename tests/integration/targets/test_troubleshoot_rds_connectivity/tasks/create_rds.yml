@@ -49,7 +49,7 @@
     - name: Create subnet group for RDS instance
       amazon.aws.rds_subnet_group:
         name: "{{ rds_subnet_group_name }}"
-        description: 'Subnet group for RDS instance to be hidden'
+        description: Subnet group for RDS instance to be hidden
         subnets: "{{ rds_subnets_ids }}"
         state: present
         tags: "{{ resource_tags }}"
@@ -58,9 +58,9 @@
       amazon.aws.ec2_security_group:
         name: "{{ rds_security_group }}"
         vpc_id: "{{ rds_vpc_id }}"
-        description: 'Security group to allow RDS instance port'
+        description: Security group to allow RDS instance port
         rules:
-          - cidr_ip: 0.0.0.0/0
+          - cidr_ip: "0.0.0.0/0"
             proto: tcp
             from_port: "{{ rds_port }}"
             to_port: "{{ rds_port }}"
