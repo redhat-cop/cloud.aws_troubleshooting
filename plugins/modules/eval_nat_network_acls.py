@@ -66,9 +66,23 @@ EXAMPLES = r"""
     dst_port: 80
     nat_network_acls:
     - egress:
-      - [100, "all", "allow", "0.0.0.0/0", null, null, 0, 65535]
+      - - 100
+        - "all"
+        - "allow"
+        - "0.0.0.0/0"
+        - null
+        - null
+        - 0
+        - 65535
     - ingress:
-      - [100, "all", "allow", "0.0.0.0/0", null, null, 0, 65535]
+      - - 100
+        - "all"
+        - "allow"
+        - "0.0.0.0/0"
+        - null
+        - null
+        - 0
+        - 65535
     nat_subnet_id: "subnet-0ffc739798db41a1c"
     routes:
     - destination_cidr_block: "192.168.0.0/24"
