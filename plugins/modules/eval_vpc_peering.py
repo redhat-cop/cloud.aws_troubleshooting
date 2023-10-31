@@ -52,49 +52,49 @@ EXAMPLES = r"""
     dst_vpc: "vpc-09620d5e5c8622e06"
     peering_id: "pcx-054dfaa54c74adba4"
     vpc_peering_connection:
-        accepter_vpc_info:
-            cidr_block: "172.25.0.0/28"
-            cidr_block_set:
-                - cidr_block: "172.25.0.0/28"
-            owner_id": "721066863947"
-            peering_options:
-                allow_dns_resolution_from_remote_vpc: false
-                allow_egress_from_local_classic_link_to_remote_vpc: false
-                allow_egress_from_local_vpc_to_remote_classic_link: false
-            region: "us-east-1"
-            vpc_id: "vpc-0e50f118140008d0c"
-        requester_vpc_info:
-            cidr_block: "173.24.0.0/28"
-            cidr_block_set:
-                - cidr_block: "173.24.0.0/28"
-            owner_id: "721066863947"
-            peering_options:
-                allow_dns_resolution_from_remote_vpc: false
-                allow_egress_from_local_classic_link_to_remote_vpc: false
-                allow_egress_from_local_vpc_to_remote_classic_link: false
-            region: "us-east-1"
-            vpc_id: "vpc-09620d5e5c8622e06"
-        status:
-            code: "active"
-            message: "Active"
-        tags: {}
-        vpc_peering_connection_id: "pcx-054dfaa54c74adba4"
+      accepter_vpc_info:
+        cidr_block: "172.25.0.0/28"
+        cidr_block_set:
+          - cidr_block: "172.25.0.0/28"
+        owner_id": "721066863947"
+        peering_options:
+          allow_dns_resolution_from_remote_vpc: false
+          allow_egress_from_local_classic_link_to_remote_vpc: false
+          allow_egress_from_local_vpc_to_remote_classic_link: false
+        region: "us-east-1"
+        vpc_id: "vpc-0e50f118140008d0c"
+      requester_vpc_info:
+        cidr_block: "173.24.0.0/28"
+        cidr_block_set:
+          - cidr_block: "173.24.0.0/28"
+        owner_id: "721066863947"
+        peering_options:
+          allow_dns_resolution_from_remote_vpc: false
+          allow_egress_from_local_classic_link_to_remote_vpc: false
+          allow_egress_from_local_vpc_to_remote_classic_link: false
+        region: "us-east-1"
+        vpc_id: "vpc-09620d5e5c8622e06"
+      status:
+        code: "active"
+        message: "Active"
+      tags: {}
+      vpc_peering_connection_id: "pcx-054dfaa54c74adba4"
     routes:
-        - destination_cidr_block: "172.25.0.0/28"
-          gateway_id: null
-          instance_id: null,
-          interface_id: null
-          network_interface_id: null
-          origin: "CreateRoute"
-          state: "active"
-          vpc_peering_connection_id: "pcx-054dfaa54c74adba4"
-        - destination_cidr_block: "173.24.0.0/28"
-          gateway_id: "local"
-          instance_id: null
-          interface_id: null
-          network_interface_id: null
-          origin: "CreateRouteTable"
-          state: "active"
+      - destination_cidr_block: "172.25.0.0/28"
+        gateway_id: null
+        instance_id: null,
+        interface_id: null
+        network_interface_id: null
+        origin: "CreateRoute"
+        state: "active"
+        vpc_peering_connection_id: "pcx-054dfaa54c74adba4"
+      - destination_cidr_block: "173.24.0.0/28"
+        gateway_id: "local"
+        instance_id: null
+        interface_id: null
+        network_interface_id: null
+        origin: "CreateRouteTable"
+        state: "active"
 """
 
 

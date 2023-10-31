@@ -70,43 +70,43 @@ EXAMPLES = r"""
     # Network ACL entries order
     # ["rule_number", "protocol", "rule_action", "cidr_block", "icmp_type", "icmp_code", "port_from", "port_to"]
     src_network_acls:
-        - egress:
-            - - 100
-              - "all"
-              - "allow"
-              - "0.0.0.0/0"
-              - null
-              - null
-              - 0
-              - 65535
-        - ingress:
-            - - 100
-              - "all"
-              - "allow"
-              - "0.0.0.0/0"
-              - null
-              - null
-              - 0
-              - 65535
+      - egress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
+      - ingress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
     dst_network_acls:
-        - egress:
-            - - 100
-              - "all"
-              - "allow"
-              - "0.0.0.0/0"
-              - null
-              - null
-              - 0
-              - 65535
-        - ingress:
-            - - 100
-              - "all"
-              - "allow"
-              - "0.0.0.0/0"
-              - null
-              - null
-              - 0
-              - 65535
+      - egress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
+      - ingress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
 """
 
 

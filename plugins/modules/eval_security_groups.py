@@ -56,59 +56,59 @@ EXAMPLES = r"""
   cloud.aws_troubleshooting.eval_security_groups:
     src_ip: "172.32.1.31"
     src_security_groups:
-        - "sg-0258afe8541042bac"
+      - "sg-0258afe8541042bac"
     dst_ip: "172.32.2.13"
     dst_port: 3389
     dst_security_groups:
-        - "sg-05f6695f90530a499"
+      - "sg-05f6695f90530a499"
     security_groups:
-        - description: "security group for jumphosts within the public subnet of ansible VPC"
-          group_id: "sg-0258afe8541042bac"
-          group_name: "sg_ansibleVPC_publicsubnet_jumphost"
-          ip_permissions:
-            - from_port: 3389
-              ip_protocol: "tcp"
-              ip_ranges:
-                - cidr_ip: "0.0.0.0/0"
-                  description: "allow rdp to jumphost"
-              ipv6_ranges: []
-              prefix_list_ids: []
-              to_port: 3389
-              user_id_group_pairs: []
-          ip_permissions_egress:
-            - ip_protocol: "-1"
-              ip_ranges:
-                - cidr_ip: "0.0.0.0/0"
-              ipv6_ranges: []
-              prefix_list_ids: []
-              user_id_group_pairs: []
-          owner_id: "721066863947"
-          tags: {}
-          vpc_id: "vpc-097bb89457aa6d8f3"
-        - description: "security group for private subnet that allows limited access from public subnet"
-          group_id: "sg-05f6695f90530a499"
-          group_name: "sg_ansibleVPC_privatesubnet_servers"
-          ip_permissions:
-            - from_port: 3389
-              ip_protocol: "tcp"
-              ip_ranges: []
-              ipv6_ranges: []
-              prefix_list_ids: []
-              to_port: 3389
-              user_id_group_pairs:
-                - description: "allow only rdp access from public to private subnet servers"
-                  group_id: "sg-0258afe8541042bac"
-                  user_id: "721066863947"
-          ip_permissions_egress:
-            - ip_protocol: "-1"
-              ip_ranges:
-                - cidr_ip: "0.0.0.0/0"
-              ipv6_ranges: []
-              prefix_list_ids: []
-              user_id_group_pairs: []
-          owner_id: "721066863947"
-          tags: {}
-          vpc_id: "vpc-097bb89457aa6d8f3"
+      - description: "security group for jumphosts within the public subnet of ansible VPC"
+        group_id: "sg-0258afe8541042bac"
+        group_name: "sg_ansibleVPC_publicsubnet_jumphost"
+        ip_permissions:
+          - from_port: 3389
+            ip_protocol: "tcp"
+            ip_ranges:
+              - cidr_ip: "0.0.0.0/0"
+                description: "allow rdp to jumphost"
+            ipv6_ranges: []
+            prefix_list_ids: []
+            to_port: 3389
+            user_id_group_pairs: []
+        ip_permissions_egress:
+          - ip_protocol: "-1"
+            ip_ranges:
+              - cidr_ip: "0.0.0.0/0"
+            ipv6_ranges: []
+            prefix_list_ids: []
+            user_id_group_pairs: []
+        owner_id: "721066863947"
+        tags: {}
+        vpc_id: "vpc-097bb89457aa6d8f3"
+      - description: "security group for private subnet that allows limited access from public subnet"
+        group_id: "sg-05f6695f90530a499"
+        group_name: "sg_ansibleVPC_privatesubnet_servers"
+        ip_permissions:
+          - from_port: 3389
+            ip_protocol: "tcp"
+            ip_ranges: []
+            ipv6_ranges: []
+            prefix_list_ids: []
+            to_port: 3389
+            user_id_group_pairs:
+              - description: "allow only rdp access from public to private subnet servers"
+                group_id: "sg-0258afe8541042bac"
+                user_id: "721066863947"
+        ip_permissions_egress:
+          - ip_protocol: "-1"
+            ip_ranges:
+              - cidr_ip: "0.0.0.0/0"
+            ipv6_ranges: []
+            prefix_list_ids: []
+            user_id_group_pairs: []
+        owner_id: "721066863947"
+        tags: {}
+        vpc_id: "vpc-097bb89457aa6d8f3"
 """
 
 
