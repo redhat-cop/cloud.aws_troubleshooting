@@ -38,7 +38,8 @@
 
         - name: Validate that role is also failing
           block:
-            - ansible.builtin.include_role:
+            - name: Include role cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+              ansible.builtin.include_role:
                 name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
               vars:
                 troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
@@ -75,7 +76,8 @@
 
         - name: Validate that troubleshoot role did not report any error
           block:
-            - ansible.builtin.include_role:
+            - name: Include role cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+              ansible.builtin.include_role:
                 name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
               vars:
                 troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"

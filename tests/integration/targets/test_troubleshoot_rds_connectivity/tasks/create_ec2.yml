@@ -83,7 +83,6 @@
         content: "{{ _key.key.private_key }}"
         dest: "{{ ansible_test_dir }}/id_rsa"
         mode: "0400"
-      when: _key is changed
 
     - name: Get image ID to create an instance
       amazon.aws.ec2_ami_info:
