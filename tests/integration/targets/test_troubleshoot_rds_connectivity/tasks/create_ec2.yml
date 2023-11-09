@@ -51,6 +51,7 @@
         lookup: tag
         resource_tags: "{{ resource_tags }}"
         state: present
+      register: igw_route_table
 
     - name: Create security group
       amazon.aws.ec2_security_group:
