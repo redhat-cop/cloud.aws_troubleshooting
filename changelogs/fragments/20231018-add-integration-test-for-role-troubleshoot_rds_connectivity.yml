@@ -1,0 +1,3 @@
+---
+trivial:
+  - add integration tests for role troubleshoot_rds_connectivity.

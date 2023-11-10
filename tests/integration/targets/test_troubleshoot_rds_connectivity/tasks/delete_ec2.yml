@@ -1,0 +1,45 @@
+---
+- name: Delete ec2 instance {{ ec2_instance_id }}
+  amazon.aws.ec2_instance:
+    instance_ids:
+      - "{{ ec2_instance_id }}"
+    wait: true
+    state: terminated
+  ignore_errors: true
+
+- name: Delete VM Key pair
+  amazon.aws.ec2_key:
+    name: "{{ ec2_key_name }}"
+    state: absent
+  ignore_errors: true
+
+- name: Delete security groups
+  amazon.aws.ec2_security_group:
+    state: absent
+    group_id: "{{ ec2_group_id }}"
+  ignore_errors: true
+
+- name: Delete internet gateway
+  amazon.aws.ec2_vpc_igw:
+    vpc_id: "{{ ec2_vpc_id }}"
+    state: absent
+  ignore_errors: true
+
+- name: Delete route table for internet gateway
+  amazon.aws.ec2_vpc_route_table:
+    vpc_id: "{{ ec2_vpc_id }}"
+    route_table_id: "{{ igw_route_table.route_table.id }}"
+    lookup: id
+    state: absent
+
+- name: Delete Subnet
+  amazon.aws.ec2_vpc_subnet:
+    cidr: "{{ ec2_subnet_cidr }}"
+    state: absent
+    vpc_id: "{{ ec2_vpc_id }}"
+  ignore_errors: true
+
+- name: Delete VPC
+  amazon.aws.ec2_vpc_net:
+    vpc_id: "{{ ec2_vpc_id }}"
+    state: absent

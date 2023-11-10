@@ -1,0 +1,27 @@
+---
+- name: Delete RDS instance
+  amazon.aws.rds_instance:
+    wait: true
+    db_instance_identifier: "{{ rds_identifier }}"
+    skip_final_snapshot: true
+    state: absent
+  ignore_errors: true
+
+- name: Delete security groups
+  amazon.aws.ec2_security_group:
+    state: absent
+    group_id: "{{ rds_group_id }}"
+  ignore_errors: true
+
+- name: Delete Subnet
+  amazon.aws.ec2_vpc_subnet:
+    cidr: "{{ item }}"
+    state: absent
+    vpc_id: "{{ rds_vpc_id }}"
+  with_items: "{{ rds_subnet_cidr }}"
+  ignore_errors: true
+
+- name: Delete VPC
+  amazon.aws.ec2_vpc_net:
+    vpc_id: "{{ rds_vpc_id }}"
+    state: absent

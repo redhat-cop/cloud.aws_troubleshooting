@@ -1,0 +1,53 @@
+---
+- name: Delete resources created for testing
+  module_defaults:
+    group/aws:
+      access_key: "{{ aws_access_key | default(omit) }}"
+      secret_key: "{{ aws_secret_key | default(omit) }}"
+      session_token: "{{ security_token | default(omit) }}"
+      region: "{{ aws_region }}"
+  block:
+    - name: List routes table from VPC {{ rds_vpc_id }}
+      amazon.aws.ec2_vpc_route_table_info:
+        filters:
+          vpc-id: "{{ rds_vpc_id }}"
+          association.main: false
+      register: rds_vpc_routes
+
+    - name: Delete routes table from VPC {{ rds_vpc_id }}
+      amazon.aws.ec2_vpc_route_table:
+        route_table_id: "{{ item }}"
+        vpc_id: "{{ rds_vpc_id }}"
+        lookup: id
+        state: absent
+      ignore_errors: true
+      with_items: "{{ rds_vpc_routes.route_tables | map(attribute='id') | list }}"
+
+    - name: List routes table from VPC {{ ec2_vpc_id }}
+      amazon.aws.ec2_vpc_route_table_info:
+        filters:
+          vpc-id: "{{ ec2_vpc_id }}"
+          association.main: false
+      register: rds_vpc_routes
+
+    - name: Delete routes table from VPC {{ ec2_vpc_id }}
+      amazon.aws.ec2_vpc_route_table:
+        route_table_id: "{{ item }}"
+        vpc_id: "{{ ec2_vpc_id }}"
+        lookup: id
+        state: absent
+      ignore_errors: true
+      with_items: "{{ rds_vpc_routes.route_tables | map(attribute='id') | list }}"
+
+    - name: Delete VPC peering request
+      community.aws.ec2_vpc_peer:
+        region: "{{ aws_region }}"
+        peering_id: "{{ vpc_peering_id }}"
+        state: absent
+      ignore_errors: true
+
+    - name: Delete RDS resources
+      ansible.builtin.include_tasks: delete_rds.yml
+
+    - name: Delete EC2 resources
+      ansible.builtin.include_tasks: delete_ec2.yml
