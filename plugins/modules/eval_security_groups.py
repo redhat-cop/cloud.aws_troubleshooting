@@ -151,28 +151,18 @@ class EvalSecurityGroups(AnsibleModule):
 
         def eval_src_egress_rules():
             for src_security_group in self.src_security_groups:
-                sg = [
-                    group
-                    for group in self.security_groups
-                    if group["group_id"] == src_security_group
-                ][0]
+                sg = [group for group in self.security_groups if group["group_id"] == src_security_group][0]
                 for rule in sg["ip_permissions_egress"]:
                     if (
                         (rule.get("ip_protocol") == "-1")
                         or (rule.get("from_port") == -1 and rule.get("to_port") == -1)
-                        or (
-                            dst_port
-                            in range(rule.get("from_port"), rule.get("to_port") + 1)
-                        )
+                        or (dst_port in range(rule.get("from_port"), rule.get("to_port") + 1))
                     ):
                         for cidr in rule["ip_ranges"]:
                             if dst_ip in ip_network(cidr["cidr_ip"], strict=False):
                                 return True
                         for group in rule["user_id_group_pairs"]:
-                            if any(
-                                sg in group["group_id"]
-                                for sg in self.dst_security_groups
-                            ):
+                            if any(sg in group["group_id"] for sg in self.dst_security_groups):
                                 return True
             self.fail_json(
                 msg="Egress rules on source do not allow traffic towards destination: {0} : {1}".format(
@@ -182,28 +172,18 @@ class EvalSecurityGroups(AnsibleModule):
 
         def eval_dst_ingress_rules():
             for dst_security_group in self.dst_security_groups:
-                sg = [
-                    group
-                    for group in self.security_groups
-                    if group["group_id"] == dst_security_group
-                ][0]
+                sg = [group for group in self.security_groups if group["group_id"] == dst_security_group][0]
                 for rule in sg["ip_permissions"]:
                     if (
                         (rule.get("ip_protocol") == "-1")
                         or (rule.get("from_port") == -1 and rule.get("to_port") == -1)
-                        or (
-                            dst_port
-                            in range(rule.get("from_port"), rule.get("to_port") + 1)
-                        )
+                        or (dst_port in range(rule.get("from_port"), rule.get("to_port") + 1))
                     ):
                         for cidr in rule["ip_ranges"]:
                             if src_ip in ip_network(cidr["cidr_ip"], strict=False):
                                 return True
                         for group in rule["user_id_group_pairs"]:
-                            if any(
-                                sg in group["group_id"]
-                                for sg in self.src_security_groups
-                            ):
+                            if any(sg in group["group_id"] for sg in self.src_security_groups):
                                 return True
             self.fail_json(
                 msg="Ingress rules on destination do not allow traffic from source: {0} towards destination port {1}".format(
@@ -221,17 +201,12 @@ class EvalSecurityGroups(AnsibleModule):
         dst_port = int(self.dst_port)
 
         for sg_id in self.src_security_groups:
-            sg = [
-                group for group in self.security_groups if group["group_id"] == sg_id
-            ][0]
+            sg = [group for group in self.security_groups if group["group_id"] == sg_id][0]
             for rule in sg["ip_permissions_egress"]:
                 if (
                     (rule.get("ip_protocol") == "-1")
                     or (rule.get("from_port") == -1 and rule.get("to_port") == -1)
-                    or (
-                        dst_port
-                        in range(rule.get("from_port"), rule.get("to_port") + 1)
-                    )
+                    or (dst_port in range(rule.get("from_port"), rule.get("to_port") + 1))
                 ):
                     for cidr in rule["ip_ranges"]:
                         if dst_ip in ip_network(cidr["cidr_ip"], strict=False):

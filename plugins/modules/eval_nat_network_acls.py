@@ -159,12 +159,8 @@ class EvalNatNetworkAcls(AnsibleModule):
             src_port_from = int(self.src_port_range.split("-")[0])
             src_port_to = int(self.src_port_range.split("-")[1])
 
-        egress_acls = [acl["egress"] for acl in self.nat_network_acls if acl["egress"]][
-            0
-        ]
-        ingress_acls = [
-            acl["ingress"] for acl in self.nat_network_acls if acl["ingress"]
-        ][0]
+        egress_acls = [acl["egress"] for acl in self.nat_network_acls if acl["egress"]][0]
+        ingress_acls = [acl["ingress"] for acl in self.nat_network_acls if acl["ingress"]][0]
 
         def check_egress_towards_dst(acls, dst_ip, dst_port):
             for item in acls:
@@ -325,8 +321,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                 mask = int(route["destination_cidr_block"].split("/")[1])
                 if (
                     "destination_prefix_list_id" not in str(route)
-                    and destination
-                    in ip_network(route["destination_cidr_block"], strict=False)
+                    and destination in ip_network(route["destination_cidr_block"], strict=False)
                     and mask > most_specific
                 ):
                     if route["state"] != "blackhole":
@@ -335,11 +330,7 @@ class EvalNatNetworkAcls(AnsibleModule):
         # 0.0.0.0/0
         if most_specific >= 0 and "igw-" in str(next_hop):
             return True
-        self.fail_json(
-            msg="No Internet Gateway route found for destination: {0}".format(
-                self.dst_ip
-            )
-        )
+        self.fail_json(msg="No Internet Gateway route found for destination: {0}".format(self.dst_ip))
 
     def execute_module(self):
         try:

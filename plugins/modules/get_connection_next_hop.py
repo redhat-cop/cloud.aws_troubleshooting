@@ -88,8 +88,7 @@ class GetConnectionNextHopType(AnsibleModule):
                 mask = int(route["destination_cidr_block"].split("/")[1])
                 if (
                     "destination_prefix_list_id" not in str(route)
-                    and destination
-                    in ip_network(route["destination_cidr_block"], strict=False)
+                    and destination in ip_network(route["destination_cidr_block"], strict=False)
                     and mask > most_specific
                 ):
                     if route["state"] != "blackhole":

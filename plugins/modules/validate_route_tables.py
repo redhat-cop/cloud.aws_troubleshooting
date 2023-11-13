@@ -284,12 +284,8 @@ class ValidateRouteTables(AnsibleModule):
         if not (dest_vpc_id[0] == src_vpc_id[0]):
             for dest_cidr in dest_subnet_cidrs:
                 for ip_addr in src_private_ips:
-                    if ip_network(dest_cidr, strict=False).overlaps(
-                        ip_network(ip_addr, strict=False)
-                    ):
-                        self.fail_json(
-                            msg="Resources are located in different VPCs, however, Cidrs are overlapping."
-                        )
+                    if ip_network(dest_cidr, strict=False).overlaps(ip_network(ip_addr, strict=False)):
+                        self.fail_json(msg="Resources are located in different VPCs, however, Cidrs are overlapping.")
         else:
             self.exit_json(result="Resources located in the same VPC.")
 
@@ -307,11 +303,7 @@ class ValidateRouteTables(AnsibleModule):
         for rtb in src_route_tables:
             self.ec2_rtb_list.append(rtb["route_table_id"])
 
-        if (
-            (dest_route_tables == src_route_tables)
-            and not b_check_vpc_rtb_ec2
-            and not b_check_vpc_rtb_rds
-        ):
+        if (dest_route_tables == src_route_tables) and not b_check_vpc_rtb_ec2 and not b_check_vpc_rtb_rds:
             self.exit_json(
                 result="Source and destination resources are using the same route table(s): {0}".format(
                     self.ec2_rtb_list
@@ -335,9 +327,9 @@ class ValidateRouteTables(AnsibleModule):
                 if len(required_ips) == 0:
                     break
                 for remote_ip in src_private_ips:
-                    if ip_network(
-                        route["destination_cidr_block"], strict=False
-                    ).overlaps(ip_network(remote_ip, strict=False)):
+                    if ip_network(route["destination_cidr_block"], strict=False).overlaps(
+                        ip_network(remote_ip, strict=False)
+                    ):
                         required_ips.remove(remote_ip)
             if len(required_ips) == 0:
                 self.rds_rtb_list.remove(rtb["route_table_id"])
@@ -351,9 +343,9 @@ class ValidateRouteTables(AnsibleModule):
                     if len(required_ips) == 0:
                         break
                     for remote_ip in src_private_ips:
-                        if ip_network(
-                            route["destination_cidr_block"], strict=False
-                        ).overlaps(ip_network(remote_ip, strict=False)):
+                        if ip_network(route["destination_cidr_block"], strict=False).overlaps(
+                            ip_network(remote_ip, strict=False)
+                        ):
                             if remote_ip in required_ips:
                                 required_ips.remove(remote_ip)
                 if len(required_ips) == 0:
@@ -375,9 +367,9 @@ class ValidateRouteTables(AnsibleModule):
                 if len(required_cidrs) == 0:
                     break
                 for remote_cidr in dest_subnet_cidrs:
-                    if ip_network(
-                        route["destination_cidr_block"], strict=False
-                    ).overlaps(ip_network(remote_cidr, strict=False)):
+                    if ip_network(route["destination_cidr_block"], strict=False).overlaps(
+                        ip_network(remote_cidr, strict=False)
+                    ):
                         if remote_cidr in required_cidrs:
                             required_cidrs.remove(remote_cidr)
             if len(required_cidrs) == 0:
@@ -392,9 +384,9 @@ class ValidateRouteTables(AnsibleModule):
                     if len(required_cidrs) == 0:
                         break
                     for remote_cidr in dest_subnet_cidrs:
-                        if ip_network(
-                            route["destination_cidr_block"], strict=False
-                        ).overlaps(ip_network(remote_cidr, strict=False)):
+                        if ip_network(route["destination_cidr_block"], strict=False).overlaps(
+                            ip_network(remote_cidr, strict=False)
+                        ):
                             required_cidrs.remove(remote_cidr)
                 if len(required_ips) == 0:
                     self.ec2_rtb_list.remove(rtb["route_table_id"])
@@ -403,23 +395,17 @@ class ValidateRouteTables(AnsibleModule):
         try:
             # RDS Info
             dest_subnet_ids = [x.get("id") for x in self.params.get("dest_subnets")]
-            dest_subnet_cidrs = [
-                x.get("cidr_block") for x in self.params.get("dest_subnets")
-            ]
+            dest_subnet_cidrs = [x.get("cidr_block") for x in self.params.get("dest_subnets")]
             dest_route_tables = self.params.get("dest_route_tables")
             dest_vpc_route_tables = self.params.get("dest_vpc_route_tables")
-            dest_vpc_id = list(
-                set(x.get("vpc_id") for x in self.params.get("dest_subnets"))
-            )
+            dest_vpc_id = list(set(x.get("vpc_id") for x in self.params.get("dest_subnets")))
 
             # EC2 Instance Info
             src_subnet_ids = [x.get("id") for x in self.params.get("src_subnets")]
             src_private_ips = self.params.get("src_private_ip")
             src_route_tables = self.params.get("src_route_tables")
             src_vpc_route_tables = self.params.get("src_vpc_route_tables")
-            src_vpc_id = list(
-                set(x.get("vpc_id") for x in self.params.get("src_subnets"))
-            )
+            src_vpc_id = list(set(x.get("vpc_id") for x in self.params.get("src_subnets")))
 
             self.rds_rtb_list = []
             self.ec2_rtb_list = []
@@ -444,9 +430,7 @@ class ValidateRouteTables(AnsibleModule):
             if len(ec2_rtb_subnet_list) < len(src_subnet_ids):
                 b_check_vpc_rtb_ec2 = True
 
-            self.validate_vpc(
-                src_vpc_id, src_private_ips, dest_vpc_id, dest_subnet_cidrs
-            )
+            self.validate_vpc(src_vpc_id, src_private_ips, dest_vpc_id, dest_subnet_cidrs)
             self.validate_route_tables(
                 src_route_tables,
                 b_check_vpc_rtb_ec2,
