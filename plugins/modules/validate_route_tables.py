@@ -257,8 +257,8 @@ result:
   sample: 'Route table validation successful'
 """
 
-from ipaddress import ip_network
 import copy
+from ipaddress import ip_network
 
 from ansible.module_utils.basic import AnsibleModule
 
