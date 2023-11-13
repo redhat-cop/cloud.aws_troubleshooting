@@ -56,7 +56,7 @@ jobs:
     if: ${{ needs.splitter.outputs.test_targets != '' }}
     env:
       source: "./source"
-      ansible_version: "stable-2.16"
+      ansible_version: "milestone"
       python_version: "3.12"
     strategy:
       fail-fast: false
