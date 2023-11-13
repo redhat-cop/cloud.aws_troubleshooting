@@ -15,7 +15,11 @@
     troubleshoot_rds_connectivity__ec2_security_group_ids: "{{ ec2_instance_info.security_groups | map(attribute='group_id') | list }}"
     troubleshoot_rds_connectivity__ec2_subnet_id: "{{ ec2_instance_info.subnet_id }}"
     troubleshoot_rds_connectivity__ec2_vpc_id: "{{ ec2_instance_info.vpc_id }}"
-    troubleshoot_rds_connectivity__ec2_private_ip_addrs: "{{ ec2_instance_info.network_interfaces | map(attribute='private_ip_addresses') | flatten | map(attribute='private_ip_address')
+    troubleshoot_rds_connectivity__ec2_private_ip_addrs: >
+      "{{ ec2_instance_info.network_interfaces
+      | map(attribute='private_ip_addresses')
+      | flatten
+      | map(attribute='private_ip_address')
       | list }}"
   vars:
     ec2_instance_info: "{{ troubleshoot_rds_connectivity__result.instances.0 }}"

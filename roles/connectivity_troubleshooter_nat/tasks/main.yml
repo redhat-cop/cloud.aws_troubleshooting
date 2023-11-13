@@ -29,7 +29,9 @@
 
     - name: Set 'connectivity_troubleshooter_nat__nat_network_acls' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_nat__nat_network_acls: "{{ connectivity_troubleshooter_nat__nat_network_acls | d([]) + [dict(connectivity_troubleshooter_nat__keys
+        connectivity_troubleshooter_nat__nat_network_acls: >
+          "{{ connectivity_troubleshooter_nat__nat_network_acls
+          | d([]) + [dict(connectivity_troubleshooter_nat__keys
           | zip(connectivity_troubleshooter_nat__vals))] }}"
       loop: "{{ connectivity_troubleshooter_nat__nat_network_acls_info.nacls }}"
       vars:
@@ -77,7 +79,9 @@
 
     - name: Set 'connectivity_troubleshooter_nat__nat_subnet_nacls' variable
       ansible.legacy.set_fact:
-        connectivity_troubleshooter_nat__nat_subnet_nacls: "{{ connectivity_troubleshooter_nat__nat_subnet_nacls | d([]) + [dict(connectivity_troubleshooter_nat__keys
+        connectivity_troubleshooter_nat__nat_subnet_nacls: >
+          "{{ connectivity_troubleshooter_nat__nat_subnet_nacls
+          | d([]) + [dict(connectivity_troubleshooter_nat__keys
           | zip(connectivity_troubleshooter_nat__vals))] }}"
       loop: "{{ connectivity_troubleshooter_nat__nat_subnet_nacls_info.nacls }}"
       vars:
@@ -90,13 +94,16 @@
           addresses.private-ip-address: "{{ connectivity_troubleshooter_nat_source_ip }}"
       register: connectivity_troubleshooter_nat__describe_src_eni
 
-    - name: Set 'connectivity_troubleshooter_nat__src_vpc_id', 'connectivity_troubleshooter_nat__src_subnet_id' and 'connectivity_troubleshooter_nat__src_security_groups'
-        variables
+    - name: >
+        Set 'connectivity_troubleshooter_nat__src_vpc_id', 'connectivity_troubleshooter_nat__src_subnet_id' and
+        'connectivity_troubleshooter_nat__src_security_groups' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_nat__src_vpc_id: "{{ connectivity_troubleshooter_nat__src_network_interface_info.vpc_id }}"
         connectivity_troubleshooter_nat__src_subnet_id: "{{ connectivity_troubleshooter_nat__src_network_interface_info.subnet_id }}"
-        connectivity_troubleshooter_nat__src_security_groups: "{{ connectivity_troubleshooter_nat__src_network_interface_info.groups | map(attribute='group_id') |
-          list }}"
+        connectivity_troubleshooter_nat__src_security_groups: >
+          "{{ connectivity_troubleshooter_nat__src_network_interface_info.groups
+          | map(attribute='group_id')
+          | list }}"
         connectivity_troubleshooter_nat__src_network_interface: "{{ connectivity_troubleshooter_nat__src_network_interface_info }}"
       vars:
         connectivity_troubleshooter_nat__src_network_interface_info: "{{ connectivity_troubleshooter_nat__describe_src_eni.network_interfaces.0 }}"

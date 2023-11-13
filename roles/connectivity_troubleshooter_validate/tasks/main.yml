@@ -15,7 +15,9 @@
 
     - name: Fail when the private IPv4 address of the AWS resource in your Amazon VPC you want to test connectivity from is not defined
       ansible.builtin.fail:
-        msg: The private IPv4 address of the AWS resource in your Amazon VPC you want to test connectivity from must be defined as connectivity_troubleshooter_validate_source_ip
+        msg: >
+          The private IPv4 address of the AWS resource in your Amazon VPC you want to test connectivity from must be defined as
+          connectivity_troubleshooter_validate_source_ip
       when: connectivity_troubleshooter_validate_source_ip is not defined
 
     - name: Fail when 'connectivity_troubleshooter_validate_source_ip' and 'connectivity_troubleshooter_validate_destination_ip' coincide
@@ -29,8 +31,9 @@
 
     - name: Set 'connectivity_troubleshooter_validate__filter_eni' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_validate__filter_eni: "{{ connectivity_troubleshooter_validate__filter_eni | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc})
-          }}"
+        connectivity_troubleshooter_validate__filter_eni: >
+          "{{ connectivity_troubleshooter_validate__filter_eni
+          | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc}) }}"
       when: connectivity_troubleshooter_validate_source_vpc | default('', true) | trim != ''
 
     - name: Gather information about source ENI
@@ -40,16 +43,20 @@
 
     - name: Fail when no network interface found
       ansible.builtin.fail:
-        msg: Kindly check the connectivity_troubleshooter_validate_source_ip and connectivity_troubleshooter_validate_source_vpc parameters, no network interface
+        msg: >
+          Kindly check the connectivity_troubleshooter_validate_source_ip and connectivity_troubleshooter_validate_source_vpc parameters, no network interface
           found
       when: connectivity_troubleshooter_validate__describe_src_eni['network_interfaces'] | length == 0
 
-    - name: Set 'connectivity_troubleshooter_validate__src_subnet_id', 'connectivity_troubleshooter_validate__src_vpc_id', 'connectivity_troubleshooter_validate__src_security_groups'
-        and 'connectivity_troubleshooter_validate__src_network_interface' variables
+    - name: >
+        Set 'connectivity_troubleshooter_validate__src_subnet_id', 'connectivity_troubleshooter_validate__src_vpc_id',
+        'connectivity_troubleshooter_validate__src_security_groups' and 'connectivity_troubleshooter_validate__src_network_interface' variables
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__src_subnet_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.subnet_id }}"
         connectivity_troubleshooter_validate__src_vpc_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_validate__src_security_groups: "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups | map(attribute='group_id')
+        connectivity_troubleshooter_validate__src_security_groups: >
+          "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups
+          | map(attribute='group_id')
           | list }}"
         connectivity_troubleshooter_validate__src_network_interface: "{{ connectivity_troubleshooter_validate__src_network_interface_info }}"
       vars:
