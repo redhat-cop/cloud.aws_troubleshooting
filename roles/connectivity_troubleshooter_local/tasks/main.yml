@@ -20,10 +20,8 @@
       ansible.builtin.set_fact:
         connectivity_troubleshooter_local__dst_vpc_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.vpc_id }}"
         connectivity_troubleshooter_local__dst_subnet_id: "{{ connectivity_troubleshooter_local__dst_network_interface_info.subnet_id }}"
-        connectivity_troubleshooter_local__dst_security_groups: >
-          "{{ connectivity_troubleshooter_local__dst_network_interface_info.groups
-          | map(attribute='group_id')
-          | list }}"
+        connectivity_troubleshooter_local__dst_security_groups: >-
+          {{ connectivity_troubleshooter_local__dst_network_interface_info.groups | map(attribute='group_id') | list }}
       vars:
         connectivity_troubleshooter_local__dst_network_interface_info: "{{ connectivity_troubleshooter_local__describe_dst_eni.network_interfaces.0 }}"
 
@@ -40,9 +38,7 @@
         connectivity_troubleshooter_local__src_vpc_id: "{{ connectivity_troubleshooter_local__src_network_interface_info.vpc_id }}"
         connectivity_troubleshooter_local__src_subnet_id: "{{ connectivity_troubleshooter_local__src_network_interface_info.subnet_id }}"
         connectivity_troubleshooter_local__src_security_groups: >
-          "{{ connectivity_troubleshooter_local__src_network_interface_info.groups
-          | map(attribute='group_id')
-          | list }}"
+          {{ connectivity_troubleshooter_local__src_network_interface_info.groups | map(attribute='group_id') | list }}
       vars:
         connectivity_troubleshooter_local__src_network_interface_info: "{{ connectivity_troubleshooter_local__describe_src_eni.network_interfaces.0 }}"
 
@@ -54,7 +50,7 @@
     - name: Fail when no route is present towards required destination VPC
       ansible.builtin.fail:
         msg: Kindly check the source route table to ensure a more specific route is present towards required destination VPC
-      when: >
+      when: >-
         connectivity_troubleshooter_local_destination_vpc | default('', true) | trim
         and connectivity_troubleshooter_local_destination_vpc != connectivity_troubleshooter_local__dst_vpc_id
 
@@ -74,12 +70,10 @@
 
     - name: Set 'connectivity_troubleshooter_local__src_security_groups_info' and 'connectivity_troubleshooter_local__dst_security_groups_info' variables
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_local__src_security_groups_info: >
-          "{{ connectivity_troubleshooter_local__src_security_groups_info.results
-          | sum(attribute='security_groups', start=[]) }}"
-        connectivity_troubleshooter_local__dst_security_groups_info: >
-          "{{ connectivity_troubleshooter_local__dst_security_groups_info.results
-          | sum(attribute='security_groups', start=[]) }}"
+        connectivity_troubleshooter_local__src_security_groups_info: >-
+          {{ connectivity_troubleshooter_local__src_security_groups_info.results | sum(attribute='security_groups', start=[]) }}
+        connectivity_troubleshooter_local__dst_security_groups_info: >-
+          {{ connectivity_troubleshooter_local__dst_security_groups_info.results | sum(attribute='security_groups', start=[]) }}
 
     - name: Evaluate ingress and egress security group rules
       cloud.aws_troubleshooting.eval_security_groups:
@@ -100,9 +94,8 @@
 
     - name: Set 'connectivity_troubleshooter_local__src_network_acls_info' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_local__src_network_acls_info: >
-          "{{ connectivity_troubleshooter_local__src_network_acls_info
-          | d([]) + [dict(_keys | zip(_vals))] }}"
+        connectivity_troubleshooter_local__src_network_acls_info: >-
+          {{ connectivity_troubleshooter_local__src_network_acls_info | d([]) + [dict(_keys | zip(_vals))] }}
       loop: "{{ connectivity_troubleshooter_local__network_acls_info.nacls }}"
       vars:
         _keys: "{{ ['egress', 'ingress'] }}"

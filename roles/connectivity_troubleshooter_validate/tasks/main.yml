@@ -31,9 +31,8 @@
 
     - name: Set 'connectivity_troubleshooter_validate__filter_eni' variable
       ansible.builtin.set_fact:
-        connectivity_troubleshooter_validate__filter_eni: >
-          "{{ connectivity_troubleshooter_validate__filter_eni
-          | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc}) }}"
+        connectivity_troubleshooter_validate__filter_eni: >-
+          {{ connectivity_troubleshooter_validate__filter_eni | combine({'vpc-id': connectivity_troubleshooter_validate_source_vpc}) }}
       when: connectivity_troubleshooter_validate_source_vpc | default('', true) | trim != ''
 
     - name: Gather information about source ENI
@@ -54,10 +53,8 @@
       ansible.builtin.set_fact:
         connectivity_troubleshooter_validate__src_subnet_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.subnet_id }}"
         connectivity_troubleshooter_validate__src_vpc_id: "{{ connectivity_troubleshooter_validate__src_network_interface_info.vpc_id }}"
-        connectivity_troubleshooter_validate__src_security_groups: >
-          "{{ connectivity_troubleshooter_validate__src_network_interface_info.groups
-          | map(attribute='group_id')
-          | list }}"
+        connectivity_troubleshooter_validate__src_security_groups: >-
+          {{ connectivity_troubleshooter_validate__src_network_interface_info.groups | map(attribute='group_id') | list }}
         connectivity_troubleshooter_validate__src_network_interface: "{{ connectivity_troubleshooter_validate__src_network_interface_info }}"
       vars:
         connectivity_troubleshooter_validate__src_network_interface_info: "{{ connectivity_troubleshooter_validate__describe_src_eni.network_interfaces.0 }}"
