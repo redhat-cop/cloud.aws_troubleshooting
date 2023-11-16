@@ -179,7 +179,8 @@ result:
 """
 
 
-from ipaddress import ip_network, ip_address
+from ipaddress import ip_address, ip_network
+
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -211,9 +212,7 @@ class EvalSrcIgwRoute(AnsibleModule):
                 if "public_ip" in str(private_ip):
                     return True
 
-        self.fail_json(
-            msg="A public IP or Elastic IP is required at source to connect to a public destination"
-        )
+        self.fail_json(msg="A public IP or Elastic IP is required at source to connect to a public destination")
 
     def eval_src_egress_rule(self):
         dst_ip = ip_address(self.dst_ip)
@@ -224,10 +223,7 @@ class EvalSrcIgwRoute(AnsibleModule):
                 if (
                     (rule.get("ip_protocol") == "-1")
                     or (rule.get("from_port") == -1 and rule.get("to_port") == -1)
-                    or (
-                        dst_port
-                        in range(rule.get("from_port"), rule.get("to_port") + 1)
-                    )
+                    or (dst_port in range(rule.get("from_port"), rule.get("to_port") + 1))
                 ):
                     for cidr in rule["ip_ranges"]:
                         if dst_ip in ip_network(cidr["cidr_ip"], strict=False):
@@ -323,12 +319,8 @@ class EvalSrcIgwRoute(AnsibleModule):
             "port_to",
         ]
 
-        egress_acls = [acl["egress"] for acl in self.src_network_acls if acl["egress"]][
-            0
-        ]
-        ingress_acls = [
-            acl["ingress"] for acl in self.src_network_acls if acl["ingress"]
-        ][0]
+        egress_acls = [acl["egress"] for acl in self.src_network_acls if acl["egress"]][0]
+        ingress_acls = [acl["ingress"] for acl in self.src_network_acls if acl["ingress"]][0]
 
         src_egress_check_pass = check_egress_acls(egress_acls, dst_ip, dst_port)
         src_ingress_check_pass = check_ingress_acls(ingress_acls, dst_ip)

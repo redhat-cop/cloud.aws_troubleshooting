@@ -79,7 +79,9 @@ class PingRDSinstance(AnsibleModule):
         self.execute_module()
 
     def connect(self):
-        conn_string = f"host={self.host} user={self.user} dbname={self.dbname} password={self.password} sslmode='require'"
+        conn_string = (
+            f"host={self.host} user={self.user} dbname={self.dbname} password={self.password} sslmode='require'"
+        )
         conn = psycopg2.connect(conn_string, connect_timeout=10)
         conn.close()
 
@@ -92,11 +94,7 @@ class PingRDSinstance(AnsibleModule):
             self.connect()
             self.exit_json(**params)
         except Exception as e:
-            self.fail_json(
-                msg="An error occurred while trying to connect to RDS instance: {0}".format(
-                    e
-                )
-            )
+            self.fail_json(msg="An error occurred while trying to connect to RDS instance: {0}".format(e))
 
 
 def main():

@@ -17,7 +17,10 @@
     - name: Fail when next hop type is not supported by this role
       ansible.builtin.fail:
         msg: Next hop type '{{ connectivity_troubleshooter_validate__next_hop }}' is not supported by this role
-      when: connectivity_troubleshooter_validate__next_hop != 'local' and not connectivity_troubleshooter_validate__next_hop.startswith('nat-') and not connectivity_troubleshooter_validate__next_hop.startswith('igw-')
+      when: >
+        connectivity_troubleshooter_validate__next_hop != 'local'
+        and not connectivity_troubleshooter_validate__next_hop.startswith('nat-')
+        and not connectivity_troubleshooter_validate__next_hop.startswith('igw-')
         and not connectivity_troubleshooter_validate__next_hop.startswith('pcx-')
 
     - name: Include 'cloud.aws_troubleshooting.connectivity_troubleshooter_local' role

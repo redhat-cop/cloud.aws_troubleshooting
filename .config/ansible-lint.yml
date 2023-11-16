@@ -1,6 +1,9 @@
 ---
 profile: production
 strict: true
+exclude_paths:
+  - changelogs/changelog.yaml
+  - tests/integration
 skip_list:
   - ignore-errors  # Use failed_when and specify error conditions instead of using ignore_errors.
   - meta-no-info  # meta/main.yml should contain relevant info.

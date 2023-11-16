@@ -114,8 +114,8 @@ result:
   sample: 'Security Group validation successful'
 """
 
-from ipaddress import ip_network, ip_address
 import copy
+from ipaddress import ip_address, ip_network
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -135,26 +135,21 @@ class ValidateSecurityGroupRules(AnsibleModule):
 
         self.execute_module()
 
-    def evaluate_security_group_rules_basedon_cidr(
-        self, security_group, security_group_ids
-    ):
+    def evaluate_security_group_rules_basedon_cidr(self, security_group, security_group_ids):
         remote_cidrs = self.params.get("dest_subnet_cidrs")
         required_cidrs = copy.deepcopy(remote_cidrs)
         dest_port = self.params.get("dest_port")
         protocol = self.params.get("protocol")
         for rule in security_group.get("ip_permissions_egress", []):
-            if (
-                rule["ip_protocol"] == protocol
-                and dest_port in range(rule["from_port"], rule["to_port"] + 1)
-            ) or (rule["ip_protocol"] == "-1"):
+            if (rule["ip_protocol"] == protocol and dest_port in range(rule["from_port"], rule["to_port"] + 1)) or (
+                rule["ip_protocol"] == "-1"
+            ):
                 for group in rule["user_id_group_pairs"]:
                     if group["group_id"] in security_group_ids:
                         return
                 for remote_cidr in remote_cidrs:
                     for cidrs in rule["ip_ranges"]:
-                        if ip_network(cidrs["cidr_ip"], strict=False).overlaps(
-                            ip_network(remote_cidr, strict=False)
-                        ):
+                        if ip_network(cidrs["cidr_ip"], strict=False).overlaps(ip_network(remote_cidr, strict=False)):
                             required_cidrs.remove(remote_cidr)
                             break
 
@@ -166,22 +161,17 @@ class ValidateSecurityGroupRules(AnsibleModule):
                 protocol=protocol,
             )
 
-    def evaluate_security_group_rules_basedon_ip(
-        self, security_group, security_group_ids
-    ):
+    def evaluate_security_group_rules_basedon_ip(self, security_group, security_group_ids):
         for rule in security_group.get("ip_permissions", []):
             if (
                 rule["ip_protocol"] == self.params.get("protocol")
-                and self.params.get("dest_port")
-                in range(rule["from_port"], rule["to_port"] + 1)
+                and self.params.get("dest_port") in range(rule["from_port"], rule["to_port"] + 1)
             ) or (rule["ip_protocol"] == "-1"):
                 for group in rule["user_id_group_pairs"]:
                     if group["group_id"] in security_group_ids:
                         return
                 for cidrs in rule["ip_ranges"]:
-                    if ip_address(self.params.get("src_private_ip")) in ip_network(
-                        cidrs["cidr_ip"], strict=False
-                    ):
+                    if ip_address(self.params.get("src_private_ip")) in ip_network(cidrs["cidr_ip"], strict=False):
                         return
 
         return "Security group {id} is not allowing {protocol} traffic to/from IP {ip_addr} for port(s) {port}.".format(
@@ -193,19 +183,13 @@ class ValidateSecurityGroupRules(AnsibleModule):
 
     def execute_module(self):
         try:
-            dest_secgroup_ids = [
-                x["group_id"] for x in self.params.get("dest_security_groups")
-            ]
-            src_secgroup_ids = [
-                x["group_id"] for x in self.params.get("src_security_groups")
-            ]
+            dest_secgroup_ids = [x["group_id"] for x in self.params.get("dest_security_groups")]
+            src_secgroup_ids = [x["group_id"] for x in self.params.get("src_security_groups")]
 
             # Verify Egress traffic from Source Instance to Destination subnets
             result = None
             for sec_group in self.params.get("src_security_groups"):
-                result = self.evaluate_security_group_rules_basedon_cidr(
-                    sec_group, dest_secgroup_ids
-                )
+                result = self.evaluate_security_group_rules_basedon_cidr(sec_group, dest_secgroup_ids)
                 if result is None:
                     break
 
@@ -220,9 +204,7 @@ class ValidateSecurityGroupRules(AnsibleModule):
 
             # Verify Ingress traffic to Destination from Source Instance IP
             for sec_group in self.params.get("dest_security_groups"):
-                result = self.evaluate_security_group_rules_basedon_ip(
-                    sec_group, src_secgroup_ids
-                )
+                result = self.evaluate_security_group_rules_basedon_ip(sec_group, src_secgroup_ids)
                 if result is None:
                     break
 

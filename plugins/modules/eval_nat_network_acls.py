@@ -65,40 +65,40 @@ EXAMPLES = r"""
     dst_ip: "8.8.8.8"
     dst_port: 80
     nat_network_acls:
-    - egress:
-      - - 100
-        - "all"
-        - "allow"
-        - "0.0.0.0/0"
-        - null
-        - null
-        - 0
-        - 65535
-    - ingress:
-      - - 100
-        - "all"
-        - "allow"
-        - "0.0.0.0/0"
-        - null
-        - null
-        - 0
-        - 65535
+      - egress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
+      - ingress:
+          - - 100
+            - "all"
+            - "allow"
+            - "0.0.0.0/0"
+            - null
+            - null
+            - 0
+            - 65535
     nat_subnet_id: "subnet-0ffc739798db41a1c"
     routes:
-    - destination_cidr_block: "192.168.0.0/24"
-      gateway_id: "local"
-      instance_id: null
-      interface_id: null
-      network_interface_id: null
-      origin: "CreateRouteTable"
-      state: "active"
-    - destination_cidr_block: "0.0.0.0/0"
-      gateway_id: "igw-0b9da14cbd81d415c"
-      instance_id: null
-      interface_id: null
-      network_interface_id: null
-      origin: "CreateRoute"
-      state: "active"
+      - destination_cidr_block: "192.168.0.0/24"
+        gateway_id: "local"
+        instance_id: null
+        interface_id: null
+        network_interface_id: null
+        origin: "CreateRouteTable"
+        state: "active"
+      - destination_cidr_block: "0.0.0.0/0"
+        gateway_id: "igw-0b9da14cbd81d415c"
+        instance_id: null
+        interface_id: null
+        network_interface_id: null
+        origin: "CreateRoute"
+        state: "active"
     src_ip: "192.168.0.28"
     src_subnet_id: "subnet-05ad2d0f8648dfb41"
 """
@@ -113,7 +113,8 @@ result:
 """
 
 
-from ipaddress import ip_network, ip_address
+from ipaddress import ip_address, ip_network
+
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -158,12 +159,8 @@ class EvalNatNetworkAcls(AnsibleModule):
             src_port_from = int(self.src_port_range.split("-")[0])
             src_port_to = int(self.src_port_range.split("-")[1])
 
-        egress_acls = [acl["egress"] for acl in self.nat_network_acls if acl["egress"]][
-            0
-        ]
-        ingress_acls = [
-            acl["ingress"] for acl in self.nat_network_acls if acl["ingress"]
-        ][0]
+        egress_acls = [acl["egress"] for acl in self.nat_network_acls if acl["egress"]][0]
+        ingress_acls = [acl["ingress"] for acl in self.nat_network_acls if acl["ingress"]][0]
 
         def check_egress_towards_dst(acls, dst_ip, dst_port):
             for item in acls:
@@ -324,8 +321,7 @@ class EvalNatNetworkAcls(AnsibleModule):
                 mask = int(route["destination_cidr_block"].split("/")[1])
                 if (
                     "destination_prefix_list_id" not in str(route)
-                    and destination
-                    in ip_network(route["destination_cidr_block"], strict=False)
+                    and destination in ip_network(route["destination_cidr_block"], strict=False)
                     and mask > most_specific
                 ):
                     if route["state"] != "blackhole":
@@ -334,11 +330,7 @@ class EvalNatNetworkAcls(AnsibleModule):
         # 0.0.0.0/0
         if most_specific >= 0 and "igw-" in str(next_hop):
             return True
-        self.fail_json(
-            msg="No Internet Gateway route found for destination: {0}".format(
-                self.dst_ip
-            )
-        )
+        self.fail_json(msg="No Internet Gateway route found for destination: {0}".format(self.dst_ip))
 
     def execute_module(self):
         try:

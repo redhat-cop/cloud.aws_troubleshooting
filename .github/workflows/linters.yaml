@@ -1,21 +1,24 @@
 ---
 name: Linters
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 on:
-  push:
   pull_request:
+    branches:
+      - main
+      - stable-*
 
 jobs:
-  linters:
-    uses: ansible-network/github_actions/.github/workflows/tox-linters.yml@main
   ansible-lint:
-    name: Ansible Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: ansible-network/github_actions/.github/actions/checkout_dependency@main
+      - uses: actions/checkout@v4
 
       - name: Run ansible-lint
         uses: ansible/ansible-lint@v6.21.0
+
+  tox-linters:
+    uses: ansible-network/github_actions/.github/workflows/tox-linters.yml@main

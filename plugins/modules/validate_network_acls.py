@@ -93,10 +93,10 @@ result:
   sample: 'Network ACL validation successful'
 """
 
-from ipaddress import ip_network, ip_address
 from collections import namedtuple
-from ansible.module_utils.basic import AnsibleModule
+from ipaddress import ip_address, ip_network
 
+from ansible.module_utils.basic import AnsibleModule
 
 # NACL Entry format
 # [
@@ -161,24 +161,18 @@ class ValidateNetworkACL(AnsibleModule):
                 if egress:
                     # Evaluate traffic based on CIDR when egress is set to True
                     eval_traffic = (
-                        ip_network(nacl_entry.cidr_block, strict=False).overlaps(
-                            ip_network(cidr, strict=False)
-                        )
+                        ip_network(nacl_entry.cidr_block, strict=False).overlaps(ip_network(cidr, strict=False))
                         for cidr in self.dest_subnet_cidrs
                     )
                 else:
                     # Evaluate traffic based on IP when egress is set to False
                     eval_traffic = (
-                        ip_address(ip)
-                        in ip_network(nacl_entry.cidr_block, strict=False)
-                        for ip in self.src_private_ip
+                        ip_address(ip) in ip_network(nacl_entry.cidr_block, strict=False) for ip in self.src_private_ip
                     )
 
                 if (
                     nacl_entry.protocol in ("all", "tcp")
-                    and is_port_in_range(
-                        port, nacl_entry.port_range_from, nacl_entry.port_range_to
-                    )
+                    and is_port_in_range(port, nacl_entry.port_range_from, nacl_entry.port_range_to)
                     and any(eval_traffic)
                 ):
                     if nacl_entry.rule_action == "allow":

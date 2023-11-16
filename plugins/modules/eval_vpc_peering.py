@@ -107,7 +107,8 @@ result:
 """
 
 
-from ipaddress import ip_network, ip_address
+from ipaddress import ip_address, ip_network
+
 from ansible.module_utils.basic import AnsibleModule
 
 
@@ -135,9 +136,7 @@ class EvalVpcPeering(AnsibleModule):
         ):
             pass
         else:
-            self.fail_json(
-                msg="Troubleshooting Cross Region peering connection is not yet supported"
-            )
+            self.fail_json(msg="Troubleshooting Cross Region peering connection is not yet supported")
         if self.dst_vpc and self.dst_vpc != "":
             if self.dst_vpc in str(self.peering_info):
                 pass
@@ -158,8 +157,7 @@ class EvalVpcPeering(AnsibleModule):
                 mask = int(route["destination_cidr_block"].split("/")[1])
                 if (
                     "destination_prefix_list_id" not in str(route)
-                    and src_ip
-                    in ip_network(route["destination_cidr_block"], strict=False)
+                    and src_ip in ip_network(route["destination_cidr_block"], strict=False)
                     and mask > most_specific
                 ):
                     if route["state"] != "blackhole":
