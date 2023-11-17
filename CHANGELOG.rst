@@ -18,7 +18,7 @@ Breaking Changes / Porting Guide
 
 - Remove support for ansible-core < 2.14 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/33).
 - roles/aws_setup_credentials - Due to ansible-lint issue, the AWS generated credentials are now stored into variable ``aws_setup_credentials__output`` instead of ``aws_role_credentials`` (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/24).
-- roles/connectivity_troubleshooter_validate - Due to ansible-lint issue, the next hop information are now stored into variable ``connectivity_troubleshooter_validate__next_hop`` instead of `next_hop` (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/24).
+- roles/connectivity_troubleshooter_validate - Due to ansible-lint issue, the next hop information are now stored into variable ``connectivity_troubleshooter_validate__next_hop`` instead of ``next_hop`` (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/24).
 
 Minor Changes
 -------------
