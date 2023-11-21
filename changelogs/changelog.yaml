@@ -59,4 +59,4 @@ releases:
     - ansible_lint_sanity_fixes.yml
     - automation_hub_update_readme.yaml
     - fix_sanity_issues.yaml
-    release_date: '2023-11-17'
+    release_date: '2023-11-21'
