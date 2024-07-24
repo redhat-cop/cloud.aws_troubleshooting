@@ -1,9 +1,16 @@
-=======================================
+========================================
 cloud.aws_troubleshooting Release Notes
-=======================================
+========================================
 
 .. contents:: Topics
 
+v3.0.0
+======
+
+Release Summary
+---------------
+
+This release removes support for ansible-core < 2.15.
 
 v2.0.0
 ======

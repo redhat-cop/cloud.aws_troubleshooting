@@ -60,3 +60,9 @@ releases:
     - automation_hub_update_readme.yaml
     - fix_sanity_issues.yaml
     release_date: '2023-11-21'
+  3.0.0:
+    changes:
+      release_summary: This release removes support for ansible-core < 2.15.
+    fragments:
+    - v3.0.0.yml
+    release_date: '2024-07-24'
