@@ -1,13 +1,21 @@
-# cloud.aws_troubleshooting
+# cloud.aws_troubleshooting Validated Content Collection
 
-The collection includes a variety of Ansible roles to help troubleshoot AWS Resources.
+This repository hosts the cloud.aws_troubleshooting Ansible Collection.
+
+## Description
+
+The cloud.aws_troubleshooting validated content collection in Ansible is designed to help users efficiently diagnose and resolve issues within their AWS environments. This collection includes a variety of Ansible roles and playbooks specifically tailored for troubleshooting common problems encountered in AWS infrastructure.
+
+## Requirements
+
+The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [community.aws](https://github.com/ansible-collections/amazon.aws) collections MUST be installed in order for this collection to work.
 
 <!--start requires_ansible-->
-## Ansible version compatibility
+### Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.14.0**.
+This collection has been tested against following Ansible versions: **>=2.15.0**.
 
-## Included content
+### Included content
 
 Click on the name of a role to view that content's documentation:
 
@@ -27,13 +35,7 @@ Name | Description
 
 <!--end collection content-->
 
-## Installation and Usage
-
-### Requirements
-
-The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [community.aws](https://github.com/ansible-collections/amazon.aws) collections MUST be installed in order for this collection to work.
-
-### Installation
+## Installation
 
 To consume this Validated Content from Automation Hub, please ensure that you add the following lines to your ansible.cfg file.
 
@@ -55,7 +57,7 @@ Once the above steps are done, you can run the following command to install the 
 ansible-galaxy collection install cloud.aws_troubleshooting
 ```
 
-### Using this collection
+## Use cases
 
 Once installed, you can reference the cloud.aws_troubleshooting collection content by its fully qualified collection name (FQCN), for example:
 
@@ -70,10 +72,6 @@ Once installed, you can reference the cloud.aws_troubleshooting collection conte
           connectivity_troubleshooter_destination_port: 80
           connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 ```
-
-### See Also
-
-* [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
 
 ## Contributing to this collection
 
@@ -107,6 +105,22 @@ If you want to run cloud integration tests, ensure you log in to the cloud:
 ```
 
 This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CI.md).
+
+## Support
+
+You can also join us on:
+
+- Libera.Chat IRC - the ``#ansible-aws`` [irc.libera.chat](https://libera.chat/) channel
+
+## Release Notes
+
+See the [raw generated changelog](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CHANGELOG.rst).
+
+## Related Information
+
+ - [Ansible User guide](https://docs.ansible.com/ansible/latest/user_guide/index.html).
+ - [Ansible Rulebook documentation](https://ansible.readthedocs.io/projects/rulebook/en/stable/index.html).
+ - [Ansible Community code of conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
 
 ## License
 
