@@ -62,6 +62,24 @@ ansible-galaxy collection install cloud.aws_troubleshooting
 Once installed, you can reference the cloud.aws_troubleshooting collection content by its fully qualified collection name (FQCN), for example:
 
 ```yaml
+  # Troubleshoot when ec2 instance cannot connect to rds instance
+  - hosts: all
+    tasks:
+       - name: Validate that role is also failing
+         block:
+           - name: Include role cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+             ansible.builtin.include_role:
+               name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+             vars:
+               troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
+               troubleshoot_rds_connectivity_ec2_instance_id: "{{ ec2_instance_id }}"
+         rescue:
+           - name: Set role failure info
+             ansible.builtin.set_fact:
+               role_failure_action: "{{ ansible_failed_task.action }}"
+               role_failure_msg: "{{ ansible_failed_result.msg }}"
+
+  # Troubleshoot AWS resource connectivity
   - hosts: all
     tasks:
        - name: Include 'cloud.aws_troubleshooting.connectivity_troubleshooter' role
@@ -76,8 +94,9 @@ Once installed, you can reference the cloud.aws_troubleshooting collection conte
 ## Contributing to this collection
 
 We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against this collection repository.
+See [CONTRIBUTING.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CONTRIBUTING.md) for more details.
 
-### Testing and Development
+### Testing
 
 The project uses `ansible-lint` and `black`.
 Assuming this repository is checked out in the proper structure,
@@ -108,9 +127,11 @@ This collection is tested using GitHub Actions. To know more about CI, refer to 
 
 ## Support
 
-You can also join us on:
+For the latest supported versions, refer to the release notes below.
 
-- Libera.Chat IRC - the ``#ansible-aws`` [irc.libera.chat](https://libera.chat/) channel
+If you encounter issues or have questions, you can submit a support request through the following channels:
+ - GitHub Issues: Report bugs, request features, or ask questions by opening an issue in the [GitHub repository](https://github.com/redhat-cop/cloud.aws_troubleshooting/).
+ - Ansible Community: Engage with the Ansible community on the Ansible Project Mailing List or [Ansible Forum](https://forum.ansible.com/g/AWS).
 
 ## Release Notes
 
