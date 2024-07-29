@@ -1,13 +1,21 @@
-# cloud.aws_troubleshooting
+# cloud.aws_troubleshooting Validated Content Collection
 
-The collection includes a variety of Ansible roles to help troubleshoot AWS Resources.
+This repository hosts the cloud.aws_troubleshooting Ansible Collection.
+
+## Description
+
+The cloud.aws_troubleshooting validated content collection in Ansible is designed to help users efficiently diagnose and resolve issues within their AWS environments. This collection includes a variety of Ansible roles and playbooks specifically tailored for troubleshooting common problems encountered in AWS infrastructure.
+
+## Requirements
+
+The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [community.aws](https://github.com/ansible-collections/amazon.aws) collections MUST be installed in order for this collection to work.
 
 <!--start requires_ansible-->
-## Ansible version compatibility
+### Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.14.0**.
+This collection has been tested against following Ansible versions: **>=2.15.0**.
 
-## Included content
+### Included content
 
 Click on the name of a role to view that content's documentation:
 
@@ -27,13 +35,7 @@ Name | Description
 
 <!--end collection content-->
 
-## Installation and Usage
-
-### Requirements
-
-The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [community.aws](https://github.com/ansible-collections/amazon.aws) collections MUST be installed in order for this collection to work.
-
-### Installation
+## Installation
 
 To consume this Validated Content from Automation Hub, please ensure that you add the following lines to your ansible.cfg file.
 
@@ -55,11 +57,29 @@ Once the above steps are done, you can run the following command to install the 
 ansible-galaxy collection install cloud.aws_troubleshooting
 ```
 
-### Using this collection
+## Use cases
 
 Once installed, you can reference the cloud.aws_troubleshooting collection content by its fully qualified collection name (FQCN), for example:
 
 ```yaml
+  # Troubleshoot when ec2 instance cannot connect to rds instance
+  - hosts: all
+    tasks:
+       - name: Validate that role is also failing
+         block:
+           - name: Include role cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+             ansible.builtin.include_role:
+               name: cloud.aws_troubleshooting.troubleshoot_rds_connectivity
+             vars:
+               troubleshoot_rds_connectivity_db_instance_id: "{{ rds_identifier }}"
+               troubleshoot_rds_connectivity_ec2_instance_id: "{{ ec2_instance_id }}"
+         rescue:
+           - name: Set role failure info
+             ansible.builtin.set_fact:
+               role_failure_action: "{{ ansible_failed_task.action }}"
+               role_failure_msg: "{{ ansible_failed_result.msg }}"
+
+  # Troubleshoot AWS resource connectivity
   - hosts: all
     tasks:
        - name: Include 'cloud.aws_troubleshooting.connectivity_troubleshooter' role
@@ -71,15 +91,12 @@ Once installed, you can reference the cloud.aws_troubleshooting collection conte
           connectivity_troubleshooter_source_ip: "{{ ip_instance_1 }}"
 ```
 
-### See Also
-
-* [Ansible Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
-
 ## Contributing to this collection
 
 We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against this collection repository.
+See [CONTRIBUTING.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CONTRIBUTING.md) for more details.
 
-### Testing and Development
+### Testing
 
 The project uses `ansible-lint` and `black`.
 Assuming this repository is checked out in the proper structure,
@@ -107,6 +124,24 @@ If you want to run cloud integration tests, ensure you log in to the cloud:
 ```
 
 This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CI.md).
+
+## Support
+
+For the latest supported versions, refer to the release notes below.
+
+If you encounter issues or have questions, you can submit a support request through the following channels:
+ - GitHub Issues: Report bugs, request features, or ask questions by opening an issue in the [GitHub repository](https://github.com/redhat-cop/cloud.aws_troubleshooting/).
+ - Ansible Community: Engage with the Ansible community on the Ansible Project Mailing List or [Ansible Forum](https://forum.ansible.com/g/AWS).
+
+## Release Notes
+
+See the [raw generated changelog](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CHANGELOG.rst).
+
+## Related Information
+
+ - [Ansible User guide](https://docs.ansible.com/ansible/latest/user_guide/index.html).
+ - [Ansible Rulebook documentation](https://ansible.readthedocs.io/projects/rulebook/en/stable/index.html).
+ - [Ansible Community code of conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
 
 ## License
 
