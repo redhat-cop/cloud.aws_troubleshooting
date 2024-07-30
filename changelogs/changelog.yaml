@@ -60,3 +60,15 @@ releases:
     - automation_hub_update_readme.yaml
     - fix_sanity_issues.yaml
     release_date: '2023-11-21'
+  3.0.0:
+    changes:
+      breaking_changes:
+      - Bump minimum version requirement for ansible-core to 2.15 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/36).
+      minor_changes:
+      - Bump version of ansible-lint to minimum 24.7.0 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/36).
+      release_summary: This release removes support for ansible-core < 2.15.
+    fragments:
+    - 3.0.0.yml
+    - 36-bump-ansible-lint-version.yml
+    - readme_template_update.yml
+    release_date: '2024-07-29'

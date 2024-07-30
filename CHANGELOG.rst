@@ -4,6 +4,23 @@ cloud.aws_troubleshooting Release Notes
 
 .. contents:: Topics
 
+v3.0.0
+======
+
+Release Summary
+---------------
+
+This release removes support for ansible-core < 2.15.
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Bump minimum version requirement for ansible-core to 2.15 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/36).
+
+Minor Changes
+-------------
+
+- Bump version of ansible-lint to minimum 24.7.0 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/36).
 
 v2.0.0
 ======
