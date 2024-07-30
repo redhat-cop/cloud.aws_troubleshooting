@@ -71,4 +71,4 @@ releases:
     - 3.0.0.yml
     - 36-bump-ansible-lint-version.yml
     - readme_template_update.yml
-    release_date: '2024-07-29'
+    release_date: '2024-07-30'
