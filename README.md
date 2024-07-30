@@ -24,14 +24,14 @@ Click on the name of a role to view that content's documentation:
 
 Name | Description
 --- | ---
-[cloud.aws_troubleshooting.aws_setup_credentials](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/aws_setup_credentials/README.md)|A role to define credentials for aws modules.
-[cloud.aws_troubleshooting.connectivity_troubleshooter](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter/README.md)|A role to troubleshoot connectivity issues between the following: a) AWS resources within an Amazon Virtual Private Cloud (Amazon VPC); b) AWS resources in different Amazon VPCs within the same AWS Region that are connected using VPC peering; c) AWS resources in an Amazon VPC and an internet resource using an internet gateway; d) AWS resources in an Amazon VPC and an internet resource using a network address translation (NAT) gateway.
-[cloud.aws_troubleshooting.connectivity_troubleshooter_igw](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter_igw/README.md)|A role to troubleshoot connectivity issues between AWS resources in an Amazon VPC and an internet resource using an internet gateway.
-[cloud.aws_troubleshooting.connectivity_troubleshooter_local](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter_local/README.md)|A role to troubleshoot connectivity issues between AWS resources within an Amazon Virtual Private Cloud (Amazon VPC).
-[cloud.aws_troubleshooting.connectivity_troubleshooter_nat](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter_nat/README.md)|A role to troubleshoot connectivity issues between AWS resources in an Amazon VPC and an internet resource using a network address translation (NAT) gateway.
-[cloud.aws_troubleshooting.connectivity_troubleshooter_peering](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter_peering/README.md)|A role to troubleshoot connectivity issues between AWS resources in different Amazon VPCs within the same AWS Region that are connected using VPC peering.
-[cloud.aws_troubleshooting.connectivity_troubleshooter_validate](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/connectivity_troubleshooter_validate/README.md)|A role to validate input parameters for troubleshoot_connectivity_* roles and return connection next hop.
-[cloud.aws_troubleshooting.troubleshoot_rds_connectivity](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/roles/troubleshoot_rds_connectivity/README.md)|A role to troubleshoot RDS connectivity from an EC2 instance.
+[cloud.aws_troubleshooting.aws_setup_credentials](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/aws_setup_credentials/README.md)|A role to define credentials for aws modules.
+[cloud.aws_troubleshooting.connectivity_troubleshooter](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter/README.md)|A role to troubleshoot connectivity issues between the following: a) AWS resources within an Amazon Virtual Private Cloud (Amazon VPC); b) AWS resources in different Amazon VPCs within the same AWS Region that are connected using VPC peering; c) AWS resources in an Amazon VPC and an internet resource using an internet gateway; d) AWS resources in an Amazon VPC and an internet resource using a network address translation (NAT) gateway.
+[cloud.aws_troubleshooting.connectivity_troubleshooter_igw](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter_igw/README.md)|A role to troubleshoot connectivity issues between AWS resources in an Amazon VPC and an internet resource using an internet gateway.
+[cloud.aws_troubleshooting.connectivity_troubleshooter_local](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter_local/README.md)|A role to troubleshoot connectivity issues between AWS resources within an Amazon Virtual Private Cloud (Amazon VPC).
+[cloud.aws_troubleshooting.connectivity_troubleshooter_nat](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter_nat/README.md)|A role to troubleshoot connectivity issues between AWS resources in an Amazon VPC and an internet resource using a network address translation (NAT) gateway.
+[cloud.aws_troubleshooting.connectivity_troubleshooter_peering](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter_peering/README.md)|A role to troubleshoot connectivity issues between AWS resources in different Amazon VPCs within the same AWS Region that are connected using VPC peering.
+[cloud.aws_troubleshooting.connectivity_troubleshooter_validate](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/connectivity_troubleshooter_validate/README.md)|A role to validate input parameters for troubleshoot_connectivity_* roles and return connection next hop.
+[cloud.aws_troubleshooting.troubleshoot_rds_connectivity](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/roles/troubleshoot_rds_connectivity/README.md)|A role to troubleshoot RDS connectivity from an EC2 instance.
 
 <!--end collection content-->
 
@@ -94,7 +94,7 @@ Once installed, you can reference the cloud.aws_troubleshooting collection conte
 ## Contributing to this collection
 
 We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against this collection repository.
-See [CONTRIBUTING.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CONTRIBUTING.md) for more details.
+See [CONTRIBUTING.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/CONTRIBUTING.md) for more details.
 
 ### Testing
 
@@ -123,7 +123,7 @@ If you want to run cloud integration tests, ensure you log in to the cloud:
   ansible-test integration [target]
 ```
 
-This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CI.md).
+This collection is tested using GitHub Actions. To know more about CI, refer to [CI.md](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/CI.md).
 
 ## Support
 
@@ -135,7 +135,7 @@ If you encounter issues or have questions, you can submit a support request thro
 
 ## Release Notes
 
-See the [raw generated changelog](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/CHANGELOG.rst).
+See the [raw generated changelog](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/CHANGELOG.rst).
 
 ## Related Information
 
@@ -146,4 +146,4 @@ See the [raw generated changelog](https://github.com/redhat-cop/cloud.aws_troubl
 ## License
 
 GNU General Public License v3.0 or later
-See [LICENSE](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/LICENSE) to see the full text.
+See [LICENSE](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/LICENSE) to see the full text.

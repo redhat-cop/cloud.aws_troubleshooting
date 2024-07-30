@@ -55,7 +55,7 @@ License
 
 GNU General Public License v3.0 or later
 
-See [LICENSE](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/main/LICENSE) to see the full text.
+See [LICENSE](https://github.com/redhat-cop/cloud.aws_troubleshooting/blob/stable-3/LICENSE) to see the full text.
 
 Author Information
 ------------------
