@@ -84,6 +84,7 @@ class GetConnectionNextHopType(AnsibleModule):
         most_specific = -1
 
         for route in self.routes:
+            next_hop = None
             if route.get("destination_cidr_block"):
                 mask = int(route["destination_cidr_block"].split("/")[1])
                 if (
