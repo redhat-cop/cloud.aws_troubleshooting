@@ -29,7 +29,7 @@
     rds_instance_info: "{{ troubleshoot_rds_connectivity__rds_info.instances.0 }}"
 
 - name: Get RDS Network ACL Rules
-  community.aws.ec2_vpc_nacl_info:
+  amazon.aws.ec2_vpc_nacl_info:
     filters:
       association.subnet-id: "{{ troubleshoot_rds_connectivity__rds_instance_subnets }}"
   register: troubleshoot_rds_connectivity__rds_network_acl

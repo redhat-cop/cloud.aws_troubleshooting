@@ -26,7 +26,7 @@
   register: troubleshoot_rds_connectivity__ec2_subnets_info
 
 - name: Get EC2 Network Acl Rules
-  community.aws.ec2_vpc_nacl_info:
+  amazon.aws.ec2_vpc_nacl_info:
     filters:
       association.subnet-id: "{{ troubleshoot_rds_connectivity__ec2_subnet_id }}"
   register: troubleshoot_rds_connectivity__ec2_network_acl

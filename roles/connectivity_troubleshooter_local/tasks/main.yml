@@ -86,7 +86,7 @@
       register: connectivity_troubleshooter_local__result_eval_security_groups
 
     - name: Gather information about source subnet network ACLs
-      community.aws.ec2_vpc_nacl_info:
+      amazon.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
             - "{{ connectivity_troubleshooter_local__src_subnet_id }}"
@@ -102,7 +102,7 @@
         _vals: "{{ ['egress', 'ingress'] | map('extract', item) }}"
 
     - name: Gather information about destination network ACLs
-      community.aws.ec2_vpc_nacl_info:
+      amazon.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
             - "{{ connectivity_troubleshooter_local__dst_subnet_id }}"

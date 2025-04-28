@@ -35,7 +35,7 @@
       with_items: "{{ connectivity_troubleshooter_igw__src_security_groups }}"
 
     - name: Gather information about source subnet network ACLs
-      community.aws.ec2_vpc_nacl_info:
+      amazon.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
             - "{{ connectivity_troubleshooter_igw__src_subnet_id }}"
