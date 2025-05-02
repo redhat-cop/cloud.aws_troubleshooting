@@ -37,7 +37,7 @@
         - __vpc_info_2.vpcs | length > 0
       block:
         - name: Find all VPC Peering connections
-          community.aws.ec2_vpc_peering_info:
+          amazon.aws.ec2_vpc_peering_info:
             filters:
               accepter-vpc-info.vpc-id: "{{ item }}"
           register: __vpc_peering_info

@@ -22,7 +22,7 @@
         connectivity_troubleshooter_nat__nat_gw_info: "{{ connectivity_troubleshooter_nat__describe_nat_gw.result.0 }}"
 
     - name: Gather information about NAT gateway subnet networks ACLs
-      community.aws.ec2_vpc_nacl_info:
+      amazon.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id: "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"
       register: connectivity_troubleshooter_nat__nat_network_acls_info
@@ -71,7 +71,7 @@
             connectivity_troubleshooter_nat__nat_routes: "{{ connectivity_troubleshooter_nat__nat_route_table_retry.route_tables.0.routes }}"
 
     - name: Gather information about NAT subnet network ACLs
-      community.aws.ec2_vpc_nacl_info:
+      amazon.aws.ec2_vpc_nacl_info:
         filters:
           association.subnet-id:
             - "{{ connectivity_troubleshooter_nat__nat_subnet_id }}"

@@ -20,7 +20,7 @@
         vpc_peering_id: "{{ result.peering_id }}"
 
     - name: Ensure VPC peering connection request exists before moving forward
-      community.aws.ec2_vpc_peering_info:
+      amazon.aws.ec2_vpc_peering_info:
         peer_connection_ids:
           - "{{ vpc_peering_id }}"
         region: "{{ aws_region }}"

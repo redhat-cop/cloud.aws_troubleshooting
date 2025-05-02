@@ -9,7 +9,7 @@
       when: "'pcx-' not in connectivity_troubleshooter_validate__next_hop"
 
     - name: Gather information about peering connection
-      community.aws.ec2_vpc_peering_info:
+      amazon.aws.ec2_vpc_peering_info:
         filters:
           vpc-peering-connection-id:
             - "{{ connectivity_troubleshooter_validate__next_hop }}"

@@ -316,6 +316,7 @@ class EvalNatNetworkAcls(AnsibleModule):
             )
 
         for route in self.routes:
+            next_hop = None
             # Confirms whether the source has a public IP address associated with the resource, if the route destination is an internet gateway.
             if route.get("destination_cidr_block"):
                 mask = int(route["destination_cidr_block"].split("/")[1])
