@@ -25,4 +25,3 @@ bugfixes:
 minor_changes:
   - documentation: >
       Update playbooks and roles documentation to provide updated information (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/44).
-
