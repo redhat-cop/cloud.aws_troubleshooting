@@ -7,14 +7,14 @@
       session_token: "{{ security_token | default(omit) }}"
       region: "{{ aws_region }}"
   block:
-    - name: List routes table from VPC {{ rds_vpc_id }}
+    - name: List routes table from VPC
       amazon.aws.ec2_vpc_route_table_info:
         filters:
           vpc-id: "{{ rds_vpc_id }}"
           association.main: false
       register: rds_vpc_routes
 
-    - name: Delete routes table from VPC {{ rds_vpc_id }}
+    - name: Delete routes table from VPC
       amazon.aws.ec2_vpc_route_table:
         route_table_id: "{{ item }}"
         vpc_id: "{{ rds_vpc_id }}"
@@ -23,14 +23,14 @@
       ignore_errors: true
       with_items: "{{ rds_vpc_routes.route_tables | map(attribute='id') | list }}"
 
-    - name: List routes table from VPC {{ ec2_vpc_id }}
+    - name: List routes table from VPC
       amazon.aws.ec2_vpc_route_table_info:
         filters:
           vpc-id: "{{ ec2_vpc_id }}"
           association.main: false
       register: rds_vpc_routes
 
-    - name: Delete routes table from VPC {{ ec2_vpc_id }}
+    - name: Delete routes table from VPC
       amazon.aws.ec2_vpc_route_table:
         route_table_id: "{{ item }}"
         vpc_id: "{{ ec2_vpc_id }}"

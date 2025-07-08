@@ -140,9 +140,8 @@
           ansible.builtin.yum:
             name:
               - virtualenv
-              - python-devel
+              - python3-devel
               - postgresql-devel
-              - rpm-build
               - gcc
             state: present
           become: true
@@ -150,6 +149,6 @@
         - name: Create virtual environment
           ansible.builtin.pip:
             name:
-              - psycopg2
-            virtualenv_python: python3.11
+              - psycopg2-binary
+            virtualenv_python: python3
             virtualenv: ~/env

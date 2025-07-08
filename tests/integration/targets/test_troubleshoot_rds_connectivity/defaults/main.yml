@@ -1,5 +1,5 @@
 ---
-aws_security_token: "{{ security_token | default(omit) }}"
+aws_session_token: "{{ security_token | default(omit) }}"
 ec2_vpc_cidr: 10.1.0.0/16
 ec2_vpc_name: "{{ resource_prefix }}-vpc"
 ec2_subnet_cidr: 10.1.1.0/24
@@ -11,7 +11,7 @@ ec2_ami_filter:
   architecture: x86_64
   virtualization-type: hvm
   root-device-type: ebs
-  name: Fedora-Cloud-Base-37-*
+  name: Fedora-Cloud-Base-39-*
 resource_tags:
   created_by: ansible-test
   resource_prefix: "{{ resource_prefix }}"
