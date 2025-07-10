@@ -309,6 +309,7 @@ class EvalNatNetworkAcls(AnsibleModule):
     def get_nat_next_hop(self):
         destination = ip_address(self.dst_ip)
         most_specific = -1
+        next_hop = None
 
         if self.src_subnet_id == self.nat_subnet_id:
             self.fail_json(
@@ -316,7 +317,6 @@ class EvalNatNetworkAcls(AnsibleModule):
             )
 
         for route in self.routes:
-            next_hop = None
             # Confirms whether the source has a public IP address associated with the resource, if the route destination is an internet gateway.
             if route.get("destination_cidr_block"):
                 mask = int(route["destination_cidr_block"].split("/")[1])

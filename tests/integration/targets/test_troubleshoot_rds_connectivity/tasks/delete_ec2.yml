@@ -43,3 +43,4 @@
   amazon.aws.ec2_vpc_net:
     vpc_id: "{{ ec2_vpc_id }}"
     state: absent
+  ignore_errors: true

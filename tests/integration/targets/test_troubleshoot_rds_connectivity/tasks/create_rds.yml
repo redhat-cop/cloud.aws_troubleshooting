@@ -82,7 +82,7 @@
         db_instance_identifier: "{{ rds_identifier }}"
         db_name: "{{ rds_instance_name }}"
         engine: postgres
-        engine_version: "14.8"
+        engine_version: "16.3"
         master_user_password: "{{ rds_master_password }}"
         master_username: "{{ rds_master_user }}"
         monitoring_interval: 0

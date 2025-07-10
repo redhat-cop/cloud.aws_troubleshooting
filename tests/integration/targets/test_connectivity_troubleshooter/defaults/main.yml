@@ -1,6 +1,6 @@
 ---
 # defaults file for tests/integration/targets/test_connectivity_troubleshooter
-aws_security_token: "{{ security_token | default(omit) }}"
+aws_session_token: "{{ security_token | default(omit) }}"
 vpc_name: "{{ resource_prefix }}-vpc"
 instance_name: "{{ resource_prefix }}-ec2"
 igw_name: "{{ resource_prefix }}-igw"

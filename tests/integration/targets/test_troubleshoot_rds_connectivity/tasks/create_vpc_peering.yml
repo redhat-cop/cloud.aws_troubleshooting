@@ -7,8 +7,8 @@
       session_token: "{{ security_token | default(omit) }}"
       region: "{{ aws_region }}"
   block:
-    - name: Create VPC Peer
-      community.aws.ec2_vpc_peer:
+    - name: Create VPC peering connection request
+      amazon.aws.ec2_vpc_peering:
         region: "{{ aws_region }}"
         vpc_id: "{{ rds_vpc_id }}"
         peer_vpc_id: "{{ ec2_vpc_id }}"
@@ -25,12 +25,12 @@
           - "{{ vpc_peering_id }}"
         region: "{{ aws_region }}"
       register: request
-      retries: 3
+      retries: 12
       delay: 5
       until: request.vpc_peering_connections[0].vpc_peering_connection_id is defined
 
     - name: Accept VPC peering request
-      community.aws.ec2_vpc_peer:
+      amazon.aws.ec2_vpc_peering:
         region: "{{ aws_region }}"
         peering_id: "{{ vpc_peering_id }}"
         state: accept
@@ -53,10 +53,10 @@
         subnets:
           - "{{ ec2_subnet_id }}"
         routes:
-          - dest: "{{ rds_vpc_cidr }}"
-            vpc_peering_connection_id: "{{ vpc_peering_id }}"
           - dest: "0.0.0.0/0"
             gateway_id: "{{ ec2_internet_gw_id }}"
+          - dest: "{{ rds_vpc_cidr }}"
+            vpc_peering_connection_id: "{{ vpc_peering_id }}"
         lookup: tag
         resource_tags:
           peering: with_rds_vpc
