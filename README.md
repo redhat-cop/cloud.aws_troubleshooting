@@ -13,7 +13,7 @@ The [amazon.aws](https://github.com/ansible-collections/amazon.aws) and [communi
 <!--start requires_ansible-->
 ### Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.15.0**.
+This collection has been tested against following Ansible versions: **>=2.17.0**.
 
 ### Included content
 
