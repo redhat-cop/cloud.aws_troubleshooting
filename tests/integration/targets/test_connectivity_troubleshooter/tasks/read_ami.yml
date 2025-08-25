@@ -13,8 +13,8 @@
           architecture: x86_64
           virtualization-type: hvm
           root-device-type: ebs
-          name: Fedora-Cloud-Base-39*
-      no_log: true
+          name: Fedora-Cloud-Base*42-*
+          no_log: true
       register: fedora_images
 
     - name: Set 'image_id' variable
