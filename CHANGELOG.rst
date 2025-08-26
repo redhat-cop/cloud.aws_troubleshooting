@@ -1,8 +1,37 @@
-=======================================
-cloud.aws_troubleshooting Release Notes
-=======================================
+========================================
+cloud.aws\_troubleshooting Release Notes
+========================================
 
 .. contents:: Topics
+
+v4.0.0
+======
+
+Release Summary
+---------------
+
+This release includes updates to the ansible-core, amazon.aws, community.aws, and ansible-lint dependencies.
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Support for ansible-core < 2.17 has been dropped
+- setup_aws_credentials - Support for the ``EC2_ACCESS_KEY`` environment variable has been removed in the latest major release of amazon.aws 10.0.0 and removed from this role. Please use the ``aws_access_key`` parameter or ``AWS_ACCESS_KEY_ID`` environment variable instead. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+- setup_aws_credentials - Support for the ``EC2_REGION`` environment variable has been removed in the latest major release of amazon.aws 10.0.0 and removed from this role. Please use the ``region`` parameter or ``AWS_REGION`` environment variable instead. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+- setup_aws_credentials - Support for the ``EC2_SECRET_KEY`` environment variable has been removed in the latest major release of amazon.aws 10.0.0 and removed from this role.Please use the ``aws_secret_key`` parameter or ``AWS_SECRET_ACCESS_KEY`` environment variable instead. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+- setup_aws_credentials - Support for the ``EC2_SECURITY_TOKEN`` and the ``AWS_SECURITY_TOKEN`` environment variable has been removed in the latest major release of amazon.aws 10.0.0 and removed from this role. Please use the ``aws_session_token`` parameter or ``AWS_SESSION_TOKEN`` environment variable instead. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+- setup_aws_credentials - Support for the ``EC2_URL_TOKEN`` environment variable has been removed in the latest major release of amazon.aws 10.0.0 and removed from this role. Please use the ``aws_endpoint_url`` parameter or ``AWS_URL`` environment variable instead. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+
+Minor Changes
+-------------
+
+- Bump version of ansible-lint to 25.1.2 (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/42).
+- documentation - Update playbooks and roles documentation to provide updated information. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
+
+Bugfixes
+--------
+
+- Fix integration tests to work with ansible-core 2.19. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
 
 v3.0.0
 ======
