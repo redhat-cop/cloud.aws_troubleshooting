@@ -11,7 +11,7 @@ ec2_ami_filter:
   architecture: x86_64
   virtualization-type: hvm
   root-device-type: ebs
-  name: Fedora-Cloud-Base-39-*
+  name: Fedora-Cloud-Base*42-*
 resource_tags:
   created_by: ansible-test
   resource_prefix: "{{ resource_prefix }}"
