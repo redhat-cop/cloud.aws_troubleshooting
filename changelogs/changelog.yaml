@@ -131,4 +131,4 @@ releases:
     - 4.0.0.yml
     - 49-update-ansible-lint.yaml
     - fixes.yml
-    release_date: '2025-08-26'
+    release_date: '2025-09-02'
