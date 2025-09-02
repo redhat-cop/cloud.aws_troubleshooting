@@ -10,7 +10,7 @@ v4.0.0
 Release Summary
 ---------------
 
-This release includes updates to the ansible-core, amazon.aws, community.aws, and ansible-lint dependencies.
+Support for certain environment variables has been removed. The versions of ansible-core, ansible-lint, amazon.aws, and community.aws have been updated.
 
 Breaking Changes / Porting Guide
 --------------------------------

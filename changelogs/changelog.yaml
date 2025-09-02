@@ -123,11 +123,12 @@ releases:
         information. (https://github.com/redhat-cop/cloud.aws_troubleshooting/pull/45)
 
         '
-      release_summary: This release includes updates to the ansible-core, amazon.aws,
-        community.aws, and ansible-lint dependencies.
+      release_summary: Support for certain environment variables has been removed.
+        The versions of ansible-core, ansible-lint, amazon.aws, and community.aws
+        have been updated.
     fragments:
     - 4.0.0-increase_ansible_version.yml
     - 4.0.0.yml
     - 49-update-ansible-lint.yaml
     - fixes.yml
-    release_date: '2025-08-26'
+    release_date: '2025-09-02'
