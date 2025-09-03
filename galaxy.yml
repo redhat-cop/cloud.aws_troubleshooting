@@ -1,7 +1,7 @@
 ---
 namespace: cloud
 name: aws_troubleshooting
-version: 4.0.0-dev0
+version: 5.0.0-dev0
 readme: README.md
 authors:
   - Ansible (https://github.com/ansible)
@@ -14,8 +14,8 @@ tags:
   - infrastructure
   - cluster
 dependencies:
-  amazon.aws: '>=5.1.0'
-  community.aws: '>=5.0.0'
+  amazon.aws: '>=10.0.0'
+  community.aws: '>=10.0.0'
 repository: https://github.com/redhat-cop/cloud.aws_troubleshooting
 documentation: ''
 homepage: https://github.com/redhat-cop/cloud.aws_troubleshooting
