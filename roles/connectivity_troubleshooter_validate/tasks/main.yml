@@ -1,5 +1,6 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_validate
+# test
 
 - name: Run 'cloud.aws_troubleshooting.connectivity_troubleshooter_validate' role
   block:
