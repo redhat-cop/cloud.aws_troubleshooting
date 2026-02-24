@@ -17,8 +17,5 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: run-ansible-lint
-        uses: ansible/ansible-lint@v25.1.2
-
   tox-linters:
     uses: ansible-network/github_actions/.github/workflows/tox-linters.yml@main
