@@ -1,4 +1,6 @@
 ---
 profile: production
 exclude_paths:
+  - .ansible/
+  - .github/
   - tests/integration
