@@ -56,7 +56,7 @@ EXAMPLES = r"""
         cidr_block: "172.25.0.0/28"
         cidr_block_set:
           - cidr_block: "172.25.0.0/28"
-        owner_id": "721066863947"
+        owner_id: "721066863947"
         peering_options:
           allow_dns_resolution_from_remote_vpc: false
           allow_egress_from_local_classic_link_to_remote_vpc: false

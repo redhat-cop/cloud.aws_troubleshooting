@@ -118,7 +118,7 @@ EXAMPLES = r"""
       private_dns_name: "ip-192-168-0-11.ec2.internal"
       private_ip_address: "192.168.0.11"
       private_ip_addresses:
-        - association":
+        - association:
           ip_owner_id: "amazon"
           public_dns_name: "ec2-3-93-192-138.compute-1.amazonaws.com"
           public_ip: "3.93.192.138"
