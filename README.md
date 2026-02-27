@@ -4,7 +4,6 @@ The Ansible AWS Troubleshooting collection includes a variety of Ansible content
 ## Contents
 
 - [Description](#description)
-- [Communication](#communication)
 - [Requirements](#requirements)
   - [Ansible Version Compatibility](#ansible-version-compatibility)
   - [Python Version Compatibility](#python-version-compatibility)
@@ -24,20 +23,6 @@ The Ansible AWS Troubleshooting collection includes a variety of Ansible content
 ## Description
 
 The primary purpose of this collection is to simplify and streamline the diagnosis and resolution of AWS connectivity and resource configuration issues through automation. By leveraging this collection, organizations can reduce manual troubleshooting effort, minimize errors, and ensure consistent diagnostic approaches. This leads to faster issue resolution and a more reliable infrastructure.
-
-This collection was formerly known as `redhat_cop.cloud_aws_troubleshooting`.
-
-## Communication
-
-* Join the Ansible forum:
-  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others.
-  * [Posts tagged with 'aws'](https://forum.ansible.com/tag/aws): subscribe to participate in collection-related conversations.
-  * [Social Spaces](https://forum.ansible.com/c/chat/4): gather and interact with fellow enthusiasts.
-  * [News & Announcements](https://forum.ansible.com/c/news/5): track project-wide announcements including social events.
-
-* The Ansible [Bullhorn newsletter](https://docs.ansible.com/ansible/devel/community/communication.html#the-bullhorn): used to announce releases and important changes.
-
-For more information about communication, see the [Ansible communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
 
 ## Requirements
 
