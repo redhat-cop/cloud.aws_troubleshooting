@@ -14,8 +14,8 @@ tags:
   - infrastructure
   - cluster
 dependencies:
-  amazon.aws: '>=10.0.0'
-  community.aws: '>=10.0.0'
+  amazon.aws: '>=10.0.0,<12.0.0-dev0'
+  community.aws: '>=10.0.0,<12.0.0-dev0'
 repository: https://github.com/redhat-cop/cloud.aws_troubleshooting
 documentation: ''
 homepage: https://github.com/redhat-cop/cloud.aws_troubleshooting

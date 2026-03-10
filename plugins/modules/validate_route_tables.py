@@ -80,8 +80,8 @@ EXAMPLES = r"""
         owner_id: "00000000000"
         private_dns_name_options_on_launch:
         enable_resource_name_dns_a_record: false
-        enable_resource_name_dns_aaaa_record": false
-        hostname_type": "ip-name"
+        enable_resource_name_dns_aaaa_record: false
+        hostname_type: "ip-name"
         state: "available"
         subnet_arn: "arn:aws:ec2:eu-west-2:721066863947:subnet/subnet-032f1a2598b6318ed"
         subnet_id: "subnet-032f1a2598b6318ed"
@@ -163,8 +163,8 @@ EXAMPLES = r"""
             interface_id: null
             network_interface_id: null
             origin: "CreateRoute"
-            state": "active"
-        vpc_id": "vpc-0bee28efef41e1de4"
+            state: "active"
+        vpc_id: "vpc-0bee28efef41e1de4"
     src_subnets:
       - assign_ipv6_address_on_creation: false
         availability_zone: "eu-west-2a"
@@ -181,7 +181,7 @@ EXAMPLES = r"""
         owner_id: "00000000000"
         private_dns_name_options_on_launch:
           enable_resource_name_dns_a_record: false
-          enable_resource_name_dns_aaaa_record": false
+          enable_resource_name_dns_aaaa_record: false
           hostname_type: "ip-name"
         state: "available"
         subnet_arn: "arn:aws:ec2:eu-west-2:721066863947:subnet/subnet-0af56e0d353f88cb8"
