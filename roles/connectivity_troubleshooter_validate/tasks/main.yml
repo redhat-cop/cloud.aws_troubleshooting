@@ -1,12 +1,13 @@
 ---
 # tasks file for roles/connectivity_troubleshooter_validate
+# test
 
 - name: Run 'cloud.aws_troubleshooting.connectivity_troubleshooter_validate' role
   block:
     - name: Fail when the IPv4 address of the resource you want to connect is not defined
       ansible.builtin.fail:
         msg: The IPv4 address of the resource you want to connect to must be defined as connectivity_troubleshooter_validate_destination_ip
-      when: connectivity_troubleshooter_validate_destination_ip is not defined
+      when: connectivity_troubleshooter_validate_destination_ip is defined
 
     - name: Fail when the port number you want to connect to on the destination resource is not defined
       ansible.builtin.fail:

@@ -141,7 +141,7 @@
           Name: "{{ instance_name }}-1"
       register: __create_ec2_instance_1
 
-    - name: Deploy EC2 instance 2
+    - name: Deploy EC2 instance no 2
       amazon.aws.ec2_instance:
         instance_type: t2.micro
         image_id: "{{ image_id }}"

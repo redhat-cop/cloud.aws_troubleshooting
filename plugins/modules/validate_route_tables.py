@@ -281,6 +281,7 @@ class ValidateRouteTables(AnsibleModule):
 
     def validate_vpc(self, src_vpc_id, src_private_ips, dest_vpc_id, dest_subnet_cidrs):
         # Check whether resources are in the same VPC. If not, Cidr cannot overlap
+        # Test
         if not (dest_vpc_id[0] == src_vpc_id[0]):
             for dest_cidr in dest_subnet_cidrs:
                 for ip_addr in src_private_ips:
