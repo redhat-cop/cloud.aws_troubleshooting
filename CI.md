@@ -15,8 +15,6 @@ The following tests run on every pull request:
 | [Sanity](.github/workflows/sanity.yaml) | Runs ansible sanity checks | See compatibility table below | devel, stable-2.17, stable-2.18, stable-2.19, stable-2.20 |
 | [Integration](.github/workflows/integration.yaml) | Executes integration test suites on AWS (split across 2 jobs, requires "safe to test" label) | 3.12 | milestone |
 
-**Note:** Integration tests run on real AWS infrastructure and require the "safe to test" label on pull requests to prevent unauthorized AWS resource creation.
-
 ### Python Version Compatibility by ansible-core Version
 
 These are outlined in the collection's [tox.ini](tox.ini) file (`envlist`) and GitHub Actions workflow exclusions.
@@ -24,7 +22,30 @@ These are outlined in the collection's [tox.ini](tox.ini) file (`envlist`) and G
 | ansible-core Version | Sanity Tests |
 | -------------------- | ------------ |
 | devel | 3.12, 3.13, 3.14 |
-| stable-2.20 | 3.12, 3.13, 3.14 |
-| stable-2.19 | 3.11, 3.12, 3.13 |
-| stable-2.18 | 3.11, 3.12, 3.13 |
-| stable-2.17 | 3.10, 3.11, 3.12 |
+| stable-2.20 | 3.10, 3.11, 3.12, 3.13, 3.14 |
+| stable-2.19 | 3.11, 3.12, 3.13, 3.14 |
+| stable-2.18 | 3.11, 3.12, 3.13, 3.14 |
+| stable-2.17 | 3.10, 3.11, 3.12, 3.14 |
+
+### Integration Test Security and "Safe to Test" Label
+
+Integration tests run on real AWS infrastructure and require the "safe to test" label to prevent unauthorized resource creation and ensure security.
+
+**Label Assignment:**
+- **Automatically added** for PRs from users with write, maintain, or admin permissions
+- **Manually added** by a maintainer for external contributors after code review
+
+**Security Model:**
+- Uses `pull_request_target` event (runs in base repository context)
+- Prevents untrusted code from automatically accessing AWS credentials
+- Label acts as an approval gate before tests consume AWS resources
+
+**Test Execution:**
+- Tests trigger when PRs are opened, reopened, synchronized (new commits), or when the label is added/removed
+- Tests will **not run** if the label is missing
+- Removing the label stops tests from running on subsequent pushes until re-added
+
+**Job Organization:**
+- Integration targets are automatically split across 2 parallel jobs
+- Split is determined by `ansible_test_splitter` action based on changed files
+- Each job runs the subset of tests relevant to the PR's changes
