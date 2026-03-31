@@ -11,7 +11,7 @@ The following tests run on every pull request:
 | Job | Description | Python Versions | ansible-core Versions |
 | --- | ----------- | --------------- | --------------------- |
 | [Changelog](.github/workflows/changelog.yaml) | Checks for the presence of changelog fragments | 3.12 | N/A |
-| [Linters](.github/workflows/linters.yaml) | Runs `black`, `flake8`, `isort`, and `ansible-lint` on plugins and tests | 3.10 | devel |
+| [Linters](.github/workflows/linters.yaml) | Runs `black`, `flake8`, `isort`, and `ansible-lint` on plugins and tests | 3.10 | 2.17 |
 | [Sanity](.github/workflows/sanity.yaml) | Runs ansible sanity checks | See compatibility table below | devel, stable-2.17, stable-2.18, stable-2.19, stable-2.20 |
 | [Integration](.github/workflows/integration.yaml) | Executes integration test suites on AWS (split across 2 jobs, requires "safe to test" label) | 3.12 | milestone |
 
